@@ -1,10 +1,7 @@
 'use client';
-import { ThemeProvider } from 'next-themes';
-import { AuthProvider } from '../context/AuthContext';
-import { WebSocketProvider } from '../context/WebSocketContext';
+import { FluentProvider, webDarkTheme, webLightTheme } from '@fluentui/react-components';
+import { ThemeProvider, useTheme } from 'next-themes';
 import { ReactQueryProvider } from '../context/ReactQueryProvider';
-import { FluentProvider, webLightTheme, webDarkTheme } from '@fluentui/react-components';
-import { useTheme } from 'next-themes';
 
 function FluentThemeProvider({ children }: { children: React.ReactNode }) {
   const { theme } = useTheme();
@@ -29,11 +26,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
     >
       <FluentThemeProvider>
         <ReactQueryProvider>
-          <AuthProvider>
-            <WebSocketProvider>
-              {children}
-            </WebSocketProvider>
-          </AuthProvider>
+          {children}
         </ReactQueryProvider>
       </FluentThemeProvider>
     </ThemeProvider>
