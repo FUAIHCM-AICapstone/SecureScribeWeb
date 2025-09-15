@@ -1,8 +1,13 @@
 
-export default async function HomePage() {
+'use client';
+
+import Dashboard from '@/components/dashboard/Dashboard';
+
+export default function HomePage() {
   return (
     <>
-      <main className='overflow-x-hidden px-3 lg:px-32'>
+      <main className='overflow-x-hidden'>
+        <Dashboard />
       </main>
     </>
   );
