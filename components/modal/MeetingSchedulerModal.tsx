@@ -1,31 +1,33 @@
 'use client';
 
-import React, { useState } from 'react';
+import { showToast } from '@/hooks/useShowToast';
 import {
+    Button,
+    Checkbox,
     Dialog,
     DialogActions,
     DialogBody,
     DialogContent,
     DialogSurface,
     DialogTitle,
-    DialogTrigger,
-    Button,
-    Input,
-    Textarea,
     Field,
-    RadioGroup,
+    Input,
     Radio,
+    RadioGroup,
+    Textarea,
     makeStyles,
-    tokens,
-    Checkbox,
+    tokens
 } from '@fluentui/react-components';
+import { DatePicker, DatePickerProps } from '@fluentui/react-datepicker-compat';
 import { CalendarAdd24Regular } from '@fluentui/react-icons';
+import {
+    TimePicker,
+    TimePickerProps,
+    formatDateToTimeString,
+} from '@fluentui/react-timepicker-compat';
 import { useTranslations } from 'next-intl';
-import { useForm, Controller } from 'react-hook-form';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import { format } from 'date-fns';
-import { showToast } from '@/hooks/useShowToast';
+import React, { useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 
 const useStyles = makeStyles({
     form: {
@@ -39,61 +41,12 @@ const useStyles = makeStyles({
         flexDirection: 'column',
         gap: tokens.spacingVerticalXS,
     },
-    datePickerWrapper: {
-        position: 'relative',
-        '& .react-datepicker-wrapper': {
-            width: '100%',
-        },
-        '& .react-datepicker__input-container input': {
-            width: '100%',
-            padding: '8px 12px',
-            border: `1px solid ${tokens.colorNeutralStroke1}`,
-            borderRadius: tokens.borderRadiusMedium,
-            backgroundColor: 'var(--colorNeutralBackground1)',
-            color: 'var(--colorNeutralForeground1)',
-            fontSize: '14px',
-            '&:focus': {
-                outline: 'none',
-                borderColor: 'var(--colorCompoundBrandStroke)',
-                boxShadow: `0 0 0 2px var(--colorCompoundBrandStroke)`,
-            },
-        },
-        '& .react-datepicker': {
-            fontSize: '14px',
-            border: `1px solid ${tokens.colorNeutralStroke1}`,
-            borderRadius: tokens.borderRadiusMedium,
-            backgroundColor: 'var(--colorNeutralBackground1)',
-        },
-        '& .react-datepicker__header': {
-            backgroundColor: 'var(--colorNeutralBackground2)',
-            borderBottom: `1px solid ${tokens.colorNeutralStroke1}`,
-        },
-        '& .react-datepicker__current-month': {
-            color: 'var(--colorNeutralForeground1)',
-        },
-        '& .react-datepicker__day-name': {
-            color: 'var(--colorNeutralForeground2)',
-        },
-        '& .react-datepicker__day': {
-            color: 'var(--colorNeutralForeground1)',
-            '&:hover': {
-                backgroundColor: 'var(--colorNeutralBackground1Hover)',
-            },
-            '&.react-datepicker__day--selected': {
-                backgroundColor: 'var(--colorCompoundBrandBackground)',
-                color: 'var(--colorNeutralForegroundOnBrand)',
-            },
-            '&.react-datepicker__day--today': {
-                backgroundColor: 'var(--colorNeutralBackground2)',
-            },
-        },
-        '& .react-datepicker__navigation': {
-            border: 'none',
-            backgroundColor: 'transparent',
-        },
-        '& .react-datepicker__navigation-icon::before': {
-            borderColor: 'var(--colorNeutralForeground2)',
-        },
+    dateTimeContainer: {
+        display: 'grid',
+        columnGap: '20px',
+        gridTemplateColumns: 'repeat(2, 1fr)',
+        maxWidth: '600px',
+        marginBottom: '10px',
     },
     radioGroup: {
         display: 'flex',
@@ -160,6 +113,13 @@ export default function MeetingSchedulerModal({
         { id: '3', name: 'Project Gamma', description: 'Marketing campaign' },
     ]);
 
+    // Separate state for date and time
+    const [selectedDate, setSelectedDate] = useState<Date | null | undefined>(null);
+    const [selectedTime, setSelectedTime] = useState<Date | null>(null);
+    const [timePickerValue, setTimePickerValue] = useState<string>(
+        selectedTime ? formatDateToTimeString(selectedTime) : ""
+    );
+
     const {
         control,
         handleSubmit,
@@ -179,6 +139,48 @@ export default function MeetingSchedulerModal({
     });
 
     const isPersonal = watch('isPersonal');
+
+    // Update combined date/time when either changes
+    React.useEffect(() => {
+        if (selectedDate && selectedTime) {
+            const combinedDateTime = new Date(
+                selectedDate.getFullYear(),
+                selectedDate.getMonth(),
+                selectedDate.getDate(),
+                selectedTime.getHours(),
+                selectedTime.getMinutes()
+            );
+            setValue('startTime', combinedDateTime);
+        } else if (selectedDate) {
+            setValue('startTime', selectedDate);
+        } else {
+            setValue('startTime', null);
+        }
+    }, [selectedDate, selectedTime, setValue]);
+
+    const onSelectDate: DatePickerProps["onSelectDate"] = (date) => {
+        setSelectedDate(date);
+        if (date && selectedTime) {
+            setSelectedTime(
+                new Date(
+                    date.getFullYear(),
+                    date.getMonth(),
+                    date.getDate(),
+                    selectedTime.getHours(),
+                    selectedTime.getMinutes()
+                )
+            );
+        }
+    };
+
+    const onTimeChange: TimePickerProps["onTimeChange"] = (_ev, data) => {
+        setSelectedTime(data.selectedTime);
+        setTimePickerValue(data.selectedTimeText ?? "");
+    };
+
+    const onTimePickerInput = (ev: React.ChangeEvent<HTMLInputElement>) => {
+        setTimePickerValue(ev.target.value);
+    };
 
     const onSubmit = async (data: MeetingFormData) => {
         try {
@@ -201,6 +203,9 @@ export default function MeetingSchedulerModal({
 
     const handleCancel = () => {
         reset();
+        setSelectedDate(null);
+        setSelectedTime(null);
+        setTimePickerValue("");
         onOpenChange(false);
     };
 
@@ -294,26 +299,26 @@ export default function MeetingSchedulerModal({
                                 validationMessage={errors.startTime?.message}
                                 required
                             >
-                                <Controller
-                                    name="startTime"
-                                    control={control}
-                                    rules={{ required: t('startTimeRequired') }}
-                                    render={({ field }) => (
-                                        <div className={styles.datePickerWrapper}>
-                                            <DatePicker
-                                                selected={field.value}
-                                                onChange={(date) => field.onChange(date)}
-                                                showTimeSelect
-                                                timeFormat="HH:mm"
-                                                timeIntervals={15}
-                                                dateFormat="yyyy-MM-dd HH:mm"
-                                                placeholderText={t('selectDateTime')}
-                                                minDate={new Date()}
-                                                timeCaption={t('time')}
-                                            />
-                                        </div>
-                                    )}
-                                />
+                                <div className={styles.dateTimeContainer}>
+                                    <Field label={t('selectDate')}>
+                                        <DatePicker
+                                            placeholder={t('selectDatePlaceholder')}
+                                            value={selectedDate}
+                                            onSelectDate={onSelectDate}
+                                        />
+                                    </Field>
+                                    <Field label={t('selectTime')}>
+                                        <TimePicker
+                                            placeholder={t('selectTimePlaceholder')}
+                                            freeform
+                                            dateAnchor={selectedDate ?? undefined}
+                                            selectedTime={selectedTime}
+                                            onTimeChange={onTimeChange}
+                                            value={timePickerValue}
+                                            onInput={onTimePickerInput}
+                                        />
+                                    </Field>
+                                </div>
                             </Field>
 
                             {/* Meeting Type */}
