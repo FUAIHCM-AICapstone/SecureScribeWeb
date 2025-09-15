@@ -1,0 +1,171 @@
+@startuml
+skinparam backgroundColor #ffffff
+skinparam defaultFontName Arial
+skinparam shadowing false
+skinparam monochrome true
+skinparam activity {
+  ArrowColor #333333
+  BorderColor #333333
+  BackgroundColor #f5f5f5
+}
+skinparam componentStyle rectangle
+skinparam rectangle {
+  BorderColor #333333
+  BackgroundColor #f5f5f5
+}
+skinparam package {
+  BorderColor #333333
+  BackgroundColor #f0f0f0
+}
+skinparam noteBackgroundColor #f9f9f9
+skinparam noteBorderColor #999999
+
+title SecureScribe – User & Admin Screen Flow (Grayscale)
+
+' Layout & spacing (grayscale, clearer arrows, more space)
+left to right direction
+skinparam defaultFontSize 12
+skinparam dpi 160
+skinparam Padding 12
+skinparam RoundCorner 8
+skinparam ArrowThickness 1
+skinparam ArrowColor #888888
+skinparam linetype curve
+skinparam Ranksep 80
+skinparam Nodesep 40
+
+legend right
+  <<screen>>  : standalone screen
+  <<section>> : part/section inside a screen (including tabs)
+  [personal]  : flow concerning personal meetings
+  [scope=..]  : file scope (meeting|project|user)
+  Edge → <<section>> : default landing section of the destination screen
+endlegend
+
+package "User App" as UserApp {
+  rectangle "Dashboard" <<screen>> as Dashboard
+  rectangle "Meeting Detail" <<screen>> as MeetingDetail
+  rectangle "Project Detail" <<screen>> as ProjectDetail
+  rectangle "User Profile" <<screen>> as UserProfile
+
+  package "Dashboard Sections" {
+    rectangle "My Meetings" <<section>> as DB_MyMeetings
+    rectangle "Recent Notes" <<section>> as DB_RecentNotes
+    rectangle "Recent Transcripts" <<section>> as DB_RecentTranscripts
+    rectangle "My Tasks (summary)" <<section>> as DB_MyTasksSummary
+    rectangle "Notifications Entry" <<section>> as DB_NotificationsEntry
+    rectangle "Quick Actions" <<section>> as DB_QuickActions
+  }
+
+  package "Meetings Sections" {
+    rectangle "Filters" <<section>> as ME_Filters
+    rectangle "List/Calendar Toggle" <<section>> as ME_ViewToggle
+  }
+
+  package "Personal Meetings Sections" {
+    rectangle "Filters" <<section>> as PM_Filters
+    rectangle "List/Calendar Toggle" <<section>> as PM_ViewToggle
+  }
+
+  package "Meeting Detail Sections" {
+    rectangle "Transcript (tab)" <<section>> as MD_Transcript
+    rectangle "Notes (tab)" <<section>> as MD_Notes
+    rectangle "Files" <<section>> as MD_Files
+    rectangle "Tasks" <<section>> as MD_Tasks
+    rectangle "Bot Controls" <<section>> as MD_BotControls
+    rectangle "Bot Logs" <<section>> as MD_BotLogs
+    rectangle "Tags" <<section>> as MD_Tags
+    rectangle "Linked Projects" <<section>> as MD_LinkedProjects
+  }
+
+  package "Projects Sections" {
+    rectangle "Filters" <<section>> as PRJ_Filters
+  }
+
+  package "Project Detail Sections" {
+    rectangle "Overview" <<section>> as PD_Overview
+    rectangle "Meetings" <<section>> as PD_Meetings
+    rectangle "Files" <<section>> as PD_Files
+    rectangle "Tasks" <<section>> as PD_Tasks
+    rectangle "Members" <<section>> as PD_Members
+  }
+
+  package "Global Files Sections" {
+    rectangle "Filters" <<section>> as GF_Filters
+    rectangle "Preview" <<section>> as GF_Preview
+  }
+
+  package "My Tasks Sections" {
+    rectangle "Filters" <<section>> as MT_Filters
+    rectangle "Kanban/List Toggle" <<section>> as MT_ViewToggle
+  }
+
+  package "Notification Center Sections" {
+    rectangle "Filters" <<section>> as NC_Filters
+    rectangle "Realtime Stream" <<section>> as NC_RealtimeStream
+  }
+
+  package "Global Search Sections" {
+    rectangle "Query" <<section>> as GS_Query
+    rectangle "Results (Files/Transcripts/Notes/Tasks)" <<section>> as GS_ResultsGroups
+    rectangle "Filters" <<section>> as GS_Filters
+  }
+
+  package "User Profile Sections" {
+    rectangle "Account" <<section>> as UP_Account
+    rectangle "Identities" <<section>> as UP_Identities
+    rectangle "Devices" <<section>> as UP_Devices
+    rectangle "Calendar Integration" <<section>> as UP_CalendarIntegration
+    rectangle "Security" <<section>> as UP_Security
+  }
+}
+
+
+' Entry
+rectangle "Auth" as Auth
+Auth --> Dashboard : login success
+Dashboard --> DB_MyMeetings : [default]
+
+' User navigation (to default sections)
+Dashboard --> ME_Filters
+Dashboard --> PM_Filters : [personal]
+Dashboard --> PRJ_Filters
+Dashboard --> GF_Filters
+Dashboard --> MT_Filters
+Dashboard --> GS_Query
+Dashboard --> NC_Filters
+Dashboard --> UP_Account
+
+ME_Filters --> MD_Transcript : [select meeting]
+PM_Filters --> MD_Transcript : [personal]
+PRJ_Filters --> PD_Overview : [select project]
+ProjectDetail --> MD_Transcript
+GF_Filters --> GF_Preview : [select file]
+GS_Query --> GS_ResultsGroups
+GS_ResultsGroups --> MD_Transcript : [meeting result]
+GS_ResultsGroups --> PD_Overview : [project result]
+GS_ResultsGroups --> GF_Preview : [file result]
+GS_ResultsGroups --> MT_Filters : [task result]
+
+' Defaults within screens to their sections
+NC_Filters --> NC_RealtimeStream
+UserProfile --> UP_Account
+
+' Meeting Detail internals
+MeetingDetail --> MD_Transcript
+MeetingDetail --> MD_Notes
+MeetingDetail --> MD_Files
+MeetingDetail --> MD_Tasks
+MeetingDetail --> MD_BotControls
+MD_BotControls --> MD_BotLogs
+MeetingDetail --> MD_Tags
+MeetingDetail --> MD_LinkedProjects
+
+' File scope deep-links
+GF_Preview --> MeetingDetail : [scope=meeting]
+GF_Preview --> ProjectDetail : [scope=project]
+GF_Preview --> UserProfile : [scope=user]
+
+@enduml
+
+

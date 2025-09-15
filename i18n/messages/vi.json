@@ -1,3 +1,16 @@
 {
-  
+  "Header": {
+    "home": "Trang chủ",
+    "searchPlaceholder": "Tìm kiếm",
+    "upload": "Tải tệp",
+    "schedule": "Lên lịch họp",
+    "view": "Xem",
+    "edit": "Sửa",
+    "filterAll": "Tất cả",
+    "filterTypes": "Loại",
+    "filterFiles": "Tệp",
+    "filterMeetings": "Cuộc họp",
+    "filterTranscripts": "Transcript",
+    "filterNotes": "Ghi chú"
+  }
 }

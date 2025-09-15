@@ -1,4 +1,3 @@
-import FooterSection from '@/components/landing/FooterSection';
 
 const App = () => {
   return (
@@ -1129,7 +1128,6 @@ const App = () => {
         </section>
       </main>
 
-      <FooterSection id="footer" />
     </div>
   );
 };

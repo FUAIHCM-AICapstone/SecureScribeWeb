@@ -1,6 +1,5 @@
 import React from 'react';
 // Assuming FooterSection is available at this path as per user's request
-import FooterSection from '@/components/landing/FooterSection';
 
 const App = () => {
   return (
@@ -683,9 +682,6 @@ const App = () => {
         </div>
       </main>
 
-      {/* Footer (Placeholder - replace with actual FooterSection component if available) */}
-      <FooterSection id="footer" />
-      {/*  */}
     </div>
   );
 };

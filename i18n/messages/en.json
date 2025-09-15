@@ -1,3 +1,16 @@
 {
-  
+  "Header": {
+    "home": "Home",
+    "searchPlaceholder": "Search",
+    "upload": "Upload file",
+    "schedule": "Schedule a meeting",
+    "view": "View",
+    "edit": "Edit",
+    "filterAll": "All",
+    "filterTypes": "Types",
+    "filterFiles": "Files",
+    "filterMeetings": "Meetings",
+    "filterTranscripts": "Transcripts",
+    "filterNotes": "Notes"
+  }
 }

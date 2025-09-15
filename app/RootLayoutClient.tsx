@@ -10,11 +10,11 @@ import store from '@/store/index';
 // Fluent UI theming is handled by the FluentProvider in the providers
 import '@/styles/globals.css';
 import { Providers } from './providers';
-import Header from '@/components/layout/Header';
+import Header from '../components/layout/Header';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { showToast } from '@/hooks/useShowToast';
 import { Toaster } from 'sonner';
-import { SidebarProvider } from '@/context/SidebarContext';
+import { SidebarProvider } from '../context/SidebarContext';
 import ClientOnlyLayout from '@/components/layout/ClientOnly';
 
 export default function RootLayoutClient({
@@ -30,9 +30,7 @@ export default function RootLayoutClient({
   const searchParams = useSearchParams();
   const pathAfterLocale = pathname.split('/').slice(2).join('/');
   const hideHeader =
-    pathAfterLocale.startsWith('auth') ||
-    pathAfterLocale.startsWith('dashboard') ||
-    pathAfterLocale.startsWith('email');
+    pathAfterLocale.startsWith('auth');
 
   useEffect(() => {
     const toastKey = searchParams.get('toast');

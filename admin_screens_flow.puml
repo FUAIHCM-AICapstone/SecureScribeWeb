@@ -1,0 +1,67 @@
+@startuml
+skinparam backgroundColor #ffffff
+skinparam defaultFontName Arial
+skinparam shadowing false
+skinparam monochrome true
+skinparam rectangle {
+  BorderColor #333333
+  BackgroundColor #f5f5f5
+}
+skinparam package {
+  BorderColor #333333
+  BackgroundColor #f0f0f0
+}
+skinparam noteBackgroundColor #f9f9f9
+skinparam noteBorderColor #999999
+
+title SecureScribe – Admin Screen Flow (Grayscale)
+
+left to right direction
+skinparam defaultFontSize 12
+skinparam dpi 160
+skinparam Padding 12
+skinparam RoundCorner 8
+skinparam ArrowThickness 1
+skinparam ArrowColor #888888
+skinparam linetype ortho
+skinparam Ranksep 80
+skinparam Nodesep 40
+
+legend right
+  <<screen>>  : standalone screen
+  <<section>> : part/section inside a screen
+  Edge → <<section>> : default landing section of the destination screen
+endlegend
+
+package "Admin App" as AdminApp {
+  rectangle "Admin Dashboard" <<screen>> as AdminDashboard
+  rectangle "Users" <<screen>> as AdminUsers
+  rectangle "User Detail" <<screen>> as AdminUserDetail
+  rectangle "Projects" <<screen>> as AdminProjects
+  rectangle "Project Detail" <<screen>> as AdminProjectDetail
+  rectangle "Meetings" <<screen>> as AdminMeetings
+  rectangle "Meeting Detail" <<screen>> as AdminMeetingDetail
+  rectangle "Bots" <<screen>> as AdminBots
+  rectangle "Audit Logs" <<screen>> as AdminAuditLogs
+  rectangle "Integrations" <<screen>> as AdminIntegrations
+  rectangle "Tags" <<screen>> as AdminTags
+
+  package "Admin Bots Sections" {
+    rectangle "List" <<section>> as AB_List
+    rectangle "Detail" <<section>> as AB_Detail
+    rectangle "Logs" <<section>> as AB_Logs
+  }
+}
+
+' Admin navigation
+AdminDashboard --> AdminUsers
+AdminDashboard --> AdminProjects
+AdminDashboard --> AdminMeetings
+AdminDashboard --> AdminBots
+AdminDashboard --> AdminAuditLogs
+AdminDashboard --> AdminIntegrations
+AdminDashboard --> AdminTags
+
+@enduml
+
+
