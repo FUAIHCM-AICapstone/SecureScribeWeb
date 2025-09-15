@@ -12,5 +12,31 @@
     "filterMeetings": "Meetings",
     "filterTranscripts": "Transcripts",
     "filterNotes": "Notes"
+  },
+  "MeetingScheduler": {
+    "scheduleMeeting": "Schedule Meeting",
+    "meetingTitle": "Meeting Title",
+    "meetingDescription": "Meeting Description",
+    "meetingUrl": "Meeting URL",
+    "startTime": "Start Time",
+    "meetingType": "Meeting Type",
+    "personalMeeting": "Personal Meeting",
+    "projectMeeting": "Project Meeting",
+    "selectProjects": "Select Projects",
+    "noProjectsAvailable": "No projects available",
+    "titlePlaceholder": "Enter meeting title",
+    "descriptionPlaceholder": "Enter meeting description (optional)",
+    "urlPlaceholder": "https://meet.google.com/...",
+    "selectDateTime": "Select date and time",
+    "time": "Time",
+    "cancel": "Cancel",
+    "createMeeting": "Create Meeting",
+    "creating": "Creating...",
+    "meetingCreated": "Meeting scheduled successfully!",
+    "meetingCreateError": "Failed to schedule meeting. Please try again.",
+    "titleRequired": "Meeting title is required",
+    "titleMinLength": "Title must be at least 3 characters",
+    "urlInvalid": "Please enter a valid URL (https://...)",
+    "startTimeRequired": "Start time is required"
   }
 }

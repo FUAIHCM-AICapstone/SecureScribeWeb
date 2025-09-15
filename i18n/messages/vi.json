@@ -12,5 +12,31 @@
     "filterMeetings": "Cuộc họp",
     "filterTranscripts": "Transcript",
     "filterNotes": "Ghi chú"
+  },
+  "MeetingScheduler": {
+    "scheduleMeeting": "Lên lịch họp",
+    "meetingTitle": "Tiêu đề cuộc họp",
+    "meetingDescription": "Mô tả cuộc họp",
+    "meetingUrl": "URL cuộc họp",
+    "startTime": "Thời gian bắt đầu",
+    "meetingType": "Loại cuộc họp",
+    "personalMeeting": "Cuộc họp cá nhân",
+    "projectMeeting": "Cuộc họp dự án",
+    "selectProjects": "Chọn dự án",
+    "noProjectsAvailable": "Không có dự án nào",
+    "titlePlaceholder": "Nhập tiêu đề cuộc họp",
+    "descriptionPlaceholder": "Nhập mô tả cuộc họp (tùy chọn)",
+    "urlPlaceholder": "https://meet.google.com/...",
+    "selectDateTime": "Chọn ngày và giờ",
+    "time": "Thời gian",
+    "cancel": "Hủy",
+    "createMeeting": "Tạo cuộc họp",
+    "creating": "Đang tạo...",
+    "meetingCreated": "Đã lên lịch cuộc họp thành công!",
+    "meetingCreateError": "Không thể lên lịch cuộc họp. Vui lòng thử lại.",
+    "titleRequired": "Tiêu đề cuộc họp là bắt buộc",
+    "titleMinLength": "Tiêu đề phải có ít nhất 3 ký tự",
+    "urlInvalid": "Vui lòng nhập URL hợp lệ (https://...)",
+    "startTimeRequired": "Thời gian bắt đầu là bắt buộc"
   }
 }
