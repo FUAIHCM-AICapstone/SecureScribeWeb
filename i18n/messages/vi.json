@@ -76,6 +76,13 @@
     "upcoming": "Sắp tới",
     "version": "v1.0.0",
     "help": "Trợ giúp",
-    "settings": "Cài đặt"
+    "settings": "Cài đặt",
+    "management": "Quản trị",
+    "bots": "Bot & Tự động hóa",
+    "integrations": "Tích hợp",
+    "reports": "Báo cáo & Phân tích",
+    "privacy": "Quyền riêng tư",
+    "terms": "Điều khoản dịch vụ",
+    "chat": "Trò chuyện"
   }
 }

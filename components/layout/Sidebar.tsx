@@ -1,13 +1,11 @@
 'use client';
 import React, { useEffect, useRef, useState } from 'react';
-import { Link, usePathname, useRouter } from '@/i18n/navigation';
+import { usePathname, useRouter } from '@/i18n/navigation';
 import {
     makeStyles,
     mergeClasses,
     tokens,
     Drawer,
-    DrawerHeader,
-    DrawerHeaderTitle,
     DrawerBody,
     Accordion,
     AccordionItem,
@@ -28,14 +26,15 @@ import {
     Briefcase24Regular,
     ClipboardTaskListLtr24Regular,
     Person24Regular,
+    Chat24Regular,
 } from '@fluentui/react-icons';
 
 const useStyles = makeStyles({
     container: {
-        width: '280px',
         transition: 'width 0.2s ease-in-out',
         borderRight: `1px solid ${tokens.colorNeutralStroke2}`,
         height: '100%',
+        padding: "0px",
         backgroundColor: tokens.colorNeutralBackground1,
         overflow: 'hidden',
     },
@@ -45,13 +44,15 @@ const useStyles = makeStyles({
     section: {
         padding: tokens.spacingVerticalS,
     },
-    linkItem: {
-        textDecoration: 'none',
-        color: tokens.colorNeutralForeground1,  // hoặc token phù hợp
-        display: 'block',
-        width: '100%',
-        padding: `${tokens.spacingVerticalS} ${tokens.spacingHorizontalM}`,
-        // có thể thêm hover/focus styles nếu muốn
+    scrollArea: {
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+        overflowY: 'auto',
+        paddingBottom: tokens.spacingVerticalL,
+    },
+    mobileTopPad: {
+        paddingTop: tokens.spacingVerticalM,
     },
     toggleGroup: {
         display: 'flex',
@@ -70,8 +71,14 @@ const useStyles = makeStyles({
         textOverflow: 'ellipsis',
     },
     panelPadding: {
-        paddingLeft: tokens.spacingHorizontalM,
+        paddingLeft: tokens.spacingHorizontalS,
         paddingRight: tokens.spacingHorizontalM,
+    },
+    footer: {
+        marginTop: tokens.spacingVerticalL,
+        padding: `${tokens.spacingVerticalS} ${tokens.spacingHorizontalM}`,
+        color: tokens.colorNeutralForeground3,
+        fontSize: '12px',
     },
 });
 
@@ -89,6 +96,16 @@ export default function Sidebar({ className }: SidebarProps) {
     const [drawerType, setDrawerType] = useState<'inline' | 'overlay'>('inline');
     const didInitToggleWatch = useRef(false);
     const prevPathRef = useRef(pathname);
+
+    const tSafe = (key: string, fallback: string) => {
+        try {
+            return (t as any)(key);
+        } catch {
+            return fallback;
+        }
+    };
+
+    // const navigate = (href: string) => router.push(href, { locale });
 
     useEffect(() => {
         const normalize = (p: string) => p.replace(/\/+$/, '');
@@ -130,6 +147,7 @@ export default function Sidebar({ className }: SidebarProps) {
             { key: 'projects', label: t('projects'), href: '/projects', icon: <Briefcase24Regular /> },
             { key: 'tasks', label: t('tasks'), href: '/tasks', icon: <ClipboardTaskListLtr24Regular /> },
             { key: 'profile', label: t('profile'), href: '/profile', icon: <Person24Regular /> },
+            { key: 'chat', label: t('chat'), href: '/chat', icon: <Chat24Regular /> },
         ];
 
     return (
@@ -155,53 +173,150 @@ export default function Sidebar({ className }: SidebarProps) {
                     if (!data.open) close();
                 }}
             >
-                <DrawerHeader>
-                    <DrawerHeaderTitle>{t('navigation')}</DrawerHeaderTitle>
-                </DrawerHeader>
                 <DrawerBody>
-                    <Accordion multiple collapsible>
-                        <AccordionItem value="pages">
-                            <AccordionHeader>{t('pages')}</AccordionHeader>
-                            <AccordionPanel>
-                                <div className={styles.panelPadding}>
-                                    <div className={styles.toggleGroup}>
-                                        {navToggles.map((item) => (
+                    <div className={mergeClasses(styles.scrollArea, drawerType === 'overlay' && styles.mobileTopPad)}>
+                        <div className={styles.panelPadding}>
+                            <div className={styles.toggleGroup}>
+                                {navToggles.map((item) => (
+                                    <ToggleButton
+                                        key={item.key}
+                                        appearance="subtle"
+                                        size="large"
+                                        icon={{ children: item.icon }}
+                                        checked={isActive(item.href)}
+                                        className={styles.toggleButton}
+                                        onClick={() => {
+                                            router.push(item.href, { locale });
+                                        }}
+                                    >
+                                        {item.label}
+                                    </ToggleButton>
+                                ))}
+                            </div>
+                        </div>
+                        <Accordion multiple collapsible>
+                            <AccordionItem value="management">
+                                <AccordionHeader>{tSafe('management', 'Management')}</AccordionHeader>
+                                <AccordionPanel>
+                                    <List>
+                                        <ListItem>
                                             <ToggleButton
-                                                key={item.key}
                                                 appearance="subtle"
                                                 size="large"
-                                                icon={{ children: item.icon }}
-                                                checked={isActive(item.href)}
                                                 className={styles.toggleButton}
+                                                checked={isActive('/bots')}
                                                 onClick={() => {
-                                                    router.push(item.href, { locale });
+                                                    router.push('/bots', { locale });
                                                 }}
                                             >
-                                                {item.label}
+                                                {tSafe('bots', 'Bots & Automations')}
                                             </ToggleButton>
-                                        ))}
-                                    </div>
-                                </div>
-                            </AccordionPanel>
-                        </AccordionItem>
-                        <AccordionItem value="extra">
-                            <AccordionHeader>{t('extra')}</AccordionHeader>
-                            <AccordionPanel>
-                                <List>
-                                    <ListItem>
-                                        <Link href="/help" className={styles.linkItem}>
-                                            {t('help')}
-                                        </Link>
-                                    </ListItem>
-                                    <ListItem>
-                                        <Link href="/about" className={styles.linkItem}>
-                                            {t('about')}
-                                        </Link>
-                                    </ListItem>
-                                </List>
-                            </AccordionPanel>
-                        </AccordionItem>
-                    </Accordion>
+                                        </ListItem>
+                                        <ListItem>
+                                            <ToggleButton
+                                                appearance="subtle"
+                                                size="large"
+                                                className={styles.toggleButton}
+                                                checked={isActive('/integrations')}
+                                                onClick={() => {
+                                                    router.push('/integrations', { locale });
+                                                }}
+                                            >
+                                                {tSafe('integrations', 'Integrations')}
+                                            </ToggleButton>
+                                        </ListItem>
+                                        <ListItem>
+                                            <ToggleButton
+                                                appearance="subtle"
+                                                size="large"
+                                                className={styles.toggleButton}
+                                                checked={isActive('/reports')}
+                                                onClick={() => {
+                                                    router.push('/reports', { locale });
+                                                }}
+                                            >
+                                                {tSafe('reports', 'Reports & Analytics')}
+                                            </ToggleButton>
+                                        </ListItem>
+                                        <ListItem>
+                                            <ToggleButton
+                                                appearance="subtle"
+                                                size="large"
+                                                className={styles.toggleButton}
+                                                checked={isActive('/settings')}
+                                                onClick={() => {
+                                                    router.push('/settings', { locale });
+                                                }}
+                                            >
+                                                {tSafe('settings', 'Settings')}
+                                            </ToggleButton>
+                                        </ListItem>
+                                    </List>
+                                </AccordionPanel>
+                            </AccordionItem>
+                            <AccordionItem value="extra">
+                                <AccordionHeader>{t('extra')}</AccordionHeader>
+                                <AccordionPanel>
+                                    <List>
+                                        <ListItem>
+                                            <ToggleButton
+                                                appearance="subtle"
+                                                size="large"
+                                                className={styles.toggleButton}
+                                                checked={isActive('/help')}
+                                                onClick={() => {
+                                                    router.push('/help', { locale });
+                                                }}
+                                            >
+                                                {t('help')}
+                                            </ToggleButton>
+                                        </ListItem>
+                                        <ListItem>
+                                            <ToggleButton
+                                                appearance="subtle"
+                                                size="large"
+                                                className={styles.toggleButton}
+                                                checked={isActive('/privacy')}
+                                                onClick={() => {
+                                                    router.push('/privacy', { locale });
+                                                }}
+                                            >
+                                                {tSafe('privacy', 'Privacy')}
+                                            </ToggleButton>
+                                        </ListItem>
+                                        <ListItem>
+                                            <ToggleButton
+                                                appearance="subtle"
+                                                size="large"
+                                                className={styles.toggleButton}
+                                                checked={isActive('/terms-of-service')}
+                                                onClick={() => {
+                                                    router.push('/terms-of-service', { locale });
+                                                }}
+                                            >
+                                                {tSafe('terms', 'Terms of Service')}
+                                            </ToggleButton>
+                                        </ListItem>
+                                        <ListItem>
+                                            <ToggleButton
+                                                appearance="subtle"
+                                                size="large"
+                                                className={styles.toggleButton}
+                                                checked={isActive('/about')}
+                                                onClick={() => {
+                                                    router.push('/about', { locale });
+                                                }}
+                                            >
+                                                {t('about')}
+                                            </ToggleButton>
+                                        </ListItem>
+                                    </List>
+                                </AccordionPanel>
+                            </AccordionItem>
+                        </Accordion>
+                        <div className={styles.footer}>
+                        </div>
+                    </div>
                 </DrawerBody>
             </Drawer>
         </aside>

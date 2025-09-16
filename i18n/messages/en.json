@@ -76,6 +76,13 @@
     "upcoming": "Upcoming",
     "version": "v1.0.0",
     "help": "Help",
-    "settings": "Settings"
+    "settings": "Settings",
+    "management": "Management",
+    "bots": "Bots & Automations",
+    "integrations": "Integrations",
+    "reports": "Reports & Analytics",
+    "privacy": "Privacy",
+    "terms": "Terms of Service",
+    "chat": "Chat"
   }
 }
