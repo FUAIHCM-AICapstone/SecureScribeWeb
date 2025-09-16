@@ -62,12 +62,19 @@ const useStyles = makeStyles({
     filter: { width: '180px' },
     right: { display: 'flex', alignItems: 'center', gap: '12px' },
     buttonText: {
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
     },
     scheduleButton: {
-        minWidth: '160px',
         justifyContent: 'center',
+        display: 'inline-flex',
+        alignItems: 'center',
+        minWidth: 'max-content',
+    },
+    actionButton: {
+        justifyContent: 'center',
+        display: 'inline-flex',
+        alignItems: 'center',
+        minWidth: 'max-content',
     },
     menuButton: {
         // Always visible on all breakpoints
@@ -248,18 +255,22 @@ export default function Header() {
                         </div>
                     </div>
                     <Tooltip content={t('upload')} relationship="label">
-                        <Button appearance="primary" icon={<ArrowUpload24Regular />} onClick={onUpload}>
-                            <span className={styles.buttonText}>{t('upload')}</span>
+                        <Button appearance="primary" size="large" className={styles.actionButton}
+                            icon={<ArrowUpload24Regular />}
+                            onClick={onUpload}
+                        >
+                            {t('upload')}
                         </Button>
                     </Tooltip>
                     <Tooltip content={t('schedule')} relationship="label">
                         <Button
                             appearance="secondary"
+                            size="large"
                             icon={<CalendarAdd24Regular />}
                             onClick={onSchedule}
-                            className={styles.scheduleButton}
+                            className={`${styles.scheduleButton} ${styles.actionButton}`}
                         >
-                            <span className={styles.buttonText}>{t('schedule')}</span>
+                            {t('schedule')}
                         </Button>
                     </Tooltip>
 

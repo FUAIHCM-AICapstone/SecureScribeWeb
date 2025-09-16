@@ -12,7 +12,17 @@
     "filterMeetings": "Cuộc họp",
     "filterTranscripts": "Transcript",
     "filterNotes": "Ghi chú",
-    "menu": "Menu"
+    "menu": "Menu",
+    "notifications": "Thông báo",
+    "crumb": {
+      "files": "Tệp",
+      "meetings": "Cuộc họp",
+      "projects": "Dự án",
+      "tasks": "Nhiệm vụ",
+      "profile": "Hồ sơ",
+      "privacy": "Quyền riêng tư",
+      "terms-of-service": "Điều khoản dịch vụ"
+    }
   },
   "MeetingScheduler": {
     "scheduleMeeting": "Lên lịch họp",
@@ -51,6 +61,11 @@
     "meetings": "Cuộc họp",
     "projects": "Dự án",
     "files": "Tệp",
+    "tasks": "Nhiệm vụ",
+    "profile": "Hồ sơ",
+    "pages": "Trang",
+    "extra": "Bổ sung",
+    "about": "Giới thiệu",
     "closeSidebar": "Đóng sidebar",
     "closeSidebarDescription": "Nhấn hoặc nhấn Escape để đóng sidebar",
     "quickSearch": "Tìm kiếm nhanh",

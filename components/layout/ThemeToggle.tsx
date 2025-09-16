@@ -3,7 +3,7 @@ import React from 'react';
 import { RiMoonFill, RiSunLine } from 'react-icons/ri';
 import { useTranslations } from 'next-intl';
 import { useTheme } from 'next-themes';
-import { Button } from '@fluentui/react-components';
+import { ToggleButton, Tooltip } from '@fluentui/react-components';
 
 const ThemeToggle = () => {
   const t = useTranslations('ThemeToggle');
@@ -12,13 +12,19 @@ const ThemeToggle = () => {
   React.useEffect(() => setMounted(true), []);
 
   if (!mounted) return null;
+  const isDark = resolvedTheme === 'dark';
   return (
-    <Button
-      aria-label={t('toggleTheme')}
-      appearance="secondary"
-      onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
-      icon={resolvedTheme === 'light' ? <RiMoonFill size={18} /> : <RiSunLine size={18} />}
-    />
+    <Tooltip content={t('toggleTheme')} relationship="label">
+      <ToggleButton
+        aria-label={t('toggleTheme')}
+        title={t('toggleTheme')}
+        appearance="secondary"
+        size="large"
+        checked={isDark}
+        onClick={() => setTheme(isDark ? 'light' : 'dark')}
+        icon={isDark ? <RiSunLine size={18} /> : <RiMoonFill size={18} />}
+      />
+    </Tooltip>
   );
 };
 

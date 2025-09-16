@@ -12,7 +12,17 @@
     "filterMeetings": "Meetings",
     "filterTranscripts": "Transcripts",
     "filterNotes": "Notes",
-    "menu": "Menu"
+    "menu": "Menu",
+    "notifications": "Notifications",
+    "crumb": {
+      "files": "Files",
+      "meetings": "Meetings",
+      "projects": "Projects",
+      "tasks": "Tasks",
+      "profile": "Profile",
+      "privacy": "Privacy",
+      "terms-of-service": "Terms of Service"
+    }
   },
   "MeetingScheduler": {
     "scheduleMeeting": "Schedule Meeting",
@@ -51,6 +61,11 @@
     "meetings": "Meetings",
     "projects": "Projects",
     "files": "Files",
+    "tasks": "Tasks",
+    "profile": "Profile",
+    "pages": "Pages",
+    "extra": "Extra",
+    "about": "About",
     "closeSidebar": "Close sidebar",
     "closeSidebarDescription": "Click or press Escape to close the sidebar",
     "quickSearch": "Quick search",
