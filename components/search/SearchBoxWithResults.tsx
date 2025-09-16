@@ -61,8 +61,7 @@ async function defaultSearchEntities(query: string): Promise<SearchResultsGroupe
 const useStyles = makeStyles({
     container: { position: "relative", width: "100%" },
     dropdown: {
-        width: "100%",
-        maxWidth: "1400px",
+        width: "50%",
         padding: 0,
         borderRadius: tokens.borderRadiusMedium,
         boxShadow: tokens.shadow16,

@@ -11,7 +11,8 @@
     "filterFiles": "Tệp",
     "filterMeetings": "Cuộc họp",
     "filterTranscripts": "Transcript",
-    "filterNotes": "Ghi chú"
+    "filterNotes": "Ghi chú",
+    "menu": "Menu"
   },
   "MeetingScheduler": {
     "scheduleMeeting": "Lên lịch họp",
@@ -38,9 +39,28 @@
     "creating": "Đang tạo...",
     "meetingCreated": "Đã lên lịch cuộc họp thành công!",
     "meetingCreateError": "Không thể lên lịch cuộc họp. Vui lòng thử lại.",
+    "viewMeeting": "Xem Cuộc Họp",
     "titleRequired": "Tiêu đề cuộc họp là bắt buộc",
     "titleMinLength": "Tiêu đề phải có ít nhất 3 ký tự",
     "urlInvalid": "Vui lòng nhập URL hợp lệ (https://...)",
     "startTimeRequired": "Thời gian bắt đầu là bắt buộc"
+  },
+  "Sidebar": {
+    "navigation": "Điều hướng",
+    "home": "Trang chủ",
+    "meetings": "Cuộc họp",
+    "projects": "Dự án",
+    "files": "Tệp",
+    "closeSidebar": "Đóng sidebar",
+    "closeSidebarDescription": "Nhấn hoặc nhấn Escape để đóng sidebar",
+    "quickSearch": "Tìm kiếm nhanh",
+    "recentItems": "Gần đây",
+    "quickActions": "Hành động nhanh",
+    "newMeeting": "Cuộc họp mới",
+    "newProject": "Dự án mới",
+    "upcoming": "Sắp tới",
+    "version": "v1.0.0",
+    "help": "Trợ giúp",
+    "settings": "Cài đặt"
   }
 }

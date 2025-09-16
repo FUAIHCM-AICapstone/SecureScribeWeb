@@ -1,7 +1,7 @@
-type PageProps = { params: { id: string } };
+type PageProps = { params: Promise<{ id: string }> };
 
 export default async function MeetingDetailPage({ params }: PageProps) {
-    const { id } = params;
+    const { id } = await params;
     return (
         <>
             <main className='overflow-x-hidden px-3 lg:px-32'>

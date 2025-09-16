@@ -190,7 +190,16 @@ export default function MeetingSchedulerModal({
             // Simulate API delay
             await new Promise(resolve => setTimeout(resolve, 1000));
 
-            showToast('success', t('meetingCreated'));
+            showToast('success', t('meetingCreated'), {
+                duration: 4000,
+                action: {
+                    label: t('viewMeeting'),
+                    onClick: () => {
+                        // TODO: Navigate to meeting details page
+                        console.log('Navigate to meeting details');
+                    }
+                }
+            });
 
             // Reset form and close modal
             reset();

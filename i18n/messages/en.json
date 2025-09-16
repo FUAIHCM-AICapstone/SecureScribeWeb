@@ -11,7 +11,8 @@
     "filterFiles": "Files",
     "filterMeetings": "Meetings",
     "filterTranscripts": "Transcripts",
-    "filterNotes": "Notes"
+    "filterNotes": "Notes",
+    "menu": "Menu"
   },
   "MeetingScheduler": {
     "scheduleMeeting": "Schedule Meeting",
@@ -38,9 +39,28 @@
     "creating": "Creating...",
     "meetingCreated": "Meeting scheduled successfully!",
     "meetingCreateError": "Failed to schedule meeting. Please try again.",
+    "viewMeeting": "View Meeting",
     "titleRequired": "Meeting title is required",
     "titleMinLength": "Title must be at least 3 characters",
     "urlInvalid": "Please enter a valid URL (https://...)",
     "startTimeRequired": "Start time is required"
+  },
+  "Sidebar": {
+    "navigation": "Navigation",
+    "home": "Home",
+    "meetings": "Meetings",
+    "projects": "Projects",
+    "files": "Files",
+    "closeSidebar": "Close sidebar",
+    "closeSidebarDescription": "Click or press Escape to close the sidebar",
+    "quickSearch": "Quick search",
+    "recentItems": "Recent",
+    "quickActions": "Quick Actions",
+    "newMeeting": "New Meeting",
+    "newProject": "New Project",
+    "upcoming": "Upcoming",
+    "version": "v1.0.0",
+    "help": "Help",
+    "settings": "Settings"
   }
 }

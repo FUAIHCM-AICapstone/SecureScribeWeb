@@ -5,12 +5,13 @@ import SearchBoxWithResults from '@/components/search/SearchBoxWithResults';
 import { showToast } from '@/hooks/useShowToast';
 import { usePathname, useRouter } from '@/i18n/navigation';
 import { Avatar, Badge, Button, CounterBadge, Divider, Drawer, DrawerBody, DrawerFooter, DrawerHeader, DrawerHeaderTitle, Tooltip, makeStyles, tokens } from '@fluentui/react-components';
-import { AlertUrgent24Regular, ArrowUpload24Regular, CalendarAdd24Regular } from '@fluentui/react-icons';
+import { AlertUrgent24Regular, ArrowUpload24Regular, CalendarAdd24Regular, Navigation24Regular } from '@fluentui/react-icons';
 import { useLocale, useTranslations } from 'next-intl';
 import Image from 'next/image';
 import React, { useState } from 'react';
 import LanguageSwitcher from './LanguageSwitcher';
 import ThemeToggle from './ThemeToggle';
+import { useSidebar } from '@/context/SidebarContext';
 
 const useStyles = makeStyles({
     header: {
@@ -61,10 +62,15 @@ const useStyles = makeStyles({
     filter: { width: '180px' },
     right: { display: 'flex', alignItems: 'center', gap: '12px' },
     buttonText: {
-        whiteSpace: 'nowrap',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
-        maxWidth: '80px',
+    },
+    scheduleButton: {
+        minWidth: '160px',
+        justifyContent: 'center',
+    },
+    menuButton: {
+        // Always visible on all breakpoints
     },
     searchContainer: {
         // Ensure consistent width for SearchBox regardless of dismiss icon state
@@ -124,6 +130,7 @@ export default function Header() {
     const locale = useLocale();
     const router = useRouter();
     const t = useTranslations('Header');
+    const { toggle } = useSidebar();
 
     const [isNotiOpen, setIsNotiOpen] = useState(false);
     const [isSchedulerOpen, setIsSchedulerOpen] = useState(false);
@@ -191,6 +198,15 @@ export default function Header() {
     return (
         <>
             <header className={styles.header}>
+                <Tooltip content={t('menu')} relationship="label">
+                    <Button
+                        appearance="subtle"
+                        icon={<Navigation24Regular />}
+                        onClick={toggle}
+                        className={styles.menuButton}
+                        aria-label="Toggle menu"
+                    />
+                </Tooltip>
                 <div
                     className={styles.brand}
                     role="button"
@@ -237,7 +253,12 @@ export default function Header() {
                         </Button>
                     </Tooltip>
                     <Tooltip content={t('schedule')} relationship="label">
-                        <Button appearance="secondary" icon={<CalendarAdd24Regular />} onClick={onSchedule}>
+                        <Button
+                            appearance="secondary"
+                            icon={<CalendarAdd24Regular />}
+                            onClick={onSchedule}
+                            className={styles.scheduleButton}
+                        >
                             <span className={styles.buttonText}>{t('schedule')}</span>
                         </Button>
                     </Tooltip>
