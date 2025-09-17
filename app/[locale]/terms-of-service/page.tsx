@@ -1,11 +1,10 @@
-import React from 'react';
-// Assuming FooterSection is available at this path as per user's request
+// Use CSS variables instead of Fluent UI tokens in server component
 
-const App = () => {
+export default async function TermsOfServicePage() {
   return (
-    <div className="min-h-screen bg-[var(--background-color)] font-sans text-gray-800">
+    <div className="min-h-screen" style={{ background: 'var(--colorNeutralBackground1)' }}>
       {/* Header */}
-      <header className="bg-[var(--primary-color)] text-white p-6 shadow-md rounded-b-lg">
+      <header className="p-6 shadow-md rounded-b-lg" style={{ backgroundColor: 'var(--colorBrandBackground)', color: 'var(--colorNeutralForegroundOnBrand)' }}>
         <div className="container mx-auto text-center">
           <h1 className="text-3xl md:text-4xl font-bold">Điều khoản Dịch vụ</h1>
         </div>
@@ -13,23 +12,21 @@ const App = () => {
 
       {/* Main Content Area */}
       <main
-        className="min-h-screen px-2 py-6 sm:px-6 md:px-10 lg:px-40"
+        className="min-h-screen px-2 py-8 sm:px-6 md:px-10 lg:px-40"
         style={{
-          background: 'var(--background-color)',
-          color: 'var(--text-color)',
+          background: 'var(--colorNeutralBackground1)',
+          color: 'var(--colorNeutralForeground1)',
           fontFamily: 'var(--font-family-base)',
           fontSize: 'var(--font-size-base)',
           lineHeight: 'var(--line-height-base)',
         }}
       >
         {/* Render the terms of service content */}
-        <div className="container mx-auto px-4 py-8">
-          <h1 className="text-4xl font-bold text-[var(--primary-color)] mb-8 text-center">
+        <div className="container mx-auto px-4 py-8 space-y-12">
+          <h1 className="text-4xl font-bold mb-8 text-center" style={{ color: 'var(--colorBrandForeground1)' }}>
             Điều khoản Dịch vụ của SecureScribe Meeting
           </h1>
-          <p className="mb-6 text-[var(--text-color)] text-center">
-            Cập nhật lần cuối: 25 tháng 7 năm 2025
-          </p>
+
 
           <section className="mb-10">
             <h2 className="text-3xl font-semibold text-[var(--primary-color)] mb-4">
@@ -41,6 +38,10 @@ const App = () => {
               giữa bạn và SecureScribe Meeting ("SecureScribe Meeting", "chúng tôi")
               quản lý việc bạn sử dụng các sản phẩm, dịch vụ, ứng dụng di động
               (nếu có) và trang web của chúng tôi (gọi chung là "Dịch vụ").
+            </p>
+            <p className="mb-6 text-center">
+              Để biết chi tiết về cách chúng tôi xử lý dữ liệu cá nhân, vui lòng
+              <a href="../privacy" className="text-[var(--primary-color)] hover:underline"> xem Chính sách Bảo mật</a>.
             </p>
             <p className="mb-4 text-[var(--text-color)]">
               Bằng cách nhấp vào nút "Tôi đồng ý" hoặc nút tương tự, đăng ký tài
@@ -685,5 +686,3 @@ const App = () => {
     </div>
   );
 };
-
-export default App;

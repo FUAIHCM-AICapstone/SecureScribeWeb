@@ -52,7 +52,7 @@ const useStyles = makeStyles({
         paddingBottom: tokens.spacingVerticalL,
     },
     mobileTopPad: {
-        paddingTop: tokens.spacingVerticalM,
+        paddingTop: tokens.spacingVerticalXL,
     },
     toggleGroup: {
         display: 'flex',

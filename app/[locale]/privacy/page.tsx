@@ -1,8 +1,8 @@
 
-const App = () => {
+export default async function PrivacyPage() {
   return (
     <div>
-      <header className="bg-[var(--primary-color)] text-white p-6 shadow-md">
+      <header className="p-6 shadow-md" style={{ backgroundColor: 'var(--colorBrandBackground)', color: 'var(--colorNeutralForegroundOnBrand)' }}>
         <div className="container mx-auto text-center">
           <h1 className="text-3xl md:text-4xl font-bold">
             Chính sách bảo mật của SecureScribe Meeting
@@ -12,8 +12,8 @@ const App = () => {
       <main
         className="min-h-screen px-2 py-6 sm:px-6 md:px-10 lg:px-40"
         style={{
-          background: 'var(--background-color)',
-          color: 'var(--text-color)',
+          background: 'var(--colorNeutralBackground1)',
+          color: 'var(--colorNeutralForeground1)',
           fontFamily: 'var(--font-family-base)',
           fontSize: 'var(--font-size-base)',
           lineHeight: 'var(--line-height-base)',
@@ -21,7 +21,7 @@ const App = () => {
       >
         <section>
           {/* Privacy Policy Content in HTML (converted from Markdown for direct rendering) */}
-          <p style={{ color: 'var(--text-color)', marginBottom: '1rem' }}>
+          <p style={{ color: 'var(--colorNeutralForeground1)', marginBottom: '1rem' }}>
             Chính sách Bảo mật này của SecureScribe Meeting phác thảo chi tiết cách
             thức SecureScribe Meeting thu thập, sử dụng, tiết lộ và bảo vệ thông tin
             cá nhân của người dùng. SecureScribe Meeting cam kết mạnh mẽ trong việc
@@ -30,7 +30,7 @@ const App = () => {
             mình. Thông tin cá nhân chỉ được sử dụng theo đúng quy định trong
             chính sách này.
           </p>
-          <p style={{ color: 'var(--text-color)', marginBottom: '1rem' }}>
+          <p style={{ color: 'var(--colorNeutralForeground1)', marginBottom: '1rem' }}>
             Đối với một sản phẩm AI như SecureScribe Meeting, chính sách bảo mật
             không chỉ là một tài liệu pháp lý đơn thuần; nó còn là một công cụ
             thiết yếu để xây dựng lòng tin với người dùng. Người dùng thường có
@@ -52,7 +52,7 @@ const App = () => {
           >
             1. Tóm tắt điều hành
           </h2>
-          <p style={{ color: 'var(--text-color)', marginBottom: '1rem' }}>
+          <p style={{ color: 'var(--colorNeutralForeground1)', marginBottom: '1rem' }}>
             Chính sách Bảo mật này có hiệu lực từ ngày 1/6/2025. Chính sách này
             áp dụng cho tất cả các dịch vụ của SecureScribe Meeting, bao gồm trang
             web SecureScribe Meeting, các chức năng sản phẩm AI cốt lõi, các ứng
@@ -61,7 +61,7 @@ const App = () => {
             nhân của người dùng, đảm bảo rằng mọi thông tin cá nhân đều được sử
             dụng đúng như đã nêu trong chính sách này.
           </p>
-          <p style={{ color: 'var(--text-color)', marginBottom: '1rem' }}>
+          <p style={{ color: 'var(--colorNeutralForeground1)', marginBottom: '1rem' }}>
             Chính sách Bảo mật này được coi là một phần không thể thiếu của Điều
             khoản Dịch vụ và mọi Điều khoản Xử lý Dữ liệu áp dụng của SecureScribe
             Meeting. Để sử dụng các Dịch vụ của SecureScribe Meeting, người dùng
@@ -91,7 +91,7 @@ const App = () => {
           >
             2. Giới thiệu Chính sách Bảo mật của SecureScribe Meeting
           </h2>
-          <p style={{ color: 'var(--text-color)', marginBottom: '1rem' }}>
+          <p style={{ color: 'var(--colorNeutralForeground1)', marginBottom: '1rem' }}>
             Chính sách Bảo mật này có hiệu lực từ ngày 1/6/2025. Chính sách này
             áp dụng cho tất cả các dịch vụ của SecureScribe Meeting, bao gồm trang
             web SecureScribe Meeting, các chức năng sản phẩm AI cốt lõi, các ứng
@@ -100,7 +100,7 @@ const App = () => {
             nhân của người dùng, đảm bảo rằng mọi thông tin cá nhân đều được sử
             dụng đúng như đã nêu trong chính sách này.
           </p>
-          <p style={{ color: 'var(--text-color)', marginBottom: '1rem' }}>
+          <p style={{ color: 'var(--colorNeutralForeground1)', marginBottom: '1rem' }}>
             Chính sách Bảo mật này được coi là một phần không thể thiếu của Điều
             khoản Dịch vụ và mọi Điều khoản Xử lý Dữ liệu áp dụng của SecureScribe
             Meeting. Để sử dụng các Dịch vụ của SecureScribe Meeting, người dùng
@@ -130,7 +130,7 @@ const App = () => {
           >
             3. Các định nghĩa
           </h2>
-          <p style={{ color: 'var(--text-color)', marginBottom: '1rem' }}>
+          <p style={{ color: 'var(--colorNeutralForeground1)', marginBottom: '1rem' }}>
             Để đảm bảo sự rõ ràng trong Chính sách Bảo mật này, các thuật ngữ
             sau đây được định nghĩa như sau:
           </p>
@@ -185,7 +185,7 @@ const App = () => {
           >
             4. Thông tin chúng tôi thu thập
           </h2>
-          <p style={{ color: 'var(--text-color)', marginBottom: '1rem' }}>
+          <p style={{ color: 'var(--colorNeutralForeground1)', marginBottom: '1rem' }}>
             SecureScribe Meeting thu thập nhiều loại thông tin khác nhau để cung cấp
             và cải thiện Dịch vụ của mình. Các loại thông tin này được phân loại
             rõ ràng như sau:
@@ -194,7 +194,7 @@ const App = () => {
           <h3 className="text-2xl font-semibold text-[var(--primary-color)] mb-3">
             Thông tin bạn cung cấp cho chúng tôi
           </h3>
-          <p style={{ color: 'var(--text-color)', marginBottom: '1rem' }}>
+          <p style={{ color: 'var(--colorNeutralForeground1)', marginBottom: '1rem' }}>
             Đây là dữ liệu được thu thập trực tiếp từ người dùng khi họ tương
             tác với Dịch vụ. Các ví dụ bao gồm:
           </p>
@@ -248,7 +248,7 @@ const App = () => {
           <h3 className="text-2xl font-semibold text-[var(--primary-color)] mb-3 mt-6">
             Thông tin được thu thập tự động
           </h3>
-          <p style={{ color: 'var(--text-color)', marginBottom: '1rem' }}>
+          <p style={{ color: 'var(--colorNeutralForeground1)', marginBottom: '1rem' }}>
             Đây là dữ liệu kỹ thuật được thu thập tự động thông qua các API,
             SDK, cookie và các công nghệ tương tự. Các loại thông tin này bao
             gồm:
@@ -281,7 +281,7 @@ const App = () => {
           <h3 className="text-2xl font-semibold text-[var(--primary-color)] mb-3 mt-6">
             Thông tin bạn đăng trên Dịch vụ
           </h3>
-          <p style={{ color: 'var(--text-color)', marginBottom: '1rem' }}>
+          <p style={{ color: 'var(--colorNeutralForeground1)', marginBottom: '1rem' }}>
             Đây là thông tin mà người dùng tự nguyện công khai thông qua các
             tính năng cộng tác (hồ sơ công khai, hình đại diện). SecureScribe
             Meeting không có nghĩa vụ giữ bí mật thông tin như vậy và khuyên
@@ -289,7 +289,7 @@ const App = () => {
             dạng hoặc định vị họ.
           </p>
 
-          <p style={{ color: 'var(--text-color)', marginBottom: '1rem' }}>
+          <p style={{ color: 'var(--colorNeutralForeground1)', marginBottom: '1rem' }}>
             Để minh bạch và rõ ràng hơn, bảng sau đây tóm tắt các loại thông tin
             được SecureScribe Meeting thu thập:
           </p>
@@ -297,16 +297,16 @@ const App = () => {
             <table className="min-w-full bg-[var(--background-color)] border border-gray-200 rounded-lg shadow-sm ">
               <thead>
                 <tr className="bg-[var(--primary-color)] text-[var(--primary-color)] uppercase text-sm leading-normal">
-                  <th className="py-3 px-6 text-left border-b border-gray-200 text-white">
+                  <th className="py-3 px-6 text-left border-b border-gray-200">
                     Loại thông tin
                   </th>
-                  <th className="py-3 px-6 text-left border-b border-gray-200 text-white">
+                  <th className="py-3 px-6 text-left border-b border-gray-200">
                     Ví dụ về dữ liệu
                   </th>
-                  <th className="py-3 px-6 text-left border-b border-gray-200 text-white">
+                  <th className="py-3 px-6 text-left border-b border-gray-200">
                     Nguồn thu thập
                   </th>
-                  <th className="py-3 px-6 text-left border-b border-gray-200 text-white">
+                  <th className="py-3 px-6 text-left border-b border-gray-200">
                     Mục đích chính của việc thu thập
                   </th>
                 </tr>
@@ -358,7 +358,7 @@ const App = () => {
           <h2 className="text-3xl font-semibold text-[var(--primary-color)] mb-4">
             5. Cách chúng tôi sử dụng Cookie và các công nghệ theo dõi khác
           </h2>
-          <p style={{ color: 'var(--text-color)', marginBottom: '1rem' }}>
+          <p style={{ color: 'var(--colorNeutralForeground1)', marginBottom: '1rem' }}>
             SecureScribe Meeting sử dụng cookie, web beacon, bộ nhớ cục bộ, SDK và
             các công nghệ theo dõi tương tự để thu thập thông tin về thiết bị,
             thói quen duyệt web và cách sử dụng. Dữ liệu này được sử dụng cho
@@ -386,7 +386,7 @@ const App = () => {
               tác với các tính năng AI).
             </li>
           </ul>
-          <p style={{ color: 'var(--text-color)', marginBottom: '1rem' }}>
+          <p style={{ color: 'var(--colorNeutralForeground1)', marginBottom: '1rem' }}>
             Đối với một sản phẩm AI, việc "cải thiện dịch vụ" mở rộng trực tiếp
             đến việc cải thiện <em>chính các mô hình AI</em>. Điều này có nghĩa
             là dữ liệu được thu thập thông qua cookie (các mẫu tương tác của
@@ -403,7 +403,7 @@ const App = () => {
             người dùng, đặc biệt nếu người dùng có lo ngại về cách dấu chân kỹ
             thuật số của họ ảnh hưởng đến "trí thông minh" của AI.
           </p>
-          <p style={{ color: 'var(--text-color)', marginBottom: '1rem' }}>
+          <p style={{ color: 'var(--colorNeutralForeground1)', marginBottom: '1rem' }}>
             Người dùng có quyền quản lý hoặc tắt một số công nghệ này thông qua
             cài đặt trình duyệt hoặc các liên kết từ chối cụ thể. Tuy nhiên,
             việc tắt các công nghệ này có thể ảnh hưởng đến đầy đủ chức năng của
@@ -415,7 +415,7 @@ const App = () => {
           <h2 className="text-3xl font-semibold text-[var(--primary-color)] mb-4">
             6. Cách chúng tôi sử dụng thông tin thu thập được
           </h2>
-          <p style={{ color: 'var(--text-color)', marginBottom: '1rem' }}>
+          <p style={{ color: 'var(--colorNeutralForeground1)', marginBottom: '1rem' }}>
             SecureScribe Meeting sử dụng thông tin thu thập được cho các mục đích cụ
             thể sau, đảm bảo tính minh bạch và tuân thủ các cơ sở pháp lý:
           </p>
@@ -506,7 +506,7 @@ const App = () => {
           <h2 className="text-3xl font-semibold text-[var(--primary-color)] mb-4">
             7. Cách chúng tôi chia sẻ thông tin của bạn
           </h2>
-          <p style={{ color: 'var(--text-color)', marginBottom: '1rem' }}>
+          <p style={{ color: 'var(--colorNeutralForeground1)', marginBottom: '1rem' }}>
             SecureScribe Meeting có thể chia sẻ thông tin cá nhân với các bên thứ ba
             trong các trường hợp cần thiết và tuân thủ luật pháp. Các danh mục
             bên thứ ba này bao gồm:
@@ -515,7 +515,7 @@ const App = () => {
           <h3 className="text-2xl font-semibold text-[var(--primary-color)] mb-3">
             Với các nhà cung cấp dịch vụ
           </h3>
-          <p style={{ color: 'var(--text-color)', marginBottom: '1rem' }}>
+          <p style={{ color: 'var(--colorNeutralForeground1)', marginBottom: '1rem' }}>
             SecureScribe Meeting chia sẻ thông tin với các nhà cung cấp dịch vụ bên
             thứ ba đáng tin cậy thực hiện các dịch vụ thay mặt cho SecureScribe
             Meeting (bộ xử lý thanh toán, lưu trữ web, lưu trữ dữ liệu, dịch vụ
@@ -547,7 +547,7 @@ const App = () => {
           <h3 className="text-2xl font-semibold text-[var(--primary-color)] mb-3 mt-6">
             Vì lý do pháp lý
           </h3>
-          <p style={{ color: 'var(--text-color)', marginBottom: '1rem' }}>
+          <p style={{ color: 'var(--colorNeutralForeground1)', marginBottom: '1rem' }}>
             Thông tin có thể được tiết lộ cho các cơ quan công quyền (cơ quan
             thực thi pháp luật, tòa án, cơ quan chính phủ) nếu được yêu cầu hợp
             pháp, để đáp ứng trát đòi hầu tòa hoặc lệnh của tòa án, hoặc để bảo
@@ -558,7 +558,7 @@ const App = () => {
           <h3 className="text-2xl font-semibold text-[var(--primary-color)] mb-3 mt-6">
             Liên quan đến các giao dịch doanh nghiệp
           </h3>
-          <p style={{ color: 'var(--text-color)', marginBottom: '1rem' }}>
+          <p style={{ color: 'var(--colorNeutralForeground1)', marginBottom: '1rem' }}>
             Thông tin có thể được chia sẻ với các công ty con, chi nhánh hoặc
             chủ sở hữu kế tiếp trong trường hợp sáp nhập, mua lại, bán tài sản
             hoặc tái cấu trúc doanh nghiệp khác. Người dùng sẽ được thông báo về
@@ -569,7 +569,7 @@ const App = () => {
           <h3 className="text-2xl font-semibold text-[var(--primary-color)] mb-3 mt-6">
             Không bán thông tin cá nhân
           </h3>
-          <p style={{ color: 'var(--text-color)', marginBottom: '1rem' }}>
+          <p style={{ color: 'var(--colorNeutralForeground1)', marginBottom: '1rem' }}>
             SecureScribe Meeting khẳng định rõ ràng rằng họ không bán thông tin cá
             nhân cho các bên thứ ba cho mục đích tiếp thị trực tiếp của họ. Một
             trong những nỗi sợ hãi lớn nhất của người dùng đối với các dịch vụ
@@ -588,7 +588,7 @@ const App = () => {
             quan trọng.
           </p>
 
-          <p style={{ color: 'var(--text-color)', marginBottom: '1rem' }}>
+          <p style={{ color: 'var(--colorNeutralForeground1)', marginBottom: '1rem' }}>
             Để tăng cường sự minh bạch, bảng sau đây cung cấp tổng quan về các
             danh mục bên thứ ba mà SecureScribe Meeting có thể chia sẻ thông tin:
           </p>
@@ -596,19 +596,19 @@ const App = () => {
             <table className="min-w-full bg-[var(--background-color)] border border-gray-200 rounded-lg shadow-sm">
               <thead>
                 <tr className="bg-[var(--primary-color)] text-[var(--primary-color)] uppercase text-sm leading-normal">
-                  <th className="py-3 px-6 text-left border-b border-gray-200 text-white">
+                  <th className="py-3 px-6 text-left border-b border-gray-200">
                     Danh mục bên thứ ba
                   </th>
-                  <th className="py-3 px-6 text-left border-b border-gray-200 text-white">
+                  <th className="py-3 px-6 text-left border-b border-gray-200">
                     Ví dụ về dịch vụ được cung cấp
                   </th>
-                  <th className="py-3 px-6 text-left border-b border-gray-200 text-white">
+                  <th className="py-3 px-6 text-left border-b border-gray-200">
                     Mục đích chia sẻ
                   </th>
-                  <th className="py-3 px-6 text-left border-b border-gray-200 text-white">
+                  <th className="py-3 px-6 text-left border-b border-gray-200">
                     Loại dữ liệu được chia sẻ (tóm tắt)
                   </th>
-                  <th className="py-3 px-6 text-left border-b border-gray-200 text-white">
+                  <th className="py-3 px-6 text-left border-b border-gray-200">
                     Biện pháp bảo vệ/Cam kết hợp đồng
                   </th>
                 </tr>
@@ -683,7 +683,7 @@ const App = () => {
             8. Các cân nhắc cụ thể về xử lý dữ liệu sản phẩm AI của SecureScribe
             Meeting
           </h2>
-          <p style={{ color: 'var(--text-color)', marginBottom: '1rem' }}>
+          <p style={{ color: 'var(--colorNeutralForeground1)', marginBottom: '1rem' }}>
             Phần này dành riêng để giải quyết các ý nghĩa về quyền riêng tư và
             các biện pháp bảo vệ độc đáo liên quan đến các chức năng AI của
             SecureScribe Meeting.
@@ -692,7 +692,7 @@ const App = () => {
           <h3 className="text-2xl font-semibold text-[var(--primary-color)] mb-3">
             Cách AI xử lý dữ liệu người dùng
           </h3>
-          <p style={{ color: 'var(--text-color)', marginBottom: '1rem' }}>
+          <p style={{ color: 'var(--colorNeutralForeground1)', marginBottom: '1rem' }}>
             AI của SecureScribe Meeting xử lý các đầu vào của người dùng ( âm thanh
             cuộc họp, văn bản, mục nhập lịch) để thực hiện các chức năng cốt lõi
             của nó (phiên âm, tóm tắt, tạo nội dung, phân tích cảm xúc). Việc xử
@@ -703,7 +703,7 @@ const App = () => {
           <h3 className="text-2xl font-semibold text-[var(--primary-color)] mb-3 mt-6">
             Quyền kiểm soát của người dùng đối với dữ liệu được xử lý bởi AI
           </h3>
-          <p style={{ color: 'var(--text-color)', marginBottom: '1rem' }}>
+          <p style={{ color: 'var(--colorNeutralForeground1)', marginBottom: '1rem' }}>
             SecureScribe Meeting cung cấp các cơ chế để người dùng quản lý, sửa đổi
             hoặc xóa các đầu vào dữ liệu thô và đầu ra do AI tạo ra. Người dùng
             có các tùy chọn để từ chối việc dữ liệu của họ được sử dụng để cải
@@ -714,7 +714,7 @@ const App = () => {
           <h3 className="text-2xl font-semibold text-[var(--primary-color)] mb-3 mt-6">
             Giới hạn trách nhiệm liên quan đến việc sử dụng AI
           </h3>
-          <p style={{ color: 'var(--text-color)', marginBottom: '1rem' }}>
+          <p style={{ color: 'var(--colorNeutralForeground1)', marginBottom: '1rem' }}>
             Mặc dù SecureScribe Meeting thực hiện các biện pháp hợp lý để bảo vệ
             quyền riêng tư và đảm bảo hiệu suất AI, nhưng công ty không chịu
             trách nhiệm về mất mát hoặc thiệt hại do người dùng dựa vào các đầu
@@ -741,7 +741,7 @@ const App = () => {
           <h3 className="text-2xl font-semibold text-[var(--primary-color)] mb-3 mt-6">
             Các tùy chọn cách ly dữ liệu nâng cao (nếu được cung cấp)
           </h3>
-          <p style={{ color: 'var(--text-color)', marginBottom: '1rem' }}>
+          <p style={{ color: 'var(--colorNeutralForeground1)', marginBottom: '1rem' }}>
             Nếu SecureScribe Meeting cung cấp các cấp độ cao cấp hoặc dịch vụ đám
             mây riêng, chính sách sẽ giải thích cách các dịch vụ này cung cấp
             khả năng cách ly dữ liệu và bảo mật nâng cao cho khách hàng yêu cầu
@@ -769,7 +769,7 @@ const App = () => {
           <h2 className="text-3xl font-semibold text-[var(--primary-color)] mb-4">
             9. Bảo mật dữ liệu
           </h2>
-          <p style={{ color: 'var(--text-color)', marginBottom: '1rem' }}>
+          <p style={{ color: 'var(--colorNeutralForeground1)', marginBottom: '1rem' }}>
             SecureScribe Meeting cam kết bảo vệ dữ liệu người dùng khỏi việc truy
             cập, tiết lộ, thay đổi và phá hủy trái phép. Các biện pháp bảo mật
             chung được thực hiện bao gồm:
@@ -795,7 +795,7 @@ const App = () => {
               liệu để đào tạo mô hình, xử lý an toàn các đầu vào nhạy cảm).
             </li>
           </ul>
-          <p style={{ color: 'var(--text-color)', marginBottom: '1rem' }}>
+          <p style={{ color: 'var(--colorNeutralForeground1)', marginBottom: '1rem' }}>
             Đối với một sản phẩm AI xử lý dữ liệu nhạy cảm, chính sách nên vượt
             ra ngoài các tuyên bố chung chung về "tiêu chuẩn ngành" và gợi ý các
             biện pháp bảo mật cụ thể liên quan đến việc xử lý dữ liệu AI, chẳng
@@ -819,7 +819,7 @@ const App = () => {
             hợp với các nguyên tắc như "bảo mật theo thiết kế" và "quyền riêng
             tư theo thiết kế".
           </p>
-          <p style={{ color: 'var(--text-color)', marginBottom: '1rem' }}>
+          <p style={{ color: 'var(--colorNeutralForeground1)', marginBottom: '1rem' }}>
             SecureScribe Meeting thừa nhận rằng không có phương pháp truyền dữ liệu
             qua Internet hoặc lưu trữ điện tử nào là an toàn 100%, do đó, Chang
             AI Meeting không thể đảm bảo an toàn tuyệt đối. Để biết thêm thông
@@ -832,7 +832,7 @@ const App = () => {
           <h2 className="text-3xl font-semibold text-[var(--primary-color)] mb-4">
             10. Quyền và lựa chọn về quyền riêng tư của bạn
           </h2>
-          <p style={{ color: 'var(--text-color)', marginBottom: '1rem' }}>
+          <p style={{ color: 'var(--colorNeutralForeground1)', marginBottom: '1rem' }}>
             SecureScribe Meeting cam kết cung cấp cho người dùng quyền kiểm soát đối
             với thông tin cá nhân của họ. Người dùng có các quyền sau:
           </p>
@@ -870,7 +870,7 @@ const App = () => {
               bất cứ lúc nào khi việc xử lý dựa trên sự đồng ý.
             </li>
           </ul>
-          <p style={{ color: 'var(--text-color)', marginBottom: '1rem' }}>
+          <p style={{ color: 'var(--colorNeutralForeground1)', marginBottom: '1rem' }}>
             Đối với một sản phẩm AI, "quyền xóa" và "quyền phản đối xử lý" đặc
             biệt phức tạp khi dữ liệu đã được sử dụng để đào tạo mô hình AI. Nếu
             dữ liệu của người dùng (bản ghi cuộc họp, đầu vào cụ thể) đã được sử
@@ -891,19 +891,19 @@ const App = () => {
             của người dùng với các thực tế kỹ thuật và nhu cầu hoạt động của một
             hệ thống AI học hỏi liên tục.
           </p>
-          <p style={{ color: 'var(--text-color)', marginBottom: '1rem' }}>
+          <p style={{ color: 'var(--colorNeutralForeground1)', marginBottom: '1rem' }}>
             Để thực hiện các quyền của mình, người dùng có thể làm theo hướng
             dẫn trong cài đặt tài khoản của họ hoặc liên hệ với SecureScribe Meeting
             qua địa chỉ email được chỉ định. SecureScribe Meeting sẽ cố gắng phản
             hồi các yêu cầu trong khung thời gian hợp lý (trong vòng bảy ngày
             làm việc đối với yêu cầu hủy hoặc xóa tài khoản).
           </p>
-          <p style={{ color: 'var(--text-color)', marginBottom: '1rem' }}>
+          <p style={{ color: 'var(--colorNeutralForeground1)', marginBottom: '1rem' }}>
             Người dùng có quyền khiếu nại với cơ quan giám sát, nhưng SecureScribe
             Meeting khuyến khích người dùng liên hệ với SecureScribe Meeting trước
             để giải quyết vấn đề.
           </p>
-          <p style={{ color: 'var(--text-color)', marginBottom: '1rem' }}>
+          <p style={{ color: 'var(--colorNeutralForeground1)', marginBottom: '1rem' }}>
             SecureScribe Meeting hiện không thực hiện hành động nào để phản hồi các
             tín hiệu "không theo dõi" từ trình duyệt web.
           </p>
@@ -913,13 +913,13 @@ const App = () => {
           <h2 className="text-3xl font-semibold text-[var(--primary-color)] mb-4">
             11. Chuyển giao dữ liệu quốc tế
           </h2>
-          <p style={{ color: 'var(--text-color)', marginBottom: '1rem' }}>
+          <p style={{ color: 'var(--colorNeutralForeground1)', marginBottom: '1rem' }}>
             SecureScribe Meeting có trụ sở tại Việt Nam. Trong quá trình cung cấp
             dịch vụ, dữ liệu cá nhân có thể được truyền, lưu trữ và xử lý tại
             Việt Nam hoặc chuyển ra nước ngoài đến các quốc gia nơi SecureScribe
             Meeting hoặc các đối tác, nhà cung cấp dịch vụ đang hoạt động.
           </p>
-          <p style={{ color: 'var(--text-color)', marginBottom: '1rem' }}>
+          <p style={{ color: 'var(--colorNeutralForeground1)', marginBottom: '1rem' }}>
             Việc chuyển giao dữ liệu cá nhân ra nước ngoài của SecureScribe Meeting
             được thực hiện theo đúng quy định tại Điều 43 và Điều 44 Nghị định
             13/2023/NĐ-CP. Các điều kiện bao gồm:
@@ -944,14 +944,14 @@ const App = () => {
               thời hạn quy định.
             </li>
           </ul>
-          <p style={{ color: 'var(--text-color)', marginBottom: '1rem' }}>
+          <p style={{ color: 'var(--colorNeutralForeground1)', marginBottom: '1rem' }}>
             SecureScribe Meeting không chuyển giao dữ liệu cá nhân ra nước ngoài cho
             mục đích khác với mục đích ban đầu nếu không có sự đồng ý lại từ
             người dùng. Chúng tôi cũng không chia sẻ dữ liệu cá nhân với bên thứ
             ba bên ngoài Việt Nam nếu bên đó không đáp ứng đầy đủ các yêu cầu
             bảo vệ dữ liệu theo luật Việt Nam.
           </p>
-          <p style={{ color: 'var(--text-color)', marginBottom: '1rem' }}>
+          <p style={{ color: 'var(--colorNeutralForeground1)', marginBottom: '1rem' }}>
             Việc tuân thủ đầy đủ các quy định pháp lý liên quan đến chuyển giao
             dữ liệu không chỉ giúp SecureScribe Meeting giảm thiểu rủi ro pháp lý mà
             còn củng cố niềm tin với người dùng, đặc biệt trong bối cảnh các sản
@@ -964,7 +964,7 @@ const App = () => {
           <h2 className="text-3xl font-semibold text-[var(--primary-color)] mb-4">
             12. Tuân thủ các quy định bảo vệ dữ liệu cá nhân
           </h2>
-          <p style={{ color: 'var(--text-color)', marginBottom: '1rem' }}>
+          <p style={{ color: 'var(--colorNeutralForeground1)', marginBottom: '1rem' }}>
             SecureScribe Meeting cam kết tuân thủ nghiêm ngặt các quy định bảo vệ dữ
             liệu cá nhân theo từng khu vực pháp lý mà chúng tôi phục vụ. Với trụ
             sở đặt tại TP. Hồ Chí Minh, Việt Nam, SecureScribe Meeting đảm bảo tuân
@@ -976,7 +976,7 @@ const App = () => {
           <h3 className="text-2xl font-semibold text-[var(--primary-color)] mb-3">
             Tuân thủ pháp luật Việt Nam về bảo vệ dữ liệu cá nhân
           </h3>
-          <p style={{ color: 'var(--text-color)', marginBottom: '1rem' }}>
+          <p style={{ color: 'var(--colorNeutralForeground1)', marginBottom: '1rem' }}>
             SecureScribe Meeting tuân thủ Luật An ninh mạng 2018 và Nghị định
             13/2023/NĐ-CP về bảo vệ dữ liệu cá nhân. Chúng tôi chỉ thu thập và
             xử lý dữ liệu khi có sự đồng thuận rõ ràng từ người dùng và đảm bảo
@@ -991,7 +991,7 @@ const App = () => {
           <h3 className="text-2xl font-semibold text-[var(--primary-color)] mb-3 mt-6">
             Tuân thủ CCPA/CPRA đối với người dùng California
           </h3>
-          <p style={{ color: 'var(--text-color)', marginBottom: '1rem' }}>
+          <p style={{ color: 'var(--colorNeutralForeground1)', marginBottom: '1rem' }}>
             Đối với cư dân California, SecureScribe Meeting tuân thủ các quyền theo
             Đạo luật CCPA và CPRA, bao gồm quyền biết, quyền truy cập, quyền yêu
             cầu xóa, quyền từ chối chia sẻ dữ liệu và quyền không bị phân biệt
@@ -1004,7 +1004,7 @@ const App = () => {
           <h3 className="text-2xl font-semibold text-[var(--primary-color)] mb-3 mt-6">
             Tuân thủ GDPR đối với người dùng tại EU và Vương quốc Anh
           </h3>
-          <p style={{ color: 'var(--text-color)', marginBottom: '1rem' }}>
+          <p style={{ color: 'var(--colorNeutralForeground1)', marginBottom: '1rem' }}>
             Khi cung cấp dịch vụ tới người dùng tại EU và Anh, SecureScribe Meeting
             áp dụng đầy đủ các nguyên tắc của Quy định chung về bảo vệ dữ liệu
             (GDPR), bao gồm tính hợp pháp, minh bạch, giới hạn mục đích, giảm
@@ -1020,14 +1020,14 @@ const App = () => {
           <h2 className="text-3xl font-semibold text-[var(--primary-color)] mb-4">
             13. Lưu giữ dữ liệu
           </h2>
-          <p style={{ color: 'var(--text-color)', marginBottom: '1rem' }}>
+          <p style={{ color: 'var(--colorNeutralForeground1)', marginBottom: '1rem' }}>
             Thông tin cá nhân sẽ chỉ được lưu giữ trong thời gian cần thiết để
             thực hiện các mục đích mà nó được thu thập, bao gồm việc cung cấp
             Dịch vụ, giải quyết tranh chấp, thực thi thỏa thuận và tuân thủ các
             nghĩa vụ pháp lý. Thông tin cá nhân sẽ bị xóa theo yêu cầu của người
             dùng (hủy tài khoản), tuân theo các ngoại lệ pháp lý.
           </p>
-          <p style={{ color: 'var(--text-color)', marginBottom: '1rem' }}>
+          <p style={{ color: 'var(--colorNeutralForeground1)', marginBottom: '1rem' }}>
             Đối với các sản phẩm AI, việc "không còn cần thiết" có thể ngụ ý
             rằng dữ liệu được sử dụng để đào tạo mô hình được giữ lại lâu hơn,
             nhưng chỉ dưới dạng ẩn danh hoặc tổng hợp. Sự phân biệt này là rất
@@ -1055,7 +1055,7 @@ const App = () => {
           <h2 className="text-3xl font-semibold text-[var(--primary-color)] mb-4">
             14. Thay đổi đối với Chính sách Bảo mật này
           </h2>
-          <p style={{ color: 'var(--text-color)', marginBottom: '1rem' }}>
+          <p style={{ color: 'var(--colorNeutralForeground1)', marginBottom: '1rem' }}>
             Chính sách Bảo mật này có thể được cập nhật định kỳ để phản ánh
             những thay đổi trong các hoạt động, dịch vụ hoặc yêu cầu pháp lý của
             SecureScribe Meeting. Ngày "Cập nhật lần cuối" ở đầu chính sách sẽ cho
@@ -1066,7 +1066,7 @@ const App = () => {
             Dịch vụ sau bất kỳ thay đổi nào sẽ cấu thành sự chấp nhận Chính sách
             Bảo mật đã sửa đổi.
           </p>
-          <p style={{ color: 'var(--text-color)', marginBottom: '1rem' }}>
+          <p style={{ color: 'var(--colorNeutralForeground1)', marginBottom: '1rem' }}>
             Đối với một sản phẩm AI, các thay đổi có thể xảy ra thường xuyên hơn
             do khả năng AI phát triển, các phương pháp xử lý dữ liệu mới hoặc
             các tích hợp bên thứ ba mới. Cơ chế thông báo và chấp nhận cần phải
@@ -1097,7 +1097,7 @@ const App = () => {
           <h2 className="text-3xl font-semibold text-[var(--primary-color)] mb-4">
             15. Liên hệ với chúng tôi
           </h2>
-          <p style={{ color: 'var(--text-color)', marginBottom: '1rem' }}>
+          <p style={{ color: 'var(--colorNeutralForeground1)', marginBottom: '1rem' }}>
             Để có bất kỳ mối quan tâm hoặc câu hỏi nào về Chính sách Bảo mật
             này, hoặc các yêu cầu liên quan đến quyền của người dùng, vui lòng
             liên hệ với SecureScribe Meeting qua địa chỉ email chuyên dụng:{' '}
@@ -1131,5 +1131,3 @@ const App = () => {
     </div>
   );
 };
-
-export default App;

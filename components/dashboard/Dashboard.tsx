@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Card, CardHeader, CardFooter, Body1, Title3 } from '@fluentui/react-components';
+import { Card, CardHeader, CardFooter, Body1, Title3, Caption1 } from '@fluentui/react-components';
 
 interface DashboardSection {
     id: string;
@@ -20,10 +20,10 @@ const sections: DashboardSection[] = [
 
 const DashboardSection: React.FC<{ section: DashboardSection }> = ({ section }) => {
     return (
-        <Card className="h-full">
+        <Card appearance="subtle" className="h-full">
             <CardHeader
                 header={<Title3>{section.title}</Title3>}
-                description={section.subtitle && <Body1 className="text-gray-600">{section.subtitle}</Body1>}
+                description={section.subtitle && <Caption1 className="text-gray-600">{section.subtitle}</Caption1>}
             />
             <div className="p-4 flex-1">
                 {/* Placeholder content - will be filled later */}
@@ -32,7 +32,7 @@ const DashboardSection: React.FC<{ section: DashboardSection }> = ({ section }) 
                 </div>
             </div>
             <CardFooter>
-                <Body1 className="text-sm text-gray-500">Section: {section.id}</Body1>
+                <Caption1 className="text-gray-500">Section: {section.id}</Caption1>
             </CardFooter>
         </Card>
     );
