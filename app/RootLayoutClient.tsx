@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @next/next/no-css-tags */
 /* eslint-disable @next/next/no-page-custom-font */
 // app/RootLayoutClient.tsx
@@ -10,6 +11,7 @@ import store from '@/store/index';
 // Fluent UI theming is handled by the FluentProvider in the providers
 import '@/styles/globals.css';
 import { Providers } from './providers';
+import { AuthProvider } from '@/context/AuthContext';
 import Header from '../components/layout/Header';
 import Sidebar from '../components/layout/Sidebar';
 import { usePathname, useSearchParams } from 'next/navigation';
@@ -30,8 +32,7 @@ export default function RootLayoutClient({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const pathAfterLocale = pathname.split('/').slice(2).join('/');
-  const hideHeader =
-    pathAfterLocale.startsWith('auth');
+  const hideHeader = pathAfterLocale.startsWith('auth');
 
   useEffect(() => {
     const toastKey = searchParams.get('toast');
@@ -87,15 +88,17 @@ export default function RootLayoutClient({
                 messages={messages}
                 timeZone="Asia/Bangkok"
               >
-                <SidebarProvider>
-                  <div style={{ display: 'flex', height: '100vh', flexDirection: 'column', overflow: 'hidden' }}>
-                    {!hideHeader && <Header />}
-                    <div style={{ display: 'flex', flex: 1, minHeight: 0 }}>
-                      <Sidebar />
-                      <main style={{ flex: 1, padding: '20px', overflow: 'auto' }}>{children}</main>
+                <AuthProvider>
+                  <SidebarProvider>
+                    <div style={{ display: 'flex', height: '100vh', flexDirection: 'column', overflow: 'hidden' }}>
+                      {!hideHeader && <Header />}
+                      <div style={{ display: 'flex', flex: 1, minHeight: 0 }}>
+                        {!hideHeader && <Sidebar />}
+                        <main style={{flex: 1}}>{children}</main>
+                      </div>
                     </div>
-                  </div>
-                </SidebarProvider>
+                  </SidebarProvider>
+                </AuthProvider>
               </NextIntlClientProvider>
             </ReactQueryProvider>
           </Provider>
