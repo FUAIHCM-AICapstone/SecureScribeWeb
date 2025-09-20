@@ -15,8 +15,8 @@ import { AuthProvider } from '@/context/AuthContext';
 import Header from '../components/layout/Header';
 import Sidebar from '../components/layout/Sidebar';
 import { usePathname, useSearchParams } from 'next/navigation';
-import { showToast } from '@/hooks/useShowToast';
-import { Toaster } from 'sonner';
+import { showToast, setToastController } from '@/hooks/useShowToast';
+import { Toaster, useToastController } from '@fluentui/react-toast';
 import { SidebarProvider } from '../context/SidebarContext';
 import ClientOnlyLayout from '@/components/layout/ClientOnly';
 
@@ -33,6 +33,14 @@ export default function RootLayoutClient({
   const searchParams = useSearchParams();
   const pathAfterLocale = pathname.split('/').slice(2).join('/');
   const hideHeader = pathAfterLocale.startsWith('auth');
+
+  // Initialize FluentUI toast controller
+  const toastController = useToastController();
+
+  useEffect(() => {
+    // Set the toast controller for the hook to use
+    setToastController(toastController);
+  }, [toastController]);
 
   useEffect(() => {
     const toastKey = searchParams.get('toast');
@@ -80,7 +88,7 @@ export default function RootLayoutClient({
       </head>
       <ClientOnlyLayout>
         <Providers>
-          <Toaster richColors position="top-right" />
+          <Toaster position="top-end" />
           <Provider store={store}>
             <ReactQueryProvider>
               <NextIntlClientProvider

@@ -33,17 +33,6 @@ const useStyles = makeStyles({
             position: "relative",
             overflow: "hidden",
             backgroundColor: tokens.colorNeutralBackground2,
-            boxShadow: `inset 0 0 100px rgba(0,0,0,0.1)`,
-            "&::before": {
-                content: '""',
-                position: "absolute",
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                backgroundColor: "rgba(255,255,255,0.05)",
-                pointerEvents: "none",
-            },
         },
     },
     brandLogo: {

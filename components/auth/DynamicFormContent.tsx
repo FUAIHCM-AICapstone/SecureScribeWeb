@@ -47,6 +47,7 @@ const DynamicFormContent: React.FC = () => {
 
             <Button
                 appearance="secondary"
+                size="large"
                 className={styles.google}
                 icon={<GoogleIcon />}
                 disabled={isLoading}

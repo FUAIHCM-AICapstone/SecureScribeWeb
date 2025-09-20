@@ -12,7 +12,7 @@ import {
 } from "firebase/auth";
 import authApi from "../services/api/auth";
 import type { UserProfile } from "../types/auth.type";
-import { showErrorToast, showSuccessToast } from "../hooks/useShowToast";
+import { showToast } from "../hooks/useShowToast";
 
 type AuthContextType = {
     user: UserProfile | null;
@@ -134,7 +134,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const loginWithGoogle = useCallback(async () => {
         if (!isFirebaseReady() || !fbAuth || !googleProvider) {
-            showErrorToast("Không thể khởi tạo Firebase trên trình duyệt.");
+            showToast('error', "Không thể khởi tạo Firebase trên trình duyệt.");
             return;
         }
         setIsLoading(true);
@@ -142,10 +142,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             const cred = await signInWithPopup(fbAuth, googleProvider);
             const idToken = await cred.user.getIdToken();
             await exchangeAndLoadProfile(idToken); // Google exchange ngay
-            showSuccessToast("Đăng nhập Google thành công.");
+            showToast('success', "Đăng nhập Google thành công.");
             redirectHome();
         } catch (err: any) {
-            showErrorToast(mapAuthErrorToMessage(err));
+            showToast('error', mapAuthErrorToMessage(err));
         } finally {
             setIsLoading(false);
         }
@@ -153,21 +153,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const signupWithEmail = useCallback(async (email: string, password: string, confirm: string) => {
         if (!isFirebaseReady() || !fbAuth) {
-            showErrorToast("Không thể khởi tạo Firebase trên trình duyệt.");
+            showToast('error', "Không thể khởi tạo Firebase trên trình duyệt.");
             return;
         }
         if (password !== confirm) {
-            showErrorToast("Mật khẩu xác nhận không khớp.");
+            showToast('error', "Mật khẩu xác nhận không khớp.");
             return;
         }
         setIsLoading(true);
         try {
             const cred = await createUserWithEmailAndPassword(fbAuth, email, password);
             await sendEmailVerification(cred.user);
-            showSuccessToast("Đăng ký thành công. Vui lòng kiểm tra email để xác minh trước khi đăng nhập.");
+            showToast('success', "Đăng ký thành công. Vui lòng kiểm tra email để xác minh trước khi đăng nhập.");
             // Không exchange. Người dùng sẽ chuyển sang đăng nhập sau khi xác minh.
         } catch (err: any) {
-            showErrorToast(mapAuthErrorToMessage(err));
+            showToast('error', mapAuthErrorToMessage(err));
         } finally {
             setIsLoading(false);
         }
@@ -175,22 +175,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const loginWithEmail = useCallback(async (email: string, password: string) => {
         if (!isFirebaseReady() || !fbAuth) {
-            showErrorToast("Không thể khởi tạo Firebase trên trình duyệt.");
+            showToast('error', "Không thể khởi tạo Firebase trên trình duyệt.");
             return;
         }
         setIsLoading(true);
         try {
             const cred = await signInWithEmailAndPassword(fbAuth, email, password);
             if (!cred.user.emailVerified) {
-                showErrorToast("Vui lòng xác minh email trước khi đăng nhập.");
+                showToast('error', "Vui lòng xác minh email trước khi đăng nhập.");
                 return;
             }
             const idToken = await cred.user.getIdToken(/* forceRefresh */ true);
             await exchangeAndLoadProfile(idToken);
-            showSuccessToast("Đăng nhập thành công.");
+            showToast('success', "Đăng nhập thành công.");
             redirectHome();
         } catch (err: any) {
-            showErrorToast(mapAuthErrorToMessage(err));
+            showToast('error', mapAuthErrorToMessage(err));
         } finally {
             setIsLoading(false);
         }
@@ -198,27 +198,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const resendEmailVerification = useCallback(async () => {
         if (!isFirebaseReady() || !fbAuth?.currentUser) {
-            showErrorToast("Không tìm thấy người dùng hiện tại để gửi xác minh email.");
+            showToast('error', "Không tìm thấy người dùng hiện tại để gửi xác minh email.");
             return;
         }
         try {
             await sendEmailVerification(fbAuth.currentUser);
-            showSuccessToast("Đã gửi lại email xác minh. Vui lòng kiểm tra hộp thư.");
+            showToast('success', "Đã gửi lại email xác minh. Vui lòng kiểm tra hộp thư.");
         } catch (err: any) {
-            showErrorToast(mapAuthErrorToMessage(err));
+            showToast('error', mapAuthErrorToMessage(err));
         }
     }, []);
 
     const sendPasswordReset = useCallback(async (email: string) => {
         if (!isFirebaseReady() || !fbAuth) {
-            showErrorToast("Không thể khởi tạo Firebase trên trình duyệt.");
+            showToast('error', "Không thể khởi tạo Firebase trên trình duyệt.");
             return;
         }
         try {
             await sendPasswordResetEmail(fbAuth, email);
-            showSuccessToast("Đã gửi email đặt lại mật khẩu.");
+            showToast('success', "Đã gửi email đặt lại mật khẩu.");
         } catch (err: any) {
-            showErrorToast(mapAuthErrorToMessage(err));
+            showToast('error', mapAuthErrorToMessage(err));
         }
     }, []);
 
@@ -227,10 +227,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         try {
             await fbAuth.currentUser.reload();
             const verified = !!fbAuth.currentUser.emailVerified;
-            if (verified) showSuccessToast("Email đã được xác minh, bạn có thể đăng nhập");
+            if (verified) showToast('success', "Email đã được xác minh, bạn có thể đăng nhập");
             return verified;
         } catch (err: any) {
-            showErrorToast(mapAuthErrorToMessage(err));
+            showToast('error', mapAuthErrorToMessage(err));
             return false;
         }
     }, []);

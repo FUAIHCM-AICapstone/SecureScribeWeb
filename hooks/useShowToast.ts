@@ -1,4 +1,6 @@
-import { toast } from 'sonner';
+import { useToastController, Toast, ToastTitle, ToastBody, ToastTrigger } from '@fluentui/react-toast';
+import { Button } from '@fluentui/react-components';
+import React from 'react';
 
 type ToastType = 'success' | 'error' | 'warning' | 'info';
 
@@ -17,16 +19,28 @@ interface ToastOptions {
   onAutoClose?: () => void;
 }
 
+// Global toast controller instance
+let toastController: ReturnType<typeof useToastController> | null = null;
+
+// Function to set the toast controller (call this in your app root)
+export const setToastController = (controller: ReturnType<typeof useToastController>) => {
+  toastController = controller;
+};
+
 const showToast = (
   type: ToastType,
   message: string,
   options: ToastOptions = {}
 ) => {
+  if (!toastController) {
+    console.warn('[showToast] Toast controller not initialized. Call setToastController first.');
+    return null;
+  }
+
   const {
     duration = 4000,
     action,
     description,
-    id,
     onDismiss,
     onAutoClose
   } = options;
@@ -60,45 +74,49 @@ const showToast = (
   const toastTitle = titles[lang][type];
   const fullDescription = description || message;
 
-  // Enhanced toast options for Sonner
-  const toastOptions = {
-    duration,
-    id,
-    action: action ? {
-      label: action.label,
-      onClick: action.onClick,
-    } : undefined,
-    onDismiss,
-    onAutoClose,
+  // Map toast types to FluentUI intent
+  const intentMap: Record<ToastType, 'success' | 'error' | 'warning' | 'info'> = {
+    success: 'success',
+    error: 'error',
+    warning: 'warning',
+    info: 'info',
   };
 
-  switch (type) {
-    case 'success':
-      return toast.success(toastTitle, {
-        ...toastOptions,
-        description: fullDescription,
-      });
-    case 'error':
-      return toast.error(toastTitle, {
-        ...toastOptions,
-        description: fullDescription,
-      });
-    case 'warning':
-      return toast.warning(toastTitle, {
-        ...toastOptions,
-        description: fullDescription,
-      });
-    case 'info':
-      return toast.info(toastTitle, {
-        ...toastOptions,
-        description: fullDescription,
-      });
-    default:
-      return toast(toastTitle, {
-        ...toastOptions,
-        description: fullDescription,
-      });
-  }
+  // Create toast content using React.createElement
+  const toastContent = React.createElement(
+    Toast,
+    null,
+    React.createElement(ToastTitle, null, toastTitle),
+    React.createElement(ToastBody, null, fullDescription),
+    action && React.createElement(
+      ToastTrigger,
+      null,
+      React.createElement(
+        Button,
+        {
+          appearance: action.variant === 'destructive' ? 'primary' : 'secondary',
+          onClick: action.onClick
+        },
+        action.label
+      )
+    )
+  );
+
+  // Dispatch the toast
+  const toastId = toastController.dispatchToast(toastContent, {
+    intent: intentMap[type],
+    timeout: duration,
+    onStatusChange: (status) => {
+      if (status === 'dismissed' && onDismiss) {
+        onDismiss();
+      }
+      if (status === 'unmounted' && onAutoClose) {
+        onAutoClose();
+      }
+    },
+  });
+
+  return toastId;
 };
 
 // Convenience methods for common toast patterns
@@ -133,33 +151,46 @@ const showPromiseToast = <T>(
 ) => {
   const { successOptions, errorOptions } = options || {};
 
-  return toast.promise(promise, {
-    loading: messages.loading,
-    success: (data) => {
+  // Show loading toast
+  const loadingToastId = showToast('info', messages.loading);
+
+  return promise
+    .then((data) => {
+      // Dismiss loading toast
+      if (loadingToastId && toastController) {
+        toastController.dismissToast(loadingToastId);
+      }
+      // Show success toast
       const successMessage = typeof messages.success === 'function' ? messages.success(data) : messages.success;
-      showSuccessToast(successMessage, successOptions);
-      return successMessage;
-    },
-    error: (error) => {
+      showToast('success', successMessage, successOptions);
+      return data;
+    })
+    .catch((error) => {
+      // Dismiss loading toast
+      if (loadingToastId && toastController) {
+        toastController.dismissToast(loadingToastId);
+      }
+      // Show error toast
       const errorMessage = typeof messages.error === 'function' ? messages.error(error) : messages.error;
-      showErrorToast(errorMessage, errorOptions);
-      return errorMessage;
-    },
-  });
+      showToast('error', errorMessage, errorOptions);
+      throw error;
+    });
 };
 
 // Dismiss specific toast
 const dismissToast = (toastId?: string | number) => {
-  if (toastId) {
-    toast.dismiss(toastId);
-  } else {
-    toast.dismiss();
+  if (toastController && toastId) {
+    toastController.dismissToast(toastId.toString());
+  } else if (toastController) {
+    toastController.dismissAllToasts();
   }
 };
 
 // Dismiss all toasts
 const dismissAllToasts = () => {
-  toast.dismiss();
+  if (toastController) {
+    toastController.dismissAllToasts();
+  }
 };
 
 export {
