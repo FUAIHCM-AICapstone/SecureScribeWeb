@@ -112,3 +112,17 @@ export interface ApiResult<T> {
   error?: ApiError;
   loading?: boolean;
 }
+
+// Pagination wrapper type
+export interface Pagination<T> {
+  data: T[];
+  pagination: PaginationMeta;
+}
+
+// Common response wrapper
+export interface CommonResponse<T> {
+  success: boolean;
+  message?: string;
+  data: T;
+  errors?: string[];
+}

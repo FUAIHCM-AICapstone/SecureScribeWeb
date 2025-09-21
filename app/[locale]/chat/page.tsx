@@ -1,12 +1,7 @@
-import { getTranslations } from 'next-intl/server';
+import ChatClientWrapper from '@/components/chat/ChatClientWrapper';
 
-export default async function ChatPage() {
-    const t = await getTranslations('Sidebar');
-    return (
-        <div>
-            <h1>{t('chat')}</h1>
-        </div>
-    );
+export default function ChatPage() {
+    return <ChatClientWrapper />;
 }
 
 
