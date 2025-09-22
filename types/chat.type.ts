@@ -20,11 +20,21 @@ export interface MessageListRequest {
 export interface SendMessageRequest {
     conversation_id: string
     content: string
+    mentions?: import('./mention.type').MentionOccurrence[]
 }
 
 export interface SendMessageResponse {
     user_message: MessageResponse
     ai_message: MessageResponse
+}
+
+// ============================================
+// UI SEND PAYLOAD (for client components)
+// ============================================
+
+export interface SendMessagePayload {
+    content: string
+    mentions: import('./mention.type').MentionOccurrence[]
 }
 
 // ============================================

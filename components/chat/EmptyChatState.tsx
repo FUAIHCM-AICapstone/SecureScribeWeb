@@ -2,6 +2,40 @@
 
 import Image from 'next/image';
 import { Text } from '@fluentui/react-components';
+import { makeStyles, tokens } from '@fluentui/react-components';
+
+const useStyles = makeStyles({
+  root: {
+    width: '100%',
+    height: '80vh',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    textAlign: 'center',
+    color: tokens.colorNeutralForeground3,
+    marginTop: tokens.spacingVerticalL,
+  },
+  logo: {
+    width: '64px',
+    height: '64px',
+    marginX: 'auto',
+    marginBottom: tokens.spacingVerticalL,
+    backgroundColor: tokens.colorNeutralBackground3,
+    borderRadius: '50%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  title: {
+    display: 'block',
+    marginBottom: tokens.spacingVerticalS,
+  },
+  subtitle: {
+    display: 'block',
+  },
+});
 
 interface EmptyChatStateProps {
   noMessagesText: string;
@@ -9,9 +43,10 @@ interface EmptyChatStateProps {
 }
 
 export function EmptyChatState({ noMessagesText, startConversationText }: EmptyChatStateProps) {
+  const styles = useStyles();
   return (
-    <div className="text-center text-[#666] mt-8">
-      <div className="w-16 h-16 mx-auto mb-4 bg-[#f3f2f1] rounded-full flex items-center justify-center overflow-hidden">
+    <div className={styles.root}>
+      <div className={styles.logo}>
         <Image
           src="/images/logos/logo.png"
           alt="Logo"
@@ -20,10 +55,10 @@ export function EmptyChatState({ noMessagesText, startConversationText }: EmptyC
           className="w-12 h-12 object-contain"
         />
       </div>
-      <Text size={500} style={{ display: 'block', marginBottom: '8px' }}>
+      <Text size={500} className={styles.title}>
         {noMessagesText}
       </Text>
-      <Text size={300} style={{ display: 'block' }}>
+      <Text size={300} className={styles.subtitle}>
         {startConversationText}
       </Text>
     </div>

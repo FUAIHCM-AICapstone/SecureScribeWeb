@@ -3,6 +3,44 @@
 import { useEffect, useRef } from 'react';
 import { ChatMessage } from './ChatMessages';
 import { EmptyChatState } from './EmptyChatState';
+import { makeStyles, tokens } from '@fluentui/react-components';
+
+const useStyles = makeStyles({
+  container: {
+    flex: 1,
+    minHeight: 0,
+    overflowY: 'auto',
+    padding: tokens.spacingHorizontalM,
+    display: 'flex',
+    flexDirection: 'column',
+    rowGap: tokens.spacingVerticalM,
+  },
+  error: {
+    backgroundColor: tokens.colorPaletteRedBackground1,
+    border: `1px solid ${tokens.colorPaletteRedBorder1}`,
+    color: tokens.colorPaletteRedForeground1,
+    paddingLeft: tokens.spacingHorizontalM,
+    paddingRight: tokens.spacingHorizontalM,
+    paddingTop: tokens.spacingVerticalS,
+    paddingBottom: tokens.spacingVerticalS,
+    borderRadius: tokens.borderRadiusMedium,
+    marginBottom: tokens.spacingVerticalM,
+  },
+  messagesContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    rowGap: tokens.spacingVerticalM,
+  },
+  typing: {
+    padding: tokens.spacingVerticalS,
+    fontStyle: 'italic',
+    color: tokens.colorNeutralForeground3,
+    fontSize: tokens.fontSizeBase300,
+  },
+  scrollAnchor: {
+    // Empty style for scroll anchor
+  },
+});
 
 interface Message {
   id: string;
@@ -32,6 +70,7 @@ export function MessagesContainer({
   noMessagesText,
   startConversationText,
 }: MessagesContainerProps) {
+  const styles = useStyles();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
 
@@ -48,10 +87,10 @@ export function MessagesContainer({
   return (
     <div
       ref={messagesContainerRef}
-      className="flex-1 min-h-0 overflow-y-auto p-4 flex flex-col gap-4"
+      className={styles.container}
     >
       {error && (
-        <div className="bg-red-200 border border-red-400 text-red-700 px-4 py-3 rounded-md mb-4">
+        <div className={styles.error}>
           {error}
         </div>
       )}
@@ -62,7 +101,7 @@ export function MessagesContainer({
           startConversationText={startConversationText}
         />
       ) : (
-        <>
+        <div className={styles.messagesContainer}>
           {messages.map((message) => (
             <div key={message.id}>
               <ChatMessage
@@ -71,15 +110,15 @@ export function MessagesContainer({
             </div>
           ))}
           {isTyping && (
-            <div className="p-3 italic text-[#666] text-sm">
+            <div className={styles.typing}>
               {typingText}
             </div>
           )}
-        </>
+        </div>
       )}
 
       {/* Scroll anchor */}
-      <div ref={messagesEndRef} />
+      <div ref={messagesEndRef} className={styles.scrollAnchor} />
     </div>
   );
 }

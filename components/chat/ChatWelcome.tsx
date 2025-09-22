@@ -1,6 +1,49 @@
 'use client';
 
 import { Text } from '@fluentui/react-components';
+import { makeStyles, tokens } from '@fluentui/react-components';
+import Image from 'next/image';
+
+const useStyles = makeStyles({
+  root: {
+    flex: 1,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: '100%',
+    backgroundColor: tokens.colorNeutralBackground2,
+  },
+  container: {
+    padding: tokens.spacingHorizontalL,
+    textAlign: 'center',
+    maxWidth: '448px',
+    margin: tokens.spacingHorizontalM,
+    backgroundColor: tokens.colorNeutralBackground1,
+    border: `1px solid ${tokens.colorNeutralStroke1}`,
+    borderRadius: tokens.borderRadiusLarge,
+    boxShadow: tokens.shadow16,
+  },
+  title: {
+    marginBottom: tokens.spacingVerticalM,
+    color: tokens.colorNeutralForeground1,
+    display: 'block',
+  },
+  subtitle: {
+    color: tokens.colorNeutralForeground3,
+  },
+  logo: {
+    width: '64px',
+    height: '64px',
+    marginX: 'auto',
+    marginBottom: tokens.spacingVerticalL,
+    backgroundColor: tokens.colorNeutralBackground3,
+    borderRadius: '50%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+  },
+});
 
 interface ChatWelcomeProps {
   welcomeTitle: string;
@@ -8,24 +51,28 @@ interface ChatWelcomeProps {
 }
 
 export function ChatWelcome({ welcomeTitle, welcomeDescription }: ChatWelcomeProps) {
+  const styles = useStyles();
   return (
-    <div className="flex-1 flex items-center justify-center h-full bg-[linear-gradient(135deg,_#f5f5f5_0%,_#e8e8e8_50%,_#f0f0f0_100%)]">
-      <div className="p-8 text-center max-w-[448px] mx-4 bg-white border border-[#e1e1e1] rounded-lg shadow-lg backdrop-blur">
+    <div className={styles.root}>
+      <div className={styles.container}>
+        <div className={styles.logo}>
+          <Image
+            src="/images/logos/logo.png"
+            alt="Logo"
+            width={48}
+            height={48}
+            className="w-12 h-12 object-contain"
+          />
+        </div>
         <Text
           as="h2"
           size={700}
           weight="semibold"
-          style={{
-            marginBottom: '16px',
-            background: 'linear-gradient(to right, #0078d4, #106ebe, #005a9e)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            display: 'block'
-          }}
+          className={styles.title}
         >
           {welcomeTitle}
         </Text>
-        <Text style={{ color: '#666' }}>
+        <Text className={styles.subtitle}>
           {welcomeDescription}
         </Text>
       </div>

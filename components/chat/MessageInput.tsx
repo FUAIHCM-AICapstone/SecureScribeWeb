@@ -2,9 +2,79 @@
 
 import { Send24Regular } from '@fluentui/react-icons';
 import { useEffect, useRef, useState } from 'react';
+import MentionSuggestions from '@/components/mentions/MentionSuggestions';
+import useMentionInput from '@/components/mentions/useMentionInput';
+import { serializeContenteditableToText, parseTokensFromText, createMentionChip } from '@/components/mentions/tokenUtils';
+import { searchMentions } from '@/services/api/mock';
+import type { SendMessagePayload } from 'types/chat.type';
+import { makeStyles, tokens } from '@fluentui/react-components';
+
+const useStyles = makeStyles({
+  root: {
+    padding: tokens.spacingHorizontalM,
+    borderTop: `1px solid ${tokens.colorNeutralStroke1}`,
+    backgroundColor: tokens.colorNeutralBackground1,
+    position: 'sticky',
+    bottom: 0,
+    zIndex: 5,
+    flexShrink: 0,
+  },
+  form: {
+    display: 'flex',
+    columnGap: tokens.spacingHorizontalS,
+    alignItems: 'end',
+    maxWidth: '100%',
+  },
+  inputContainer: {
+    flex: 1,
+    position: 'relative',
+  },
+  editor: {
+    minHeight: '44px',
+    maxHeight: '200px',
+    overflow: 'auto',
+    padding: tokens.spacingHorizontalS,
+    border: `1px solid ${tokens.colorNeutralStroke1}`,
+    borderRadius: tokens.borderRadiusMedium,
+    fontSize: tokens.fontSizeBase300,
+    fontFamily: tokens.fontFamilyBase,
+    outlineStyle: 'none',
+    backgroundColor: tokens.colorNeutralBackground1,
+    color: tokens.colorNeutralForeground1,
+    whiteSpace: 'pre-wrap',
+    wordWrap: 'break-word',
+  },
+  placeholder: {
+    position: 'absolute',
+    left: tokens.spacingHorizontalS,
+    top: tokens.spacingHorizontalS,
+    fontSize: tokens.fontSizeBase300,
+    color: tokens.colorNeutralForeground3,
+    pointerEvents: 'none',
+  },
+  sendButton: {
+    minWidth: '44px',
+    height: '44px',
+    paddingLeft: tokens.spacingHorizontalS,
+    paddingRight: tokens.spacingHorizontalS,
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    columnGap: tokens.spacingHorizontalXS,
+    borderRadius: tokens.borderRadiusMedium,
+    backgroundColor: tokens.colorBrandBackground,
+    color: 'white',
+    '&:hover': {
+      backgroundColor: tokens.colorBrandBackgroundHover,
+    },
+    '&:disabled': {
+      opacity: 0.5,
+    },
+  },
+});
 
 interface MessageInputProps {
-  onSendMessage: (content: string) => void;
+  onSendMessage: (payload: SendMessagePayload) => void;
   isLoading: boolean;
   canSendMessage: boolean;
   placeholder: string;
@@ -16,58 +86,178 @@ export function MessageInput({
   canSendMessage,
   placeholder,
 }: MessageInputProps) {
-  const [input, setInput] = useState('');
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const styles = useStyles();
+  const editorRef = useRef<HTMLDivElement>(null);
+  const [isEmpty, setIsEmpty] = useState(true);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!input.trim() || !canSendMessage) return;
+  const mention = useMentionInput({
+    editorRef,
+    search: (q: string) => searchMentions(q, 8),
+    limit: 8,
+  });
 
-    onSendMessage(input.trim());
-    setInput('');
+  const updateEmpty = () => {
+    const el = editorRef.current;
+    if (!el) return;
+    const text = el.innerText.replace(/\u200b/g, '').trim();
+    setIsEmpty(text.length === 0 && el.querySelectorAll('[data-mention-id]').length === 0);
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      if (input.trim() && canSendMessage) {
-        onSendMessage(input.trim());
-        setInput('');
+  const handlePaste = (e: React.ClipboardEvent<HTMLDivElement>) => {
+    const el = editorRef.current;
+    if (!el) return;
+    const text = e.clipboardData.getData('text/plain');
+    const tokens = parseTokensFromText(text);
+    if (tokens.length === 0) return; // allow default paste
+    e.preventDefault();
+    const sel = window.getSelection();
+    if (!sel || sel.rangeCount === 0) return;
+    const range = sel.getRangeAt(0);
+    let cursor = range;
+    tokens.forEach((t) => {
+      const chip = createMentionChip(t.mention);
+      cursor.insertNode(chip);
+      const space = document.createTextNode(' ');
+      chip.after(space);
+      const r = document.createRange();
+      r.setStartAfter(space);
+      r.collapse(true);
+      cursor = r;
+    });
+    sel.removeAllRanges();
+    sel.addRange(cursor);
+    updateEmpty();
+  };
+
+  const removeAdjacentChipIfAny = (direction: 'backward' | 'forward'): boolean => {
+    const sel = window.getSelection();
+    if (!sel || sel.rangeCount === 0 || !sel.isCollapsed) return false;
+    const node = sel.anchorNode as Node;
+    const offset = sel.anchorOffset;
+    const isText = node.nodeType === Node.TEXT_NODE;
+    const parent = node.parentElement as HTMLElement | null;
+
+    if (direction === 'backward') {
+      if (isText && offset > 0) return false; // normal deletion
+      const prev = (isText ? (node.previousSibling || parent?.previousSibling) : (node.previousSibling)) as HTMLElement | null;
+      if (prev && (prev as HTMLElement).dataset && (prev as HTMLElement).dataset.mentionId) {
+        // remove optional preceding space
+        const before = prev.previousSibling;
+        if (before && before.nodeType === Node.TEXT_NODE && (before as Text).data.endsWith(' ')) {
+          (before as Text).data = (before as Text).data.slice(0, -1);
+        }
+        prev.remove();
+        updateEmpty();
+        return true;
+      }
+    } else {
+      if (isText && node.textContent && offset < node.textContent.length) return false; // normal deletion
+      const next = (isText ? (node.nextSibling || parent?.nextSibling) : (node.nextSibling)) as HTMLElement | null;
+      if (next && next.dataset && next.dataset.mentionId) {
+        // remove optional trailing space after chip
+        const after = next.nextSibling;
+        if (after && after.nodeType === Node.TEXT_NODE) {
+          const t = after as Text;
+          if (t.data.startsWith(' ')) t.data = t.data.slice(1);
+        }
+        next.remove();
+        updateEmpty();
+        return true;
       }
     }
+    return false;
   };
 
-  // Auto-resize textarea
-  useEffect(() => {
-    if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 150)}px`;
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (mention.actions.onKeyDown(e)) return;
+    if (e.key === 'Backspace') {
+      if (removeAdjacentChipIfAny('backward')) {
+        e.preventDefault();
+        return;
+      }
     }
-  }, [input]);
+    if (e.key === 'Delete') {
+      if (removeAdjacentChipIfAny('forward')) {
+        e.preventDefault();
+        return;
+      }
+    }
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      if (!canSendMessage) return;
+      const el = editorRef.current;
+      if (!el) return;
+      const { content, mentions } = serializeContenteditableToText(el);
+      if (!content.trim()) return;
+      onSendMessage({ content, mentions });
+      el.innerHTML = '';
+      setIsEmpty(true);
+    }
+  };
+
+  const handleInput = () => {
+    mention.actions.onInput();
+    updateEmpty();
+  };
+
+  useEffect(() => {
+    const el = editorRef.current;
+    if (!el) return;
+    const observer = new MutationObserver(() => updateEmpty());
+    observer.observe(el, { childList: true, characterData: true, subtree: true });
+    return () => observer.disconnect();
+  }, []);
 
   return (
-    <div className="p-4 border-t border-[#e1e1e1] bg-white sticky bottom-0 z-[5] flex-shrink-0">
-      <form onSubmit={handleSubmit} className="flex gap-3 items-end max-w-full">
-        <textarea
-          ref={textareaRef}
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder={!canSendMessage ? "" : placeholder}
-          disabled={!canSendMessage}
-          rows={1}
-          className="flex-1 p-3 border border-[#d1d1d1] rounded-lg text-sm font-sans resize-none min-h-[44px] max-h-[120px] outline-none focus:border-[#0078d4] transition-colors"
-        />
+    <div className={styles.root}>
+      <div className={styles.form}>
+        <div className={styles.inputContainer}>
+          <div
+            ref={editorRef}
+            role="textbox"
+            aria-multiline="true"
+            contentEditable={canSendMessage}
+            onKeyDown={handleKeyDown}
+            onInput={handleInput}
+            onPaste={handlePaste}
+            className={styles.editor}
+            data-placeholder={canSendMessage ? placeholder : ''}
+            tabIndex={0}
+          />
+          {isEmpty && canSendMessage && (
+            <div className={styles.placeholder}>{placeholder}</div>
+          )}
+        </div>
         <button
-          type="submit"
-          disabled={!input.trim() || !canSendMessage}
-          className="min-w-[44px] h-11 px-3 inline-flex items-center justify-center gap-2 rounded-md bg-[#0078d4] hover:bg-[#106ebe] text-white disabled:opacity-50"
+          type="button"
+          disabled={!canSendMessage || isEmpty}
+          onClick={() => {
+            if (!canSendMessage) return;
+            const el = editorRef.current;
+            if (!el) return;
+            const { content, mentions } = serializeContenteditableToText(el);
+            if (!content.trim()) return;
+            onSendMessage({ content, mentions });
+            el.innerHTML = '';
+            setIsEmpty(true);
+          }}
+          className={styles.sendButton}
           aria-label="Send message"
         >
           <Send24Regular />
           {!isLoading && 'Send'}
         </button>
-      </form>
+      </div>
+      <MentionSuggestions
+        open={mention.state.open}
+        position={mention.state.position}
+        items={mention.state.items}
+        focusedIndex={mention.state.focusedIndex}
+        onSelect={(it) => mention.actions.commit(it)}
+        onMove={(dir) => mention.actions.setFocusedIndex((i: number) => (dir === 'down' ? i + 1 : i - 1))}
+        onClose={() => mention.actions.close()}
+        labels={{}}
+      />
     </div>
   );
 }

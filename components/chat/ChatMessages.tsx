@@ -9,6 +9,93 @@ import { Copy24Regular, Checkmark24Regular, Person24Regular } from '@fluentui/re
 import Image from 'next/image';
 import { MessageCodeBlock } from './MessageCodeBlock';
 import { useTranslations } from 'next-intl';
+import { makeStyles, tokens } from '@fluentui/react-components';
+
+const useStyles = makeStyles({
+  userMessage: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+  },
+  userBubble: {
+    maxWidth: '80%',
+    padding: tokens.spacingHorizontalM,
+    backgroundColor: tokens.colorBrandBackground,
+    color: "white",
+    border: `1px solid ${tokens.colorBrandForeground1}`,
+    borderRadius: tokens.borderRadiusMedium,
+  },
+  userMessageInner: {
+    display: 'flex',
+    alignItems: 'flex-start',
+    columnGap: tokens.spacingHorizontalS,
+  },
+  userAvatar: {
+    width: '32px',
+    height: '32px',
+    borderRadius: '50%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    overflow: 'hidden',
+  },
+  userContent: {
+    flex: 1,
+    minWidth: 0,
+  },
+  userContentText: {
+    marginBottom: tokens.spacingVerticalS,
+    lineHeight: 1.5,
+    wordWrap: 'break-word',
+    whiteSpace: 'pre-wrap',
+  },
+  userTimestamp: {
+    fontSize: tokens.fontSizeBase200,
+    marginTop: tokens.spacingVerticalS,
+    color: 'rgba(255,255,255,0.7)',
+  },
+  assistantMessage: {
+    display: 'flex',
+    flexDirection: 'column',
+    rowGap: tokens.spacingVerticalS,
+  },
+  assistantHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    columnGap: tokens.spacingHorizontalS,
+    paddingLeft: tokens.spacingHorizontalS,
+    paddingRight: tokens.spacingHorizontalS,
+  },
+  assistantAvatar: {
+    width: '32px',
+    height: '32px',
+    borderRadius: '50%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: tokens.colorBrandBackgroundInverted,
+    overflow: 'hidden',
+  },
+  assistantLabel: {
+    fontSize: tokens.fontSizeBase400,
+    fontWeight: tokens.fontWeightSemibold,
+    color: tokens.colorNeutralForeground1,
+  },
+  assistantTimestamp: {
+    fontSize: tokens.fontSizeBase200,
+    color: tokens.colorNeutralForeground3,
+  },
+  assistantContent: {
+    marginLeft: '44px',
+    display: 'flex',
+    flexDirection: 'column',
+    rowGap: tokens.spacingVerticalM,
+  },
+  copyButton: {
+    fontSize: '12px',
+    color: tokens.colorNeutralForeground3,
+  },
+});
 
 interface Message {
   id: string;
@@ -38,6 +125,7 @@ export function ChatMessage({
 }: ChatMessageProps) {
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
   const tMsg = useTranslations('Chat.Messages');
+  const styles = useStyles();
 
 
   // Enhanced debug logging
@@ -58,12 +146,46 @@ export function ChatMessage({
     }
   };
 
+  const renderContentWithMentions = (text: string, isUser: boolean) => {
+    const parts: Array<string | { name: string }> = []
+    const regex = /@\{(meeting|project|file)\}\{([^}]+)\}/g
+    let lastIndex = 0
+    let match: RegExpExecArray | null
+    while ((match = regex.exec(text)) !== null) {
+      if (match.index > lastIndex) parts.push(text.slice(lastIndex, match.index))
+      const name = match[2].trim()
+      parts.push({ name })
+      lastIndex = match.index + match[0].length
+    }
+    if (lastIndex < text.length) parts.push(text.slice(lastIndex))
+    return (
+      <>
+        {parts.map((p, i) =>
+          typeof p === 'string' ? (
+            <span key={i}>{p}</span>
+          ) : (
+            <span
+              key={i}
+              className={
+                isUser
+                  ? 'inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-white/20 text-white text-[0.9em] border border-white/60'
+                  : 'inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-[rgba(0,120,212,0.18)] text-[#0b5cad] text-[0.9em] border border-[#5aa0e6]'
+              }
+            >
+              @{p.name}
+            </span>
+          )
+        )}
+      </>
+    )
+  }
+
   if (message.role === 'user') {
     return (
-      <div className="flex justify-end">
-        <div className="max-w-[80%] p-4 backdrop-blur transition-all bg-[linear-gradient(to_right,_#0078d4,_#106ebe)] text-white border border-[#0078d4] rounded-lg">
-          <div className="flex items-start gap-3">
-            <div className="w-8 h-8 rounded-full flex items-center justify-center bg-white/20 overflow-hidden">
+      <div className={styles.userMessage}>
+        <div className={styles.userBubble}>
+          <div className={styles.userMessageInner}>
+            <div className={styles.userAvatar}>
               {user?.profile_picture ? (
                 <Image
                   src={user.profile_picture}
@@ -86,11 +208,11 @@ export function ChatMessage({
                 style={{ display: user?.profile_picture ? 'none' : 'block' }}
               />
             </div>
-            <div className="flex-1 min-w-0">
-              <p className="mb-2 leading-relaxed whitespace-pre-wrap break-words">
-                {message.content}
+            <div className={styles.userContent}>
+              <p className={styles.userContentText}>
+                {renderContentWithMentions(message.content, true)}
               </p>
-              <p className="text-xs mt-2 text-white/70">
+              <p className={styles.userTimestamp}>
                 {message.timestamp.toLocaleTimeString()}
               </p>
             </div>
@@ -102,10 +224,10 @@ export function ChatMessage({
 
   // Assistant message
   return (
-    <div className="space-y-2">
+    <div className={styles.assistantMessage}>
       {/* Bot Avatar and Timestamp */}
-      <div className="flex items-center gap-3 px-2">
-        <div className="w-8 h-8 rounded-full flex items-center justify-center bg-[color:var(--primary)]/10 overflow-hidden">
+      <div className={styles.assistantHeader}>
+        <div className={styles.assistantAvatar}>
           <Image
             src="/images/logos/logo.png"
             alt="Assistant Logo"
@@ -114,16 +236,16 @@ export function ChatMessage({
             className="w-6 h-6 object-contain"
           />
         </div>
-        <span className="text-sm font-medium text-[color:var(--foreground)]">
+        <span className={styles.assistantLabel}>
           {tMsg('assistantLabel')}
         </span>
-        <span className="text-xs text-[color:var(--muted-foreground)]">
+        <span className={styles.assistantTimestamp}>
           {message.timestamp.toLocaleTimeString()}
         </span>
       </div>
 
       {/* Bot Message Content - Enhanced responsive markdown */}
-      <div className="ml-11 space-y-3">
+      <div className={styles.assistantContent}>
         <div className="prose prose-sm max-w-none prose-gray dark:prose-invert">
           <ReactMarkdown
             remarkPlugins={[remarkGfm]}
@@ -138,7 +260,19 @@ export function ChatMessage({
                 if (inline) {
                   return (
                     <code
-                      className="bg-[color:var(--muted)] text-[color:var(--foreground)] px-1.5 py-0.5 rounded text-sm font-mono border border-[color:var(--border)]/50 shadow-sm"
+                      style={{
+                        backgroundColor: tokens.colorNeutralBackground3,
+                        color: tokens.colorNeutralForeground1,
+                        paddingLeft: tokens.spacingHorizontalXS,
+                        paddingRight: tokens.spacingHorizontalXS,
+                        paddingTop: tokens.spacingVerticalXS,
+                        paddingBottom: tokens.spacingVerticalXS,
+                        borderRadius: tokens.borderRadiusSmall,
+                        fontSize: tokens.fontSizeBase300,
+                        fontFamily: tokens.fontFamilyMonospace,
+                        border: `1px solid ${tokens.colorNeutralStroke1}`,
+                        boxShadow: tokens.shadow2,
+                      }}
                       {...rest}
                     >
                       {children}
@@ -272,7 +406,7 @@ export function ChatMessage({
             appearance="subtle"
             size="small"
             onClick={() => handleCopyMessage(message.id, message.content)}
-            style={{ fontSize: '12px', color: '#666' }}
+            className={styles.copyButton}
           >
             {copiedMessageId === message.id ? (
               <>

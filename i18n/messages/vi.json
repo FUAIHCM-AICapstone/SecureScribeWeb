@@ -19,6 +19,7 @@
       "meetings": "Cuộc họp",
       "projects": "Dự án",
       "tasks": "Nhiệm vụ",
+      "chat": "Trò chuyện",
       "profile": "Hồ sơ",
       "privacy": "Quyền riêng tư",
       "terms-of-service": "Điều khoản dịch vụ"
@@ -160,5 +161,16 @@
       "copy": "Sao chép",
       "copied": "Đã sao chép"
     }
+  },
+  "Mentions": {
+    "loading": "Đang tải",
+    "noResults": "Không có kết quả",
+    "searchPlaceholder": "Tìm kiếm...",
+    "meetings": "Cuộc họp",
+    "projects": "Dự án",
+    "files": "Tệp",
+    "hintArrows": "Dùng ↑/↓ để di chuyển",
+    "hintEnter": "Enter để chọn",
+    "hintEsc": "Esc để đóng"
   }
 }

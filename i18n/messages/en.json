@@ -20,6 +20,7 @@
       "projects": "Projects",
       "tasks": "Tasks",
       "profile": "Profile",
+      "chat": "Chat",
       "privacy": "Privacy",
       "terms-of-service": "Terms of Service"
     }
@@ -160,5 +161,16 @@
       "copy": "Copy",
       "copied": "Copied"
     }
+  },
+  "Mentions": {
+    "loading": "Loading",
+    "noResults": "No results",
+    "searchPlaceholder": "Search...",
+    "meetings": "Meetings",
+    "projects": "Projects",
+    "files": "Files",
+    "hintArrows": "Use ↑/↓ to navigate",
+    "hintEnter": "Enter to select",
+    "hintEsc": "Esc to close"
   }
 }

@@ -6,6 +6,102 @@ import { useState } from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { useTranslations } from 'next-intl';
+import { makeStyles, tokens } from '@fluentui/react-components';
+
+const useStyles = makeStyles({
+  headerContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    borderRadius: tokens.borderRadiusMedium,
+    border: `1px solid ${tokens.colorNeutralStroke1}`,
+    backgroundColor: tokens.colorNeutralBackground1,
+    marginTop: tokens.spacingVerticalM,
+    marginBottom: tokens.spacingVerticalM,
+    width: '100%',
+    maxWidth: '100%',
+    overflow: 'hidden',
+  },
+  header: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    height: '36px',
+    backgroundColor: tokens.colorNeutralBackground1,
+    borderBottom: `1px solid ${tokens.colorNeutralStroke1}`,
+    paddingLeft: tokens.spacingHorizontalM,
+    paddingRight: tokens.spacingHorizontalM,
+    fontSize: tokens.fontSizeBase200,
+    fontFamily: tokens.fontFamilyBase,
+    color: tokens.colorNeutralForeground3,
+    fontWeight: tokens.fontWeightMedium,
+  },
+  headerActions: {
+    display: 'flex',
+    alignItems: 'center',
+    columnGap: tokens.spacingHorizontalXS,
+  },
+  floatingContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    borderRadius: tokens.borderRadiusMedium,
+    border: `1px solid ${tokens.colorNeutralStroke1}`,
+    backgroundColor: tokens.colorNeutralBackground3,
+    marginTop: tokens.spacingVerticalM,
+    marginBottom: tokens.spacingVerticalM,
+    width: '100%',
+    maxWidth: '100%',
+    overflow: 'hidden',
+    position: 'relative',
+  },
+  floatingActions: {
+    position: 'absolute',
+    top: tokens.spacingVerticalS,
+    right: tokens.spacingVerticalS,
+    display: 'flex',
+    columnGap: tokens.spacingHorizontalXS,
+  },
+  inlineContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    borderRadius: tokens.borderRadiusMedium,
+    border: `1px solid ${tokens.colorNeutralStroke1}`,
+    backgroundColor: tokens.colorNeutralBackground3,
+    marginTop: tokens.spacingVerticalS,
+    marginBottom: tokens.spacingVerticalS,
+    position: 'relative',
+    overflow: 'hidden',
+  },
+  inlineActions: {
+    position: 'absolute',
+    top: tokens.spacingVerticalXS,
+    right: tokens.spacingVerticalXS,
+    display: 'flex',
+    columnGap: tokens.spacingHorizontalXS,
+  },
+  actionButton: {
+    fontSize: tokens.fontSizeBase200,
+    backgroundColor: tokens.colorNeutralBackground1,
+    color: tokens.colorNeutralForeground1,
+    border: `1px solid ${tokens.colorNeutralStroke1}`,
+    paddingTop: tokens.spacingVerticalXS,
+    paddingBottom: tokens.spacingVerticalXS,
+    paddingLeft: tokens.spacingHorizontalS,
+    paddingRight: tokens.spacingHorizontalS,
+  },
+  actionButtonFloating: {
+    fontSize: tokens.fontSizeBase200,
+    backgroundColor: tokens.colorNeutralBackground1,
+    color: tokens.colorNeutralForeground1,
+    border: `1px solid ${tokens.colorNeutralStroke1}`,
+    paddingTop: tokens.spacingVerticalXS,
+    paddingBottom: tokens.spacingVerticalXS,
+    paddingLeft: tokens.spacingHorizontalS,
+    paddingRight: tokens.spacingHorizontalS,
+  },
+  languageLabel: {
+    fontWeight: tokens.fontWeightMedium,
+  },
+});
 
 interface MessageCodeBlockProps {
   code: string;
@@ -20,6 +116,7 @@ export function MessageCodeBlock({
 }: MessageCodeBlockProps) {
   const [copied, setCopied] = useState(false);
   const tCode = useTranslations('Chat.CodeBlock');
+  const styles = useStyles();
 
 
   // Map common language names to file extensions
@@ -93,16 +190,16 @@ export function MessageCodeBlock({
   if (variant === 'header') {
     return (
       <>
-        <div className="contain-inline-size rounded-md border border-[color:var(--border)] relative bg-[color:var(--card)] my-4 w-full max-w-full overflow-hidden">
+        <div className={styles.headerContainer}>
           {/* Header with language and actions */}
-          <div className="flex items-center text-[color:var(--muted-foreground)] px-4 py-2 text-xs font-sans justify-between h-9 bg-[color:var(--card)] dark:bg-[color:var(--muted)] select-none rounded-t border-b border-[color:var(--border)]">
-            <span className="font-medium">{language}</span>
-            <div className="flex items-center gap-1">
+          <div className={styles.header}>
+            <span className={styles.languageLabel}>{language}</span>
+            <div className={styles.headerActions}>
               <Button
                 appearance="subtle"
                 size="small"
                 onClick={handleDownload}
-                style={{ display: 'flex', gap: '4px', alignItems: 'center', padding: '4px 12px', fontSize: '12px' }}
+                className={styles.actionButton}
               >
                 <ArrowDownload24Regular style={{ width: '12px', height: '12px' }} />
                 {tCode('download')}
@@ -111,7 +208,7 @@ export function MessageCodeBlock({
                 appearance="subtle"
                 size="small"
                 onClick={handleCopy}
-                style={{ display: 'flex', gap: '4px', alignItems: 'center', padding: '4px 12px', fontSize: '12px' }}
+                className={styles.actionButton}
               >
                 {copied ? (
                   <>
@@ -154,8 +251,8 @@ export function MessageCodeBlock({
 
   if (variant === 'floating') {
     return (
-      <div className="contain-inline-size rounded-md border border-[color:var(--border)] relative bg-[color:var(--muted)] my-4 w-full max-w-full overflow-hidden group">
-        <div className="relative">
+      <div className={`${styles.floatingContainer} group`}>
+        <div style={{ position: 'relative' }}>
           <SyntaxHighlighter
             language={language}
             style={oneDark}
@@ -173,12 +270,12 @@ export function MessageCodeBlock({
           </SyntaxHighlighter>
 
           {/* Floating action buttons */}
-          <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex gap-1">
+          <div className={styles.floatingActions}>
             <Button
               appearance="subtle"
               size="small"
               onClick={handleDownload}
-              style={{ fontSize: '12px', backgroundColor: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(8px)', border: '1px solid #e1e1e1', padding: '4px 8px' }}
+              className={styles.actionButtonFloating}
             >
               <ArrowDownload24Regular style={{ width: '12px', height: '12px' }} />
             </Button>
@@ -186,7 +283,7 @@ export function MessageCodeBlock({
               appearance="subtle"
               size="small"
               onClick={handleCopy}
-              style={{ fontSize: '12px', backgroundColor: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(8px)', border: '1px solid #e1e1e1', padding: '4px 8px', display: 'flex', gap: '4px', alignItems: 'center' }}
+              className={styles.actionButtonFloating}
             >
               {copied ? (
                 <>
@@ -209,7 +306,7 @@ export function MessageCodeBlock({
   // Default inline variant
   return (
     <>
-      <div className="contain-inline-size rounded border border-[color:var(--border)] bg-[color:var(--muted)] my-2 relative overflow-hidden group">
+      <div className={`${styles.inlineContainer} group`}>
         <SyntaxHighlighter
           language={language}
           style={oneDark}
@@ -227,12 +324,12 @@ export function MessageCodeBlock({
         </SyntaxHighlighter>
 
         {/* Action buttons for inline variant */}
-        <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex gap-1">
+        <div className={styles.inlineActions}>
           <Button
             appearance="subtle"
             size="small"
             onClick={handleDownload}
-            style={{ fontSize: '12px', padding: '4px 8px', backgroundColor: 'rgba(255,255,255,0.8)' }}
+            className={styles.actionButton}
           >
             <ArrowDownload24Regular style={{ width: '12px', height: '12px' }} />
           </Button>
@@ -240,7 +337,7 @@ export function MessageCodeBlock({
             appearance="subtle"
             size="small"
             onClick={handleCopy}
-            style={{ fontSize: '12px', padding: '4px 8px', backgroundColor: 'rgba(255,255,255,0.8)' }}
+            className={styles.actionButton}
           >
             {copied ? (
               <Checkmark24Regular style={{ width: '12px', height: '12px' }} />

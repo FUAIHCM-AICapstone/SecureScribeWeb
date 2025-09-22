@@ -2,17 +2,73 @@
 /* eslint-disable @typescript-eslint/no-empty-object-type */
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
-import { FluentProvider, teamsLightTheme, TabList, Tab, Button, Input, Tooltip, makeStyles, shorthands, tokens } from '@fluentui/react-components'
-import { Add24Regular, Dismiss16Regular } from '@fluentui/react-icons'
 import chatApi from '@/services/api/chat'
-import { type Message, type Conversation, convertToUIConversation } from 'types/chat.type'
-import { ChatInterface } from './ChatInterface'
+import { Button, Input, Tab, TabList, Tooltip, makeStyles, tokens } from '@fluentui/react-components'
+import { Add24Regular, Dismiss16Regular } from '@fluentui/react-icons'
 import { useTranslations } from 'next-intl'
+import { useEffect, useRef, useState } from 'react'
+import { convertToUIConversation, type Conversation, type Message, type SendMessagePayload } from 'types/chat.type'
+import { ChatInterface } from './ChatInterface'
+import { MessageInput } from './MessageInput'
 
 interface ChatClientWrapperProps {
     // No props needed for standalone version
 }
+
+const useStyles = makeStyles({
+    root: {
+        height: 'calc(100vh - 64px)',
+        display: 'flex',
+        flexDirection: 'column'
+    },
+    header: {
+        padding: '8px 12px',
+        display: 'flex',
+        alignItems: 'center',
+        columnGap: '8px',
+        position: 'sticky',
+        top: 0,
+        backgroundColor: tokens.colorNeutralBackground1,
+        zIndex: 10,
+        boxShadow: tokens.shadow4,
+    },
+    tabListContainer: {
+        flex: 1,
+        width: '100%',
+        overflowX: 'auto',
+        overflowY: 'hidden',
+        msOverflowStyle: 'none',
+        scrollbarWidth: 'none',
+        selectors: {
+            '&::-webkit-scrollbar': {
+                width: '0px',
+                height: '0px'
+            }
+        }
+    },
+    tabList: {
+        minWidth: '100%'
+    },
+    tabItem: {
+        display: 'flex',
+        alignItems: 'center',
+        columnGap: '8px',
+        maxWidth: '220px'
+    },
+    tabName: {
+        display: 'inline-block',
+        maxWidth: '180px',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap'
+    },
+    renameInput: {
+        width: '160px'
+    },
+    content: {
+        flex: 1,
+    }
+})
 
 export default function ChatClientWrapper({ }: ChatClientWrapperProps) {
     const styles = useStyles()
@@ -80,14 +136,14 @@ export default function ChatClientWrapper({ }: ChatClientWrapperProps) {
     }
 
     // Handle sending new message (mock simulation)
-    const handleSendMessage = async (content: string) => {
+    const handleSendMessage = async (payload: SendMessagePayload) => {
         if (!activeConversationId) return
 
         // Add user message
         const userMessage: Message = {
             id: `user-${Date.now()}`,
             role: 'user',
-            content,
+            content: payload.content,
             timestamp: new Date()
         }
         setMessages(prev => [...prev, userMessage])
@@ -97,7 +153,34 @@ export default function ChatClientWrapper({ }: ChatClientWrapperProps) {
             const aiMessage: Message = {
                 id: `assistant-${Date.now()}`,
                 role: 'assistant',
-                content: `This is a mock response to: "${content}"`,
+                content: `
+# Mock Response
+
+This is a mock response to: **"${payload.content}"**
+
+---
+
+Here are some markdown formatting examples:
+
+- **Bold text**
+- *Italic text*
+- \`Inline code\`
+- Code block:
+\`\`\`javascript
+console.log('Hello, world!');
+\`\`\`
+- Bullet points:
+  - Item 1
+  - Item 2
+  - Item 3
+
+> Blockquote example
+
+1. Numbered list item 1
+2. Numbered list item 2
+
+Enjoy testing markdown! 🎉
+                `,
                 timestamp: new Date()
             }
             setMessages(prev => [...prev, aiMessage])
@@ -179,152 +262,102 @@ export default function ChatClientWrapper({ }: ChatClientWrapperProps) {
     }
 
     return (
-        <FluentProvider theme={teamsLightTheme}>
-            <div className={styles.root}>
-                {/* Conversation Tabs Header */}
-                <div className={styles.header}>
-                    <div
-                        className={styles.tabListContainer}
-                        ref={tabListContainerRef}
-                        onWheel={(e) => {
-                            if (e.deltaY !== 0) {
-                                e.preventDefault()
-                                const el = tabListContainerRef.current
-                                if (el) {
-                                    el.scrollLeft += e.deltaY
-                                }
+        <div className={styles.root}>
+            {/* Conversation Tabs Header */}
+            <div className={styles.header}>
+                <div
+                    className={styles.tabListContainer}
+                    ref={tabListContainerRef}
+                    onWheel={(e) => {
+                        if (e.deltaY !== 0) {
+                            e.preventDefault()
+                            const el = tabListContainerRef.current
+                            if (el) {
+                                el.scrollLeft += e.deltaY
                             }
-                        }}
+                        }
+                    }}
+                >
+                    <TabList
+                        appearance="subtle"
+                        size="small"
+                        selectedValue={activeConversationId || undefined}
+                        onTabSelect={(_, data) => handleConversationChange(String(data.value))}
+                        className={styles.tabList}
                     >
-                        <TabList
-                            appearance="subtle"
-                            size="small"
-                            selectedValue={activeConversationId || undefined}
-                            onTabSelect={(_, data) => handleConversationChange(String(data.value))}
-                            className={styles.tabList}
-                        >
-                            {(conversations.length === 0 ? [] : conversations).map(conv => (
-                                <Tab key={conv.id} value={conv.id}>
-                                    <div
-                                        onDoubleClick={(e) => {
-                                            e.stopPropagation()
-                                            startRename(conv.id, conv.name)
-                                        }}
-                                        className={styles.tabItem}
-                                    >
-                                        {renamingId === conv.id ? (
-                                            <Input
-                                                appearance="underline"
-                                                size="medium"
-                                                value={renameValue}
-                                                onChange={(_, data) => setRenameValue(data.value)}
-                                                onBlur={() => commitRename(conv.id)}
-                                                onKeyDown={(e) => {
-                                                    if (e.key === 'Enter') commitRename(conv.id)
-                                                    if (e.key === 'Escape') cancelRename()
-                                                }}
-                                                className={styles.renameInput}
-                                            />
-                                        ) : (
-                                            <Tooltip content={tTabs('doubleClickToRename')} relationship="label">
-                                                <span className={styles.tabName}>
-                                                    {conv.name}
-                                                </span>
-                                            </Tooltip>
-                                        )}
-                                        <Button
-                                            appearance="subtle"
-                                            size="small"
-                                            icon={<Dismiss16Regular />}
-                                            onClick={(e) => handleCloseConversation(conv.id, e)}
-                                            aria-label={tTabs('closeAria')}
+                        {(conversations.length === 0 ? [] : conversations).map(conv => (
+                            <Tab key={conv.id} value={conv.id}>
+                                <div
+                                    onDoubleClick={(e) => {
+                                        e.stopPropagation()
+                                        startRename(conv.id, conv.name)
+                                    }}
+                                    className={styles.tabItem}
+                                >
+                                    {renamingId === conv.id ? (
+                                        <Input
+                                            appearance="underline"
+                                            size="medium"
+                                            value={renameValue}
+                                            onChange={(_, data) => setRenameValue(data.value)}
+                                            onBlur={() => commitRename(conv.id)}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter') commitRename(conv.id)
+                                                if (e.key === 'Escape') cancelRename()
+                                            }}
+                                            className={styles.renameInput}
                                         />
-                                    </div>
-                                </Tab>
-                            ))}
-                        </TabList>
-                    </div>
-                    <Tooltip content={tTabs('new')} relationship="label">
-                        <Button
-                            appearance="subtle"
-                            icon={<Add24Regular />}
-                            onClick={handleCreateConversation}
-                            aria-label={tTabs('new')}
-                        />
-                    </Tooltip>
+                                    ) : (
+                                        <Tooltip content={tTabs('doubleClickToRename')} relationship="label">
+                                            <span className={styles.tabName}>
+                                                {conv.name}
+                                            </span>
+                                        </Tooltip>
+                                    )}
+                                    <Button
+                                        appearance="subtle"
+                                        size="small"
+                                        icon={<Dismiss16Regular />}
+                                        onClick={(e) => handleCloseConversation(conv.id, e)}
+                                        aria-label={tTabs('closeAria')}
+                                    />
+                                </div>
+                            </Tab>
+                        ))}
+                    </TabList>
                 </div>
-
-                {/* Chat Interface */}
-                <div className={styles.content}>
-                    <ChatInterface
-                        conversation={conversations.find(c => c.id === activeConversationId) || null}
-                        activeConversationId={activeConversationId}
-                        messages={messages}
-                        isLoading={false}
-                        isTyping={false}
-                        error={null}
-                        onSendMessage={handleSendMessage}
-                        onOpenMobileSidebar={() => { }}
+                <Tooltip content={tTabs('new')} relationship="label">
+                    <Button
+                        appearance="subtle"
+                        icon={<Add24Regular />}
+                        onClick={handleCreateConversation}
+                        aria-label={tTabs('new')}
                     />
-                </div>
+                </Tooltip>
             </div>
-        </FluentProvider>
+
+            {/* Chat Interface */}
+            <div className={styles.content}>
+                <ChatInterface
+                    conversation={conversations.find(c => c.id === activeConversationId) || null}
+                    activeConversationId={activeConversationId}
+                    messages={messages}
+                    isLoading={false}
+                    isTyping={false}
+                    error={null}
+                    onOpenMobileSidebar={() => { }}
+                />
+            </div>
+
+            {/* Input Area moved here */}
+            <div style={{ padding: '0' }}>
+                <MessageInput
+                    onSendMessage={handleSendMessage}
+                    isLoading={false}
+                    canSendMessage={Boolean(activeConversationId)}
+                    placeholder={tTabs('new')}
+                />
+            </div>
+        </div>
     )
 }
-
-const useStyles = makeStyles({
-    root: {
-        height: 'calc(100vh - 64px)',
-        display: 'flex',
-        flexDirection: 'column'
-    },
-    header: {
-        padding: '8px 12px',
-        display: 'flex',
-        alignItems: 'center',
-        columnGap: '8px',
-        position: 'sticky',
-        top: 0,
-        backgroundColor: tokens.colorNeutralBackground1,
-        zIndex: 10,
-        boxShadow: tokens.shadow4,
-        ...shorthands.borderBottom('1px', 'solid', tokens.colorNeutralStroke1)
-    },
-    tabListContainer: {
-        flex: 1,
-        width: '100%',
-        overflowX: 'auto',
-        overflowY: 'hidden',
-        msOverflowStyle: 'none',
-        scrollbarWidth: 'none',
-        selectors: {
-            '&::-webkit-scrollbar': {
-                width: '0px',
-                height: '0px'
-            }
-        }
-    },
-    tabList: {
-        minWidth: '100%'
-    },
-    tabItem: {
-        display: 'flex',
-        alignItems: 'center',
-        columnGap: '8px',
-        maxWidth: '220px'
-    },
-    tabName: {
-        display: 'inline-block',
-        maxWidth: '180px',
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        whiteSpace: 'nowrap'
-    },
-    renameInput: {
-        width: '160px'
-    },
-    content: {
-        flex: 1,
-        minHeight: 0
-    }
-})

@@ -4,7 +4,16 @@ import { useEffect } from 'react';
 import { ChatWelcome } from './ChatWelcome';
 import { useTranslations } from 'next-intl';
 import { MessagesContainer } from './MessageContainer';
-import { MessageInput } from './MessageInput';
+import { makeStyles, tokens } from '@fluentui/react-components';
+
+const useStyles = makeStyles({
+  root: {
+    display: 'flex',
+    flexDirection: 'column',
+    height: 'calc(100vh - 185px)',
+    backgroundColor: tokens.colorNeutralBackground2,
+  },
+});
 
 interface Message {
   id: string;
@@ -32,7 +41,6 @@ interface ChatInterfaceProps {
   isLoading: boolean;
   isTyping: boolean;
   error: string | null;
-  onSendMessage: (content: string) => void;
   onOpenMobileSidebar: () => void;
 }
 
@@ -40,17 +48,13 @@ export function ChatInterface({
   conversation,
   activeConversationId,
   messages,
-  isLoading,
   isTyping,
   error,
-  onSendMessage,
 }: ChatInterfaceProps) {
   const t = useTranslations('Chat.Interface');
+  const styles = useStyles();
 
-  // Check if user can send messages - block when bot is responding
-  const canSendMessage = (): boolean => {
-    return Boolean(activeConversationId && !isLoading && !isTyping);
-  };
+  // Note: input moved to ChatClientWrapper; this component renders messages only
 
   // Auto scroll when conversation changes
   useEffect(() => {
@@ -74,7 +78,7 @@ export function ChatInterface({
   }
 
   return (
-    <div className="flex flex-col h-full min-h-0 bg-[#f5f5f5]">
+    <div className={styles.root}>
       {/* Messages Area */}
       <MessagesContainer
         messages={messages}
@@ -83,14 +87,6 @@ export function ChatInterface({
         typingText={t('typing')}
         noMessagesText={t('noMessages')}
         startConversationText={t('startConversation')}
-      />
-
-      {/* Input Area */}
-      <MessageInput
-        onSendMessage={onSendMessage}
-        isLoading={isLoading}
-        canSendMessage={canSendMessage()}
-        placeholder={t('inputPlaceholder')}
       />
     </div>
   );

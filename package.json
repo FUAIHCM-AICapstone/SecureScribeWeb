@@ -71,6 +71,7 @@
     "@types/react-dom": "^18",
     "@types/react-paginate": "^7.1.4",
     "@types/react-resizable": "^3.0.8",
+    "@types/react-syntax-highlighter": "^15.5.13",
     "eslint": "^8.57.1",
     "eslint-config-next": "^15.0.3",
     "eslint-config-prettier": "^9.1.0",
