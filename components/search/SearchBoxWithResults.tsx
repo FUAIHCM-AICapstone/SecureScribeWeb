@@ -16,7 +16,7 @@ import {
 } from "@fluentui/react-components";
 import { showToast } from "@/hooks/useShowToast";
 import SearchResultItem, { SearchResult, SearchEntityType } from "./SearchResultItem";
-import useDebouncedValue from "./useDebouncedValue";
+import { useResponsiveDebouncedValue } from "./useDebouncedValue";
 
 // Types required by the spec
 export interface SearchResultsGrouped {
@@ -24,6 +24,9 @@ export interface SearchResultsGrouped {
     transcripts: SearchResult[];
     meeting_notes: SearchResult[];
     files: SearchResult[];
+    projects?: SearchResult[];
+    users?: SearchResult[];
+    documents?: SearchResult[];
 }
 
 // Default mock search using existing services/api/mock
@@ -55,6 +58,9 @@ async function defaultSearchEntities(query: string): Promise<SearchResultsGroupe
         transcripts: mapped.filter((i) => i.type === "transcript"),
         meeting_notes: mapped.filter((i) => i.type === "meeting_note"),
         files: mapped.filter((i) => i.type === "file"),
+        projects: [],
+        users: [],
+        documents: [],
     };
 }
 
@@ -118,10 +124,18 @@ export function SearchBoxWithResults({
     const styles = useStyles();
     const [open, setOpen] = React.useState(false);
     const [query, setQuery] = React.useState("");
-    const debouncedQuery = useDebouncedValue(query, 300);
+    const debouncedQuery = useResponsiveDebouncedValue(query, 500);
     const [loading, setLoading] = React.useState(false);
     const [error, setError] = React.useState<string | null>(null);
-    const [results, setResults] = React.useState<SearchResultsGrouped>({ meetings: [], transcripts: [], meeting_notes: [], files: [] });
+    const [results, setResults] = React.useState<SearchResultsGrouped>({
+        meetings: [],
+        transcripts: [],
+        meeting_notes: [],
+        files: [],
+        projects: [],
+        users: [],
+        documents: []
+    });
 
     const [flatItems, setFlatItems] = React.useState<SearchResult[]>([]);
     const [focusedIndex, setFocusedIndex] = React.useState<number>(-1);
@@ -130,9 +144,9 @@ export function SearchBoxWithResults({
     const listboxId = React.useId();
 
     const rebuildFlat = React.useCallback((r: SearchResultsGrouped) => {
-        const order: Array<keyof SearchResultsGrouped> = ["meetings", "transcripts", "meeting_notes", "files"];
+        const order: Array<keyof SearchResultsGrouped> = ["meetings", "projects", "transcripts", "documents", "meeting_notes", "users", "files"];
         const merged: SearchResult[] = [];
-        order.forEach((k) => merged.push(...r[k]));
+        order.forEach((k) => merged.push(...(r[k] || [])));
         setFlatItems(merged);
         if (merged.length === 0) setFocusedIndex(-1);
     }, []);
@@ -145,7 +159,15 @@ export function SearchBoxWithResults({
     React.useEffect(() => {
         if (!debouncedQuery.trim()) {
             setOpen(false);
-            setResults({ meetings: [], transcripts: [], meeting_notes: [], files: [] });
+            setResults({
+                meetings: [],
+                transcripts: [],
+                meeting_notes: [],
+                files: [],
+                projects: [],
+                users: [],
+                documents: []
+            });
             setError(null);
             setLoading(false);
             return;
@@ -281,8 +303,11 @@ export function SearchBoxWithResults({
                     ) : (
                         <div className={styles.groupsWrap}>
                             {renderGroup("Meetings", results.meetings)}
+                            {renderGroup("Projects", results.projects || [])}
                             {renderGroup("Transcripts", results.transcripts)}
+                            {renderGroup("Documents", results.documents || [])}
                             {renderGroup("Meeting Notes", results.meeting_notes)}
+                            {renderGroup("Users", results.users || [])}
                             {renderGroup("Files", results.files)}
                         </div>
                     )}

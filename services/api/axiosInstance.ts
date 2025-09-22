@@ -72,7 +72,7 @@ axiosInstance.interceptors.response.use(
                 try {
                     // Determine locale from path
                     const loc = window.location.pathname.split('/').filter(Boolean)[0] || 'en';
-                    const target = `/${loc}/auth?toast=require_login`;
+                    const target = `/${loc}/auth`;
                     window.location.assign(target);
                 } catch { }
                 return Promise.reject(refreshErr);

@@ -4,7 +4,7 @@ const queryClient = new QueryClient({
     defaultOptions: {
         queries: {
             retry: 2,
-            refetchOnWindowFocus: false,
+            refetchOnWindowFocus: true, // Refetch data when window regains focus
             staleTime: 2 * 60 * 1000, // 2 minutes for dashboard data
             gcTime: 10 * 60 * 1000, // 10 minutes
             refetchOnMount: 'always', // Always refetch dashboard data on mount
@@ -36,6 +36,15 @@ export const queryKeys = {
 
     user: ['user'] as const,
     userStats: ['user', 'stats'] as const,
+
+    notifications: ['notifications'] as const,
+    notification: (id: string) => ['notifications', id] as const,
+
+    search: (query: string) => ['search', query] as const,
+    searchProjects: (query: string) => ['search', 'projects', query] as const,
+    searchMeetings: (query: string) => ['search', 'meetings', query] as const,
+    searchFiles: (query: string) => ['search', 'files', query] as const,
+    searchUsers: (query: string) => ['search', 'users', query] as const,
 };
 
 export default queryClient;

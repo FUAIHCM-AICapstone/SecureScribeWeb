@@ -15,25 +15,29 @@ export function middleware(request: NextRequest) {
   const { pathname, origin, searchParams } = request.nextUrl;
   const accessToken = request.cookies.get('access_token');
 
-  // Block dashboard access if not logged in
-  // if (/^\/(dashboard|vi\/dashboard|en\/dashboard)(\/|$)/.test(pathname)) {
-  //   if (!accessToken) {
-  //     const url = request.nextUrl.clone();
-  //     url.pathname = '/auth';
-  //     url.searchParams.set('toast', 'require_login');
-  //     return NextResponse.redirect(url);
-  //   }
-  // }
+  // Block root page access if not logged in
+  if (/^\/(vi|en)$/.test(pathname) || pathname === '/') {
+    if (!accessToken) {
+      const url = request.nextUrl.clone();
+      // Determine locale from pathname or default to 'vi'
+      const locale = pathname.startsWith('/vi') ? 'vi' : pathname.startsWith('/en') ? 'en' : 'vi';
+      url.pathname = `/${locale}/auth`;
+      url.searchParams.set('toast', 'require_login');
+      return NextResponse.redirect(url);
+    }
+  }
 
-  // Block /auth if already logged in
-  // if (/^\/(auth|vi\/auth|en\/auth)(\/|$)/.test(pathname)) {
-  //   if (accessToken) {
-  //     const url = request.nextUrl.clone();
-  //     url.pathname = '/dashboard/personal';
-  //     url.searchParams.set('toast', 'already_logged_in');
-  //     return NextResponse.redirect(url);
-  //   }
-  // }
+  // Redirect /auth if already logged in (redirect to home)
+  if (/^\/(vi|en)\/auth(\/|$)/.test(pathname)) {
+    if (accessToken) {
+      const url = request.nextUrl.clone();
+      // Determine locale from pathname
+      const locale = pathname.startsWith('/vi') ? 'vi' : 'en';
+      url.pathname = `/${locale}`;
+      url.searchParams.set('toast', 'already_logged_in');
+      return NextResponse.redirect(url);
+    }
+  }
 
   // Redirect /dashboard or /vi/dashboard or /en/dashboard to /dashboard/personal (with locale if present)
   // if (/^\/(dashboard|vi\/dashboard|en\/dashboard)$/.test(pathname)) {
@@ -57,7 +61,6 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/',
     '/(vi|en)/:path*',
     '/((?!api|_next|_vercel|.*\\.|robots.txt).*)',
     '/not-found',

@@ -7,9 +7,12 @@ import {
     DocumentText24Regular,
     Note24Regular,
     Document24Regular,
+    Building24Regular,
+    Person24Regular,
+    Search24Regular,
 } from "@fluentui/react-icons";
 
-export type SearchEntityType = "meeting" | "transcript" | "meeting_note" | "file";
+export type SearchEntityType = "meeting" | "transcript" | "meeting_note" | "file" | "project" | "user" | "document";
 
 export interface SearchResult {
     id: string;
@@ -100,6 +103,13 @@ function getIconAndColor(type: SearchEntityType): { icon: React.ReactNode; color
         case "meeting_note":
             return { icon: <Note24Regular />, color: "#C239B3" };
         case "file":
+            return { icon: <Document24Regular />, color: "#605E5C" };
+        case "project":
+            return { icon: <Building24Regular />, color: "#D13438" };
+        case "user":
+            return { icon: <Person24Regular />, color: "#8764B8" };
+        case "document":
+            return { icon: <Search24Regular />, color: "#00BCF2" };
         default:
             return { icon: <Document24Regular />, color: "#605E5C" };
     }

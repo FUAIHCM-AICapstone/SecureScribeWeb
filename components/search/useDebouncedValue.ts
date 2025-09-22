@@ -14,7 +14,7 @@ export function useDebouncedValue<T>(value: T, delayMs: number): T {
 }
 
 // Responsive debounce - shorter delay on mobile for better UX
-export function useResponsiveDebouncedValue<T>(value: T, baseDelayMs: number = 300): T {
+export function useResponsiveDebouncedValue<T>(value: T, baseDelayMs: number = 500): T {
     const [isMobile, setIsMobile] = React.useState(false);
 
     React.useEffect(() => {
@@ -24,7 +24,7 @@ export function useResponsiveDebouncedValue<T>(value: T, baseDelayMs: number = 3
         return () => window.removeEventListener('resize', checkMobile);
     }, []);
 
-    const responsiveDelay = isMobile ? Math.max(baseDelayMs * 0.6, 150) : baseDelayMs;
+    const responsiveDelay = isMobile ? Math.max(baseDelayMs * 0.6, 200) : baseDelayMs;
 
     return useDebouncedValue(value, responsiveDelay);
 }

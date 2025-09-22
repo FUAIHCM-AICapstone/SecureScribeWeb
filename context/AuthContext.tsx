@@ -25,6 +25,8 @@ type AuthContextType = {
     sendPasswordReset: (email: string) => Promise<void>;
     checkEmailVerification: () => Promise<boolean>;
     logout: () => Promise<void>;
+    redirectHome: () => void;
+    redirectAuth: () => void;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -45,6 +47,10 @@ function saveTokens(access_token: string, refresh_token: string, expires_in: num
     localStorage.setItem("access_token", access_token);
     localStorage.setItem("refresh_token", refresh_token);
     localStorage.setItem("token_expires_at", String(token_expires_at));
+
+    // Set cookie for server-side authentication checks (middleware can read this)
+    document.cookie = `access_token=${access_token}; path=/; secure; samesite=strict; max-age=${expires_in}`;
+
     authApi.setToken(access_token);
 }
 
@@ -53,6 +59,10 @@ function clearTokens() {
     localStorage.removeItem("access_token");
     localStorage.removeItem("refresh_token");
     localStorage.removeItem("token_expires_at");
+
+    // Clear the cookie as well
+    document.cookie = "access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; secure; samesite=strict";
+
     authApi.clearToken();
 }
 
@@ -73,6 +83,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const redirectAuth = useCallback(() => {
         const locale = getLocaleFromPath(pathname || "/en");
         router.push(buildLocaleUrl(locale, "/auth?toast=require_login"));
+    }, [pathname, router]);
+
+    const redirectAuthWithoutToast = useCallback(() => {
+        const locale = getLocaleFromPath(pathname || "/en");
+        router.push(buildLocaleUrl(locale, "/auth"));
     }, [pathname, router]);
 
     const scheduleTokenRefresh = useCallback((expiresAtMs: number) => {
@@ -96,6 +111,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 window.localStorage.setItem('access_token', access_token);
                 window.localStorage.setItem('refresh_token', new_refresh || refresh_token);
                 window.localStorage.setItem('token_expires_at', String(newExpiresAt));
+
+                // Update cookie with new access token
+                document.cookie = `access_token=${access_token}; path=/; secure; samesite=strict; max-age=${expires_in}`;
+
                 authApi.setToken(access_token);
                 // Schedule next
                 scheduleTokenRefresh(newExpiresAt);
@@ -103,11 +122,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 // On failure, logout and redirect to auth
                 clearTokens();
                 setUser(null);
-                redirectAuth();
+                redirectAuthWithoutToast();
             }
         }, delay);
         refreshTimerRef.current = id as unknown as number;
-    }, [redirectAuth]);
+    }, [redirectAuthWithoutToast]);
 
     const exchangeAndLoadProfile = useCallback(async (idToken: string) => {
         const resp = await authApi.firebaseLogin({ id_token: idToken });
@@ -244,9 +263,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 window.clearTimeout(refreshTimerRef.current);
                 refreshTimerRef.current = null;
             }
-            redirectAuth();
+            redirectAuthWithoutToast();
         }
-    }, [redirectAuth]);
+    }, [redirectAuthWithoutToast]);
 
     // Initialize from existing token on mount
     useEffect(() => {
@@ -284,8 +303,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             sendPasswordReset,
             checkEmailVerification,
             logout,
+            redirectHome,
+            redirectAuth,
         }),
-        [user, isLoading, isAuthenticated, loginWithGoogle, signupWithEmail, loginWithEmail, resendEmailVerification, sendPasswordReset, checkEmailVerification, logout]
+        [user, isLoading, isAuthenticated, loginWithGoogle, signupWithEmail, loginWithEmail, resendEmailVerification, sendPasswordReset, checkEmailVerification, logout, redirectHome, redirectAuth]
     );
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
