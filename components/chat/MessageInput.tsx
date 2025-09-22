@@ -1,6 +1,5 @@
 'use client';
 
-import { Button } from '@fluentui/react-components';
 import { Send24Regular } from '@fluentui/react-icons';
 import { useEffect, useRef, useState } from 'react';
 
@@ -47,17 +46,8 @@ export function MessageInput({
   }, [input]);
 
   return (
-    <div style={{
-      padding: '16px',
-      borderTop: '1px solid #e1e1e1',
-      backgroundColor: '#ffffff'
-    }}>
-      <form onSubmit={handleSubmit} style={{
-        display: 'flex',
-        gap: '12px',
-        alignItems: 'flex-end',
-        maxWidth: '100%'
-      }}>
+    <div className="p-4 border-t border-[#e1e1e1] bg-white sticky bottom-0 z-[5] flex-shrink-0">
+      <form onSubmit={handleSubmit} className="flex gap-3 items-end max-w-full">
         <textarea
           ref={textareaRef}
           value={input}
@@ -66,34 +56,17 @@ export function MessageInput({
           placeholder={!canSendMessage ? "" : placeholder}
           disabled={!canSendMessage}
           rows={1}
-          style={{
-            flex: 1,
-            padding: '12px',
-            border: '1px solid #d1d1d1',
-            borderRadius: '8px',
-            fontSize: '14px',
-            fontFamily: 'Segoe UI, system-ui, sans-serif',
-            resize: 'none',
-            minHeight: '44px',
-            maxHeight: '120px',
-            outline: 'none',
-            transition: 'border-color 0.2s',
-          }}
-          onFocus={(e) => e.target.style.borderColor = '#0078d4'}
-          onBlur={(e) => e.target.style.borderColor = '#d1d1d1'}
+          className="flex-1 p-3 border border-[#d1d1d1] rounded-lg text-sm font-sans resize-none min-h-[44px] max-h-[120px] outline-none focus:border-[#0078d4] transition-colors"
         />
-        <Button
+        <button
           type="submit"
           disabled={!input.trim() || !canSendMessage}
-          appearance="primary"
-          icon={<Send24Regular />}
-          style={{
-            minWidth: '44px',
-            height: '44px'
-          }}
+          className="min-w-[44px] h-11 px-3 inline-flex items-center justify-center gap-2 rounded-md bg-[#0078d4] hover:bg-[#106ebe] text-white disabled:opacity-50"
+          aria-label="Send message"
         >
+          <Send24Regular />
           {!isLoading && 'Send'}
-        </Button>
+        </button>
       </form>
     </div>
   );

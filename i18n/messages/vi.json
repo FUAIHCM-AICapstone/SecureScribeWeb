@@ -131,5 +131,34 @@
     "forgot_subtitle": "Đặt lại mật khẩu của bạn một cách an toàn",
     "password_required": "Mật khẩu là bắt buộc",
     "password_min_length": "Mật khẩu phải có ít nhất 6 ký tự"
+  },
+  "Chat": {
+    "Tabs": {
+      "new": "Cuộc trò chuyện mới",
+      "closeAria": "Đóng cuộc trò chuyện",
+      "doubleClickToRename": "Nhấp đúp để đổi tên"
+    },
+    "Interface": {
+      "welcomeTitle": "Chào mừng đến với Trò chuyện",
+      "welcomeDescription": "Chọn một cuộc trò chuyện để bắt đầu",
+      "typing": "Trợ lý đang nhập...",
+      "noMessages": "Chưa có tin nhắn",
+      "startConversation": "Bắt đầu cuộc trò chuyện",
+      "inputPlaceholder": "Nhập tin nhắn...",
+      "send": "Gửi",
+      "sendAria": "Gửi tin nhắn"
+    },
+    "Messages": {
+      "assistantLabel": "Trợ lý",
+      "copy": "Sao chép",
+      "copied": "Đã sao chép",
+      "systemPrompt": "Lời nhắc hệ thống",
+      "imageAlt": "Hình ảnh"
+    },
+    "CodeBlock": {
+      "download": "Tải xuống",
+      "copy": "Sao chép",
+      "copied": "Đã sao chép"
+    }
   }
 }

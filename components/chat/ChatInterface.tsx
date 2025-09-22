@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { ChatWelcome } from './ChatWelcome';
+import { useTranslations } from 'next-intl';
 import { MessagesContainer } from './MessageContainer';
 import { MessageInput } from './MessageInput';
 
@@ -44,6 +45,7 @@ export function ChatInterface({
   error,
   onSendMessage,
 }: ChatInterfaceProps) {
+  const t = useTranslations('Chat.Interface');
 
   // Check if user can send messages - block when bot is responding
   const canSendMessage = (): boolean => {
@@ -65,27 +67,22 @@ export function ChatInterface({
   if (!conversation && !activeConversationId) {
     return (
       <ChatWelcome
-        welcomeTitle="Welcome to Chat"
-        welcomeDescription="Select a conversation to start chatting"
+        welcomeTitle={t('welcomeTitle')}
+        welcomeDescription={t('welcomeDescription')}
       />
     );
   }
 
   return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      height: '100%',
-      backgroundColor: '#f5f5f5'
-    }}>
+    <div className="flex flex-col h-full min-h-0 bg-[#f5f5f5]">
       {/* Messages Area */}
       <MessagesContainer
         messages={messages}
         isTyping={isTyping}
         error={error}
-        typingText="Assistant is typing..."
-        noMessagesText="No messages yet"
-        startConversationText="Start a conversation"
+        typingText={t('typing')}
+        noMessagesText={t('noMessages')}
+        startConversationText={t('startConversation')}
       />
 
       {/* Input Area */}
@@ -93,7 +90,7 @@ export function ChatInterface({
         onSendMessage={onSendMessage}
         isLoading={isLoading}
         canSendMessage={canSendMessage()}
-        placeholder="Type your message..."
+        placeholder={t('inputPlaceholder')}
       />
     </div>
   );

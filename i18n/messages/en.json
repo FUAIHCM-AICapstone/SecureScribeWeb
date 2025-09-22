@@ -131,5 +131,34 @@
     "forgot_subtitle": "Reset your password securely",
     "password_required": "Password is required",
     "password_min_length": "Password must be at least 6 characters"
+  },
+  "Chat": {
+    "Tabs": {
+      "new": "New conversation",
+      "closeAria": "Close conversation",
+      "doubleClickToRename": "Double click to rename"
+    },
+    "Interface": {
+      "welcomeTitle": "Welcome to Chat",
+      "welcomeDescription": "Select a conversation to start chatting",
+      "typing": "Assistant is typing...",
+      "noMessages": "No messages yet",
+      "startConversation": "Start a conversation",
+      "inputPlaceholder": "Type your message...",
+      "send": "Send",
+      "sendAria": "Send message"
+    },
+    "Messages": {
+      "assistantLabel": "Assistant",
+      "copy": "Copy",
+      "copied": "Copied",
+      "systemPrompt": "System Prompt",
+      "imageAlt": "Image"
+    },
+    "CodeBlock": {
+      "download": "Download",
+      "copy": "Copy",
+      "copied": "Copied"
+    }
   }
 }

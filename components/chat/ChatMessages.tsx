@@ -8,6 +8,7 @@ import { Button } from '@fluentui/react-components';
 import { Copy24Regular, Checkmark24Regular, Person24Regular } from '@fluentui/react-icons';
 import Image from 'next/image';
 import { MessageCodeBlock } from './MessageCodeBlock';
+import { useTranslations } from 'next-intl';
 
 interface Message {
   id: string;
@@ -36,6 +37,7 @@ export function ChatMessage({
   user,
 }: ChatMessageProps) {
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
+  const tMsg = useTranslations('Chat.Messages');
 
 
   // Enhanced debug logging
@@ -59,18 +61,7 @@ export function ChatMessage({
   if (message.role === 'user') {
     return (
       <div className="flex justify-end">
-        <div
-          style={{
-            maxWidth: '80%',
-            padding: '16px',
-            backdropFilter: 'blur(8px)',
-            transition: 'all 0.3s',
-            background: 'linear-gradient(to right, #0078d4, #106ebe)',
-            color: 'white',
-            border: '1px solid #0078d4',
-            borderRadius: '8px',
-          }}
-        >
+        <div className="max-w-[80%] p-4 backdrop-blur transition-all bg-[linear-gradient(to_right,_#0078d4,_#106ebe)] text-white border border-[#0078d4] rounded-lg">
           <div className="flex items-start gap-3">
             <div className="w-8 h-8 rounded-full flex items-center justify-center bg-white/20 overflow-hidden">
               {user?.profile_picture ? (
@@ -124,7 +115,7 @@ export function ChatMessage({
           />
         </div>
         <span className="text-sm font-medium text-[color:var(--foreground)]">
-          Assistant
+          {tMsg('assistantLabel')}
         </span>
         <span className="text-xs text-[color:var(--muted-foreground)]">
           {message.timestamp.toLocaleTimeString()}
@@ -276,7 +267,7 @@ export function ChatMessage({
 
 
         {/* Copy Button */}
-        <div className="flex justify-end">
+        <div className="flex justify-start">
           <Button
             appearance="subtle"
             size="small"
@@ -286,12 +277,12 @@ export function ChatMessage({
             {copiedMessageId === message.id ? (
               <>
                 <Checkmark24Regular style={{ marginRight: '4px' }} />
-                Copied
+                {tMsg('copied')}
               </>
             ) : (
               <>
                 <Copy24Regular style={{ marginRight: '4px' }} />
-                Copy
+                {tMsg('copy')}
               </>
             )}
           </Button>

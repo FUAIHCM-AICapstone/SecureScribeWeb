@@ -48,24 +48,10 @@ export function MessagesContainer({
   return (
     <div
       ref={messagesContainerRef}
-      style={{
-        flex: 1,
-        overflowY: 'auto',
-        padding: '16px',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '16px'
-      }}
+      className="flex-1 min-h-0 overflow-y-auto p-4 flex flex-col gap-4"
     >
       {error && (
-        <div style={{
-          backgroundColor: '#fed7d7',
-          border: '1px solid #fc8181',
-          color: '#c53030',
-          padding: '12px 16px',
-          borderRadius: '8px',
-          marginBottom: '16px'
-        }}>
+        <div className="bg-red-200 border border-red-400 text-red-700 px-4 py-3 rounded-md mb-4">
           {error}
         </div>
       )}
@@ -85,12 +71,7 @@ export function MessagesContainer({
             </div>
           ))}
           {isTyping && (
-            <div style={{
-              padding: '12px',
-              fontStyle: 'italic',
-              color: '#666',
-              fontSize: '14px'
-            }}>
+            <div className="p-3 italic text-[#666] text-sm">
               {typingText}
             </div>
           )}

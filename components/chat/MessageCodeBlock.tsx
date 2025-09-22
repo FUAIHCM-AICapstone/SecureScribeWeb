@@ -5,6 +5,7 @@ import { ArrowDownload24Regular, Checkmark24Regular, Copy24Regular } from '@flue
 import { useState } from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { useTranslations } from 'next-intl';
 
 interface MessageCodeBlockProps {
   code: string;
@@ -18,6 +19,7 @@ export function MessageCodeBlock({
   variant = 'header'
 }: MessageCodeBlockProps) {
   const [copied, setCopied] = useState(false);
+  const tCode = useTranslations('Chat.CodeBlock');
 
 
   // Map common language names to file extensions
@@ -91,9 +93,9 @@ export function MessageCodeBlock({
   if (variant === 'header') {
     return (
       <>
-        <div className="contain-inline-size rounded-md border-[0.5px] border-[color:var(--border)] relative bg-[color:var(--card)] my-4 w-full max-w-full overflow-hidden">
+        <div className="contain-inline-size rounded-md border border-[color:var(--border)] relative bg-[color:var(--card)] my-4 w-full max-w-full overflow-hidden">
           {/* Header with language and actions */}
-          <div className="flex items-center text-[color:var(--muted-foreground)] px-4 py-2 text-xs font-sans justify-between h-9 bg-[color:var(--card)] dark:bg-[color:var(--muted)] select-none rounded-t-[5px] border-b border-[color:var(--border)]">
+          <div className="flex items-center text-[color:var(--muted-foreground)] px-4 py-2 text-xs font-sans justify-between h-9 bg-[color:var(--card)] dark:bg-[color:var(--muted)] select-none rounded-t border-b border-[color:var(--border)]">
             <span className="font-medium">{language}</span>
             <div className="flex items-center gap-1">
               <Button
@@ -103,7 +105,7 @@ export function MessageCodeBlock({
                 style={{ display: 'flex', gap: '4px', alignItems: 'center', padding: '4px 12px', fontSize: '12px' }}
               >
                 <ArrowDownload24Regular style={{ width: '12px', height: '12px' }} />
-                Download
+                {tCode('download')}
               </Button>
               <Button
                 appearance="subtle"
@@ -114,12 +116,12 @@ export function MessageCodeBlock({
                 {copied ? (
                   <>
                     <Checkmark24Regular style={{ width: '12px', height: '12px' }} />
-                    Copied
+                    {tCode('copied')}
                   </>
                 ) : (
                   <>
                     <Copy24Regular style={{ width: '12px', height: '12px' }} />
-                    Copy
+                    {tCode('copy')}
                   </>
                 )}
               </Button>
@@ -131,14 +133,7 @@ export function MessageCodeBlock({
             <SyntaxHighlighter
               language={language}
               style={oneDark}
-              customStyle={{
-                margin: 0,
-                padding: '1rem',
-                background: 'rgba(0, 0, 0, 0.05)',
-                fontSize: '14px',
-                lineHeight: '1.5',
-                backgroundColor: 'rgba(0, 0, 0, 0.05)'
-              }}
+              customStyle={{ margin: 0, padding: '1rem', background: 'rgba(0,0,0,0.05)', fontSize: '14px', lineHeight: '1.5' }}
               showLineNumbers={true}
               wrapLines={true}
               codeTagProps={{
@@ -164,13 +159,7 @@ export function MessageCodeBlock({
           <SyntaxHighlighter
             language={language}
             style={oneDark}
-            customStyle={{
-              margin: 0,
-              padding: '1rem',
-              background: 'transparent',
-              fontSize: '14px',
-              lineHeight: '1.5'
-            }}
+            customStyle={{ margin: 0, padding: '1rem', background: 'transparent', fontSize: '14px', lineHeight: '1.5' }}
             showLineNumbers={false}
             wrapLines={true}
             codeTagProps={{
@@ -202,12 +191,12 @@ export function MessageCodeBlock({
               {copied ? (
                 <>
                   <Checkmark24Regular style={{ width: '12px', height: '12px' }} />
-                  Copied
+                  {tCode('copied')}
                 </>
               ) : (
                 <>
                   <Copy24Regular style={{ width: '12px', height: '12px' }} />
-                  Copy
+                  {tCode('copy')}
                 </>
               )}
             </Button>
@@ -224,13 +213,7 @@ export function MessageCodeBlock({
         <SyntaxHighlighter
           language={language}
           style={oneDark}
-          customStyle={{
-            margin: 0,
-            padding: '0.75rem',
-            background: 'transparent',
-            fontSize: '13px',
-            lineHeight: '1.4'
-          }}
+          customStyle={{ margin: 0, padding: '0.75rem', background: 'transparent', fontSize: '13px', lineHeight: '1.4' }}
           showLineNumbers={false}
           wrapLines={true}
           codeTagProps={{

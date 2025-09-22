@@ -10,26 +10,14 @@ interface EmptyChatStateProps {
 
 export function EmptyChatState({ noMessagesText, startConversationText }: EmptyChatStateProps) {
   return (
-    <div style={{ textAlign: 'center', color: '#666', marginTop: '32px' }}>
-      <div
-        style={{
-          width: '64px',
-          height: '64px',
-          margin: '0 auto 16px',
-          backgroundColor: '#f3f2f1',
-          borderRadius: '50%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          overflow: 'hidden'
-        }}
-      >
+    <div className="text-center text-[#666] mt-8">
+      <div className="w-16 h-16 mx-auto mb-4 bg-[#f3f2f1] rounded-full flex items-center justify-center overflow-hidden">
         <Image
           src="/images/logos/logo.png"
           alt="Logo"
           width={48}
           height={48}
-          style={{ width: '48px', height: '48px', objectFit: 'contain' }}
+          className="w-12 h-12 object-contain"
         />
       </div>
       <Text size={500} style={{ display: 'block', marginBottom: '8px' }}>

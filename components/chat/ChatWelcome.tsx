@@ -9,29 +9,8 @@ interface ChatWelcomeProps {
 
 export function ChatWelcome({ welcomeTitle, welcomeDescription }: ChatWelcomeProps) {
   return (
-    <div
-      style={{
-        flex: 1,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        height: '100%',
-        background: 'linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 50%, #f0f0f0 100%)',
-      }}
-    >
-      <div
-        style={{
-          padding: '32px',
-          textAlign: 'center',
-          maxWidth: '448px',
-          margin: '0 16px',
-          backgroundColor: 'white',
-          border: '1px solid #e1e1e1',
-          borderRadius: '8px',
-          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-          backdropFilter: 'blur(8px)',
-        }}
-      >
+    <div className="flex-1 flex items-center justify-center h-full bg-[linear-gradient(135deg,_#f5f5f5_0%,_#e8e8e8_50%,_#f0f0f0_100%)]">
+      <div className="p-8 text-center max-w-[448px] mx-4 bg-white border border-[#e1e1e1] rounded-lg shadow-lg backdrop-blur">
         <Text
           as="h2"
           size={700}
