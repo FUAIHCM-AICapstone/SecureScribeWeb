@@ -3,45 +3,62 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Install Yarn
-RUN corepack enable
+# Install Yarn and security updates
+RUN corepack enable && \
+    apk add --no-cache dumb-init && \
+    addgroup -g 1001 -S nodejs && \
+    adduser -S nextjs -u 1001
 
-# Copy package.json and yarn.lock (if available)
-COPY package.json ./
-COPY yarn.lock ./
+# Set build-time environment variables
+ENV NEXT_PUBLIC_API_BASE_URL=https://securescribe.wc504.io.vn/api
 
-# Install dependencies
-RUN yarn install --frozen-lockfile
+# Copy package files first for better layer caching
+COPY package.json yarn.lock ./
 
-# Copy the rest of the application
-COPY . .
+# Install dependencies with cache mount for better performance
+RUN --mount=type=cache,target=/root/.yarn \
+    yarn install --frozen-lockfile && \
+    yarn cache clean
+
+# Copy source code
+COPY --chown=nextjs:nodejs . .
 
 # Build the Next.js app
 RUN yarn build
 
-# Production image, copy only necessary files
+# Production image - use distroless for smaller size
 FROM node:20-alpine AS runner
 
 WORKDIR /app
 
+# Install dumb-init for proper signal handling
+RUN apk add --no-cache dumb-init
+
+# Create non-root user
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nextjs -u 1001
+
+# Set environment variables
 ENV NODE_ENV=production
-ENV NEXT_PUBLIC_API_BASE_URL=https://securescribe.wc504.io.vn/api
+ENV PORT=3030
 
-# Install Yarn
-RUN corepack enable
-
-# Copy package.json and yarn.lock
-COPY package.json ./
-COPY yarn.lock ./
+# Copy package files
+COPY --chown=nextjs:nodejs package.json yarn.lock ./
 
 # Install only production dependencies
-RUN yarn install --frozen-lockfile --production
+RUN --mount=type=cache,target=/root/.yarn \
+    yarn install --frozen-lockfile --production && \
+    yarn cache clean
 
-# Copy built app from builder
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/next.config.js /app/package.json ./
-ENV PORT=3030
+# Copy built application
+COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/next.config.js ./next.config.js
+
+# Create non-root user and set permissions
+USER nextjs
+
 EXPOSE 3030
 
-CMD ["yarn", "start"]
+# Use dumb-init to handle signals properly
+CMD ["dumb-init", "yarn", "start"]
