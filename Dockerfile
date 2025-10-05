@@ -25,6 +25,7 @@ FROM node:20-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
+ENV NEXT_PUBLIC_API_BASE_URL=https://securescribe.wc504.io.vn/api
 
 # Install Yarn
 RUN corepack enable
@@ -39,9 +40,8 @@ RUN yarn install --frozen-lockfile --production
 # Copy built app from builder
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/next.config.js ./next.config.js
-COPY --from=builder /app/package.json ./package.json
-ENV PORT=3002
-EXPOSE 3002
+COPY --from=builder /app/next.config.js /app/package.json ./
+ENV PORT=3030
+EXPOSE 3030
 
 CMD ["yarn", "start"]
