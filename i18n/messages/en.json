@@ -180,5 +180,53 @@
     "hintArrows": "Use ↑/↓ to navigate",
     "hintEnter": "Enter to select",
     "hintEsc": "Esc to close"
+  },
+  "Dashboard": {
+    "title": "Dashboard",
+    "description": "Stay on top of personal tasks, team initiatives, and shared knowledge without leaving this workspace.",
+    "cards": {
+      "myTasks": {
+        "title": "My Tasks",
+        "updatedAt": "5:40 AM",
+        "description": "Manage personal work, monitor status, and meet deadlines. Create a new task or quickly update progress.",
+        "primaryAction": "Check Task",
+        "secondaryAction": "New Task"
+      },
+      "teamProject": {
+        "title": "Team Project",
+        "updatedAt": "5:40 AM",
+        "description": "Review the projects you participate in. See members, progress, related documents, or launch new initiatives.",
+        "primaryAction": "Update Project",
+        "secondaryAction": "New Project"
+      },
+      "myMeetings": {
+        "title": "My Meetings",
+        "updatedAt": "5:40 AM",
+        "description": "Check upcoming meetings, access notes, transcripts, and supporting materials without leaving the dashboard.",
+        "primaryAction": "Check Meetings",
+        "secondaryAction": "New Meeting"
+      },
+      "recentTranscripts": {
+        "title": "Recent Transcripts",
+        "updatedAt": "5:40 AM",
+        "description": "Quickly open the latest transcripts with audio references and full-content search to keep context handy.",
+        "primaryAction": "Check Scripts",
+        "secondaryAction": "Upload Audio"
+      },
+      "recentNotes": {
+        "title": "Recent Notes",
+        "updatedAt": "5:40 AM",
+        "description": "Review recently edited or shared notes, see who updated them, and jump back into collaborative work.",
+        "primaryAction": "Check Notes",
+        "secondaryAction": "New Note"
+      },
+      "quickActions": {
+        "title": "Quick Actions",
+        "updatedAt": "5:40 AM",
+        "description": "Launch frequent actions instantly: create meetings, upload files, and assign tasks without switching tabs.",
+        "primaryAction": "Check Actions",
+        "secondaryAction": "Create Action"
+      }
+    }
   }
 }

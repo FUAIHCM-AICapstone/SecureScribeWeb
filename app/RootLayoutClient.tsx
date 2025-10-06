@@ -98,11 +98,22 @@ export default function RootLayoutClient({
               >
                 <AuthProvider>
                   <SidebarProvider>
-                    <div style={{ display: 'flex', height: '100vh', flexDirection: 'column', overflow: 'hidden' }}>
+                    <div
+                      style={{
+                        display: 'flex',
+                        height: '100vh',
+                        flexDirection: 'column',
+                        overflow: 'hidden',
+                      }}
+                    >
                       {!hideHeader && <Header />}
                       <div style={{ display: 'flex', flex: 1, minHeight: 0 }}>
                         {!hideHeader && <Sidebar />}
-                        <main style={{flex: 1}}>{children}</main>
+                        <main
+                          style={{ flex: 1, overflow: 'auto', minHeight: 0 }}
+                        >
+                          {children}
+                        </main>
                       </div>
                     </div>
                   </SidebarProvider>
