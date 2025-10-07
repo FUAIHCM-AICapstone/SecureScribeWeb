@@ -122,16 +122,21 @@ const useStyles = makeStyles({
     position: 'relative',
     cursor: 'pointer',
     boxShadow: `0 2px 8px ${tokens.colorNeutralShadowAmbient}, 0 1px 2px ${tokens.colorNeutralShadowKey}`,
+    backgroundImage: `
+      radial-gradient(circle at 10% 20%, ${tokens.colorBrandBackground}03 0%, transparent 50%),
+      radial-gradient(circle at 90% 80%, ${tokens.colorBrandBackground2}03 0%, transparent 50%)
+    `,
     ':hover': {
       transform: 'translateY(-8px) scale(1.02)',
-      boxShadow: `0 12px 32px ${tokens.colorNeutralShadowAmbient}, 0 4px 12px ${tokens.colorNeutralShadowKey}, 0 0 0 2px ${tokens.colorBrandBackground}60`,
+      boxShadow: `0 16px 40px ${tokens.colorNeutralShadowAmbient}, 0 6px 16px ${tokens.colorNeutralShadowKey}, 0 0 0 2px ${tokens.colorBrandBackground}60`,
     },
     ':hover::before': {
       opacity: '1',
       height: '4px',
     },
     ':hover::after': {
-      opacity: '0.15',
+      opacity: '0.2',
+      transform: 'scale(1.2)',
     },
     '::before': {
       content: '""',
@@ -144,6 +149,7 @@ const useStyles = makeStyles({
       opacity: '0.6',
       transition: 'all 0.4s ease',
       boxShadow: `0 0 12px ${tokens.colorBrandBackground}`,
+      zIndex: 1,
     },
     '::after': {
       content: '""',
@@ -153,11 +159,31 @@ const useStyles = makeStyles({
       width: '150px',
       height: '150px',
       borderRadius: '50%',
-      background: `radial-gradient(circle, ${tokens.colorBrandBackground}10 0%, transparent 70%)`,
+      background: `radial-gradient(circle, ${tokens.colorBrandBackground}15 0%, transparent 70%)`,
       opacity: '0',
-      transition: 'opacity 0.4s ease',
+      transition: 'all 0.5s ease',
       pointerEvents: 'none',
     },
+  },
+  cardDecoTop: {
+    position: 'absolute',
+    top: '20px',
+    left: '20px',
+    width: '6px',
+    height: '6px',
+    borderRadius: '50%',
+    backgroundColor: tokens.colorBrandBackground,
+    opacity: '0.3',
+  },
+  cardDecoBottom: {
+    position: 'absolute',
+    bottom: '30px',
+    right: '30px',
+    width: '4px',
+    height: '4px',
+    borderRadius: '50%',
+    backgroundColor: tokens.colorBrandBackground2,
+    opacity: '0.2',
   },
   cardHeader: {
     padding: '16px 16px 10px',
@@ -177,6 +203,18 @@ const useStyles = makeStyles({
     flexGrow: 1,
     padding: '0 16px 16px',
     color: tokens.colorNeutralForeground2,
+    position: 'relative',
+    '::before': {
+      content: '""',
+      position: 'absolute',
+      bottom: '0',
+      right: '0',
+      width: '60px',
+      height: '60px',
+      borderRadius: '50%',
+      background: `radial-gradient(circle, ${tokens.colorBrandBackground}05 0%, transparent 70%)`,
+      pointerEvents: 'none',
+    },
   },
   description: {
     display: '-webkit-box',
@@ -188,6 +226,9 @@ const useStyles = makeStyles({
     fontSize: '14px',
     color: tokens.colorNeutralForeground3,
     fontWeight: '400',
+    listStyle: 'none',
+    margin: '0',
+    padding: '0',
   },
   iconContainer: {
     display: 'flex',
@@ -209,11 +250,46 @@ const useStyles = makeStyles({
       left: '-50%',
       width: '200%',
       height: '200%',
-      background: `radial-gradient(circle, ${tokens.colorNeutralBackground1}40 0%, transparent 60%)`,
-      animation: 'pulse 3s ease-in-out infinite',
+      background: `
+        radial-gradient(circle at 30% 30%, ${tokens.colorNeutralBackground1}50 0%, transparent 50%),
+        radial-gradient(circle at 70% 70%, ${tokens.colorNeutralBackground1}30 0%, transparent 50%)
+      `,
+      animation: 'pulse 4s ease-in-out infinite',
+    },
+    '::after': {
+      content: '""',
+      position: 'absolute',
+      top: '0',
+      left: '-100%',
+      width: '50%',
+      height: '100%',
+      background: `linear-gradient(90deg, transparent 0%, ${tokens.colorNeutralBackground1}40 50%, transparent 100%)`,
+      transform: 'skewX(-20deg)',
+      animation: 'shimmer 3s ease-in-out infinite',
+    },
+    '@keyframes pulse': {
+      '0%, 100%': {
+        opacity: '0.3',
+        transform: 'scale(1)',
+      },
+      '50%': {
+        opacity: '0.6',
+        transform: 'scale(1.1)',
+      },
+    },
+    '@keyframes shimmer': {
+      '0%': {
+        left: '-100%',
+      },
+      '50%, 100%': {
+        left: '200%',
+      },
     },
     ':hover': {
       transform: 'scale(1.05)',
+    },
+    ':hover::after': {
+      animationDuration: '1.5s',
     },
   },
   statsContainer: {
@@ -226,11 +302,30 @@ const useStyles = makeStyles({
   statBadge: {
     fontSize: '12px',
     fontWeight: '600',
-    padding: '4px 10px',
+    padding: '5px 12px',
     borderRadius: tokens.borderRadiusMedium,
-    transition: 'transform 0.2s ease',
+    transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
+    cursor: 'pointer',
+    position: 'relative',
+    boxShadow: `0 2px 4px ${tokens.colorNeutralShadowAmbient}`,
     ':hover': {
-      transform: 'scale(1.1)',
+      transform: 'scale(1.15) translateY(-2px)',
+      boxShadow: `0 4px 12px ${tokens.colorNeutralShadowKey}`,
+    },
+    '::before': {
+      content: '""',
+      position: 'absolute',
+      top: '0',
+      left: '0',
+      right: '0',
+      bottom: '0',
+      borderRadius: tokens.borderRadiusMedium,
+      background: `linear-gradient(135deg, ${tokens.colorNeutralBackground1}20 0%, transparent 100%)`,
+      opacity: '0',
+      transition: 'opacity 0.3s ease',
+    },
+    ':hover::before': {
+      opacity: '1',
     },
   },
   footer: {
@@ -274,10 +369,10 @@ const useStyles = makeStyles({
     boxShadow: `inset 0 0 20px ${tokens.colorPaletteBlueBackground2}20, 0 4px 12px ${tokens.colorPaletteBlueBackground2}25`,
   },
   iconSubtle: {
-    background: `linear-gradient(135deg, ${tokens.colorNeutralBackground4} 0%, ${tokens.colorNeutralBackground5} 50%, ${tokens.colorNeutralBackground4} 100%)`,
-    color: tokens.colorNeutralForeground1,
+    background: `linear-gradient(135deg, ${tokens.colorNeutralBackground5}50 0%, ${tokens.colorNeutralBackground6}70 50%, ${tokens.colorNeutralBackground5}50 100%)`,
+    color: tokens.colorBrandForeground1,
     border: `2px solid ${tokens.colorNeutralStroke2}`,
-    boxShadow: `inset 0 0 20px ${tokens.colorNeutralBackground6}, 0 4px 12px ${tokens.colorNeutralShadowAmbient}`,
+    boxShadow: `inset 0 0 20px ${tokens.colorNeutralBackground6}, 0 4px 12px ${tokens.colorNeutralShadowAmbient}, inset 0 0 40px ${tokens.colorBrandBackground}08`,
   },
 });
 
@@ -380,7 +475,7 @@ const Dashboard: React.FC = () => {
       updatedAt: t('cards.recentTranscripts.updatedAt'),
       description: t('cards.recentTranscripts.description'),
       icon: <DocumentText24Regular />,
-      accentColor: 'warning',
+      accentColor: 'danger',
       stats: [
         { label: 'Total', value: 18 },
         { label: 'New', value: 3 },
@@ -420,7 +515,7 @@ const Dashboard: React.FC = () => {
       updatedAt: t('cards.quickActions.updatedAt'),
       description: t('cards.quickActions.description'),
       icon: <Flash24Regular />,
-      accentColor: 'danger',
+      accentColor: 'warning',
       stats: [
         { label: 'Recent', value: 15 },
         { label: 'Favorites', value: 6 },
@@ -440,17 +535,6 @@ const Dashboard: React.FC = () => {
     <section className={styles.root}>
       <div className={styles.intro}>
         <Title1 className={styles.introTitle}>{t('title')}</Title1>
-        <span
-          style={{
-            margin: '0 12px',
-            fontSize: '20px',
-            fontWeight: '300',
-            color: tokens.colorBrandForeground2,
-            opacity: '0.6',
-          }}
-        >
-          •
-        </span>
         <Body1 className={styles.introDescription}>{t('description')}</Body1>
       </div>
 
@@ -476,7 +560,26 @@ const Dashboard: React.FC = () => {
               />
 
               <div className={styles.cardBody}>
-                <div className={iconClassName}>{card.icon}</div>
+                <div className={iconClassName}>
+                  <div
+                    style={{
+                      transition:
+                        'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                      display: 'flex',
+                      position: 'relative',
+                      zIndex: 1,
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform =
+                        'rotate(5deg) scale(1.1)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = 'rotate(0deg) scale(1)';
+                    }}
+                  >
+                    {card.icon}
+                  </div>
+                </div>
 
                 <Body1 className={styles.description}>{card.description}</Body1>
 
