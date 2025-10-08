@@ -1,17 +1,20 @@
 'use client';
 
 import React, { useState, useCallback, useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { useSearchParams, useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import {
   Button,
   Text,
+  Spinner,
   makeStyles,
   tokens,
   shorthands,
 } from '@fluentui/react-components';
 import { ArrowLeft20Regular, ArrowRight20Regular } from '@fluentui/react-icons';
 import { getMeetings } from '@/services/api/meeting';
+import { queryKeys } from '@/lib/queryClient';
 import { MeetingsHeader } from './MeetingsHeader';
 import { MeetingsGrid } from './MeetingsGrid';
 import { MeetingsList } from './MeetingsList';
@@ -74,12 +77,28 @@ const useStyles = makeStyles({
     textAlign: 'center',
     color: tokens.colorNeutralForeground2,
   },
+  loadingIndicator: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    ...shorthands.gap('12px'),
+    ...shorthands.padding('16px'),
+    backgroundColor: tokens.colorNeutralBackground1,
+    ...shorthands.borderRadius(tokens.borderRadiusMedium),
+    ...shorthands.border('1px', 'solid', tokens.colorNeutralStroke2),
+    marginBottom: '16px',
+  },
+  loadingText: {
+    color: tokens.colorNeutralForeground2,
+    fontSize: '14px',
+  },
 });
 
 export function MeetingsPageClient() {
   const styles = useStyles();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const t = useTranslations('Meetings');
 
   // Initialize state from URL params
   const [viewMode, setViewMode] = useState<'grid' | 'list'>(
@@ -122,12 +141,18 @@ export function MeetingsPageClient() {
   );
 
   // Fetch meetings with React Query
-  const { data, isLoading, isError, error, refetch } = useQuery({
-    queryKey: ['meetings', apiFilters, apiParams],
+  const { data, isLoading, isFetching, isError, error, refetch } = useQuery({
+    queryKey:
+      isPersonal === true
+        ? [...queryKeys.personalMeetings, apiParams]
+        : [...queryKeys.meetings, apiFilters, apiParams],
     queryFn: async () => {
       return getMeetings(apiFilters, apiParams);
     },
-    staleTime: 30000, // 30 seconds
+    staleTime: 2 * 60 * 1000, // 2 minutes (consistent with queryClient config)
+    gcTime: 10 * 60 * 1000, // 10 minutes
+    placeholderData: keepPreviousData, // Keep previous data while fetching
+    refetchOnWindowFocus: false, // Don't refetch on window focus
   });
 
   // Update URL when filters change
@@ -206,12 +231,16 @@ export function MeetingsPageClient() {
     isPersonal !== undefined || searchQuery || startDateFrom || startDateTo,
   );
 
-  // Loading state
-  if (isLoading) {
+  // Loading states
+  const isInitialLoading = isLoading && !data;
+  const isRefetchingData = isFetching && !!data;
+
+  // Initial loading state - show full skeleton
+  if (isInitialLoading) {
     return (
       <div className={styles.container}>
         <Text className={styles.errorTitle} style={{ marginBottom: '24px' }}>
-          Loading meetings...
+          {t('loading')}
         </Text>
         <div className={styles.skeletonGrid}>
           {Array.from({ length: 6 }).map((_, i) => (
@@ -227,14 +256,14 @@ export function MeetingsPageClient() {
     return (
       <div className={styles.container}>
         <div className={styles.errorContainer}>
-          <Text className={styles.errorTitle}>Failed to load meetings</Text>
+          <Text className={styles.errorTitle}>{t('errorTitle')}</Text>
           <Text className={styles.errorMessage}>
             {error instanceof Error
               ? error.message
               : 'An unexpected error occurred'}
           </Text>
           <Button appearance="primary" onClick={() => refetch()}>
-            Try Again
+            {t('retry')}
           </Button>
         </div>
       </div>
@@ -263,6 +292,13 @@ export function MeetingsPageClient() {
         totalCount={totalCount}
       />
 
+      {isRefetchingData && (
+        <div className={styles.loadingIndicator}>
+          <Spinner size="tiny" />
+          <Text className={styles.loadingText}>{t('searching')}</Text>
+        </div>
+      )}
+
       <div className={styles.content}>
         {meetings.length === 0 ? (
           <EmptyMeetingsState
@@ -284,10 +320,10 @@ export function MeetingsPageClient() {
             disabled={!hasPrev}
             onClick={() => handlePageChange(currentPage - 1)}
           >
-            Previous
+            {t('previous')}
           </Button>
           <Text className={styles.pageInfo}>
-            Page {currentPage} of {totalPages}
+            {t('pageInfo', { current: currentPage, total: totalPages })}
           </Text>
           <Button
             appearance="secondary"
@@ -296,7 +332,7 @@ export function MeetingsPageClient() {
             disabled={!hasNext}
             onClick={() => handlePageChange(currentPage + 1)}
           >
-            Next
+            {t('next')}
           </Button>
         </div>
       )}

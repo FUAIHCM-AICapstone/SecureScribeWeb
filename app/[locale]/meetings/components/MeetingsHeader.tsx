@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import {
   Button,
   Input,
@@ -18,7 +19,6 @@ import {
   Search20Regular,
   CalendarLtr20Regular,
 } from '@fluentui/react-icons';
-import { useDebounce } from '@/hooks/useDebounce';
 
 const useStyles = makeStyles({
   header: {
@@ -62,6 +62,12 @@ const useStyles = makeStyles({
       width: '100%',
     },
   },
+  searchGroup: {
+    display: 'flex',
+    alignItems: 'center',
+    ...shorthands.gap('8px'),
+    flexGrow: 1,
+  },
   datePickerGroup: {
     display: 'flex',
     alignItems: 'center',
@@ -103,36 +109,46 @@ export function MeetingsHeader({
   totalCount,
 }: MeetingsHeaderProps) {
   const styles = useStyles();
+  const t = useTranslations('Meetings');
   const [localSearch, setLocalSearch] = useState(searchQuery);
-  const debouncedSearch = useDebounce(localSearch, 400);
 
-  // Update parent when debounced value changes
+  // Update local search when searchQuery prop changes
   React.useEffect(() => {
-    if (debouncedSearch !== searchQuery) {
-      onSearchChange(debouncedSearch);
-    }
-  }, [debouncedSearch, onSearchChange, searchQuery]);
+    setLocalSearch(searchQuery);
+  }, [searchQuery]);
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSearchSubmit = () => {
+    if (localSearch !== searchQuery) {
+      onSearchChange(localSearch);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleSearchSubmit();
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setLocalSearch(e.target.value);
   };
 
   return (
     <div className={styles.header}>
       <div className={styles.topRow}>
-        <Text className={styles.title}>Meetings</Text>
+        <Text className={styles.title}>{t('title')}</Text>
         <div className={styles.viewToggle}>
           <Button
             appearance={viewMode === 'grid' ? 'primary' : 'secondary'}
             icon={<Grid20Regular />}
             onClick={() => onViewModeChange('grid')}
-            aria-label="Grid view"
+            aria-label={t('gridView')}
           />
           <Button
             appearance={viewMode === 'list' ? 'primary' : 'secondary'}
             icon={<List20Regular />}
             onClick={() => onViewModeChange('list')}
-            aria-label="List view"
+            aria-label={t('listView')}
           />
         </div>
       </div>
@@ -145,7 +161,7 @@ export function MeetingsHeader({
             onClick={() => onPersonalChange(undefined)}
             size="small"
           >
-            All Meetings
+            {t('allMeetings')}
           </ToggleButton>
           <ToggleButton
             appearance={isPersonal === true ? 'primary' : 'secondary'}
@@ -153,23 +169,33 @@ export function MeetingsHeader({
             onClick={() => onPersonalChange(true)}
             size="small"
           >
-            Personal
+            {t('personalMeetings')}
           </ToggleButton>
         </div>
 
-        <Input
-          className={styles.searchInput}
-          placeholder="Search meetings..."
-          value={localSearch}
-          onChange={handleSearchChange}
-          contentBefore={<Search20Regular />}
-        />
+        <div className={styles.searchGroup}>
+          <Input
+            className={styles.searchInput}
+            placeholder={t('searchPlaceholder')}
+            value={localSearch}
+            onChange={handleInputChange}
+            onKeyDown={handleKeyDown}
+            contentBefore={<Search20Regular />}
+          />
+          <Button
+            appearance="secondary"
+            icon={<Search20Regular />}
+            onClick={handleSearchSubmit}
+          >
+            {t('searchButton')}
+          </Button>
+        </div>
 
         <div className={styles.datePickerGroup}>
           <CalendarLtr20Regular />
           <DatePicker
             className={styles.datePicker}
-            placeholder="From date"
+            placeholder={t('fromDate')}
             value={startDateFrom}
             onSelectDate={(date) =>
               onDateRangeChange(date || null, startDateTo)
@@ -178,7 +204,7 @@ export function MeetingsHeader({
           <Text>-</Text>
           <DatePicker
             className={styles.datePicker}
-            placeholder="To date"
+            placeholder={t('toDate')}
             value={startDateTo}
             onSelectDate={(date) =>
               onDateRangeChange(startDateFrom, date || null)
@@ -187,7 +213,7 @@ export function MeetingsHeader({
         </div>
 
         <Caption1 className={styles.countText}>
-          {totalCount} {totalCount === 1 ? 'meeting' : 'meetings'}
+          {t('meetingsCount', { count: totalCount })}
         </Caption1>
       </div>
     </div>

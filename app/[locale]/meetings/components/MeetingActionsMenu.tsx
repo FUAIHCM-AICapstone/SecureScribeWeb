@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import {
   Menu,
   MenuTrigger,
@@ -25,6 +26,8 @@ interface MeetingActionsMenuProps {
 }
 
 export function MeetingActionsMenu({ meeting }: MeetingActionsMenuProps) {
+  const t = useTranslations('Meetings');
+
   const handleAction = (action: string) => {
     console.log(`Action ${action} for meeting ${meeting.id}`);
     // TODO: Implement actual actions later
@@ -56,7 +59,7 @@ export function MeetingActionsMenu({ meeting }: MeetingActionsMenuProps) {
           appearance="subtle"
           icon={<MoreHorizontal20Regular />}
           size="small"
-          aria-label="Meeting actions"
+          aria-label={t('actions.label')}
         />
       </MenuTrigger>
 
@@ -66,25 +69,25 @@ export function MeetingActionsMenu({ meeting }: MeetingActionsMenuProps) {
             icon={<Eye20Regular />}
             onClick={() => handleAction('view')}
           >
-            View Details
+            {t('actions.view')}
           </MenuItem>
           <MenuItem
             icon={<Edit20Regular />}
             onClick={() => handleAction('edit')}
           >
-            Edit Meeting
+            {t('actions.edit')}
           </MenuItem>
           <MenuItem
             icon={<Share20Regular />}
             onClick={() => handleAction('share')}
           >
-            Share
+            {t('actions.share')}
           </MenuItem>
           <MenuItem
             icon={<Archive20Regular />}
             onClick={() => handleAction('archive')}
           >
-            Archive
+            {t('actions.archive')}
           </MenuItem>
           <MenuDivider />
           <MenuItem
@@ -92,7 +95,7 @@ export function MeetingActionsMenu({ meeting }: MeetingActionsMenuProps) {
             onClick={() => handleAction('delete')}
             style={{ color: 'var(--colorPaletteRedForeground1)' }}
           >
-            Delete
+            {t('actions.delete')}
           </MenuItem>
         </MenuList>
       </MenuPopover>

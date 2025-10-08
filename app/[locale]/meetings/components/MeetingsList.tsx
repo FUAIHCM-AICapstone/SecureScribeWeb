@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import {
   Table,
   TableHeader,
@@ -34,17 +35,18 @@ interface MeetingsListProps {
 
 export function MeetingsList({ meetings }: MeetingsListProps) {
   const styles = useStyles();
+  const t = useTranslations('Meetings');
 
   return (
     <div className={styles.tableWrapper}>
       <Table className={styles.table} size="small">
         <TableHeader>
           <TableRow>
-            <TableHeaderCell>Meeting Title</TableHeaderCell>
-            <TableHeaderCell>Start Time</TableHeaderCell>
-            <TableHeaderCell>Status</TableHeaderCell>
-            <TableHeaderCell>Projects</TableHeaderCell>
-            <TableHeaderCell>Actions</TableHeaderCell>
+            <TableHeaderCell>{t('table.title')}</TableHeaderCell>
+            <TableHeaderCell>{t('table.startTime')}</TableHeaderCell>
+            <TableHeaderCell>{t('table.status')}</TableHeaderCell>
+            <TableHeaderCell>{t('table.projects')}</TableHeaderCell>
+            <TableHeaderCell>{t('table.actions')}</TableHeaderCell>
           </TableRow>
         </TableHeader>
         <TableBody>

@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import {
   Button,
   Text,
@@ -50,6 +51,7 @@ export function EmptyMeetingsState({
   onCreateClick,
 }: EmptyMeetingsStateProps) {
   const styles = useStyles();
+  const t = useTranslations('Meetings');
 
   return (
     <div className={styles.container}>
@@ -57,16 +59,16 @@ export function EmptyMeetingsState({
         <CalendarEmpty48Regular style={{ width: '96px', height: '96px' }} />
       </div>
       <Text className={styles.title}>
-        {isFiltered ? 'No meetings found' : 'No meetings yet'}
+        {isFiltered ? t('noMeetingsFound') : t('noMeetingsYet')}
       </Text>
       <Caption1 className={styles.description}>
         {isFiltered
-          ? "Try adjusting your filters or search terms to find what you're looking for."
-          : 'Get started by creating your first meeting to collaborate with your team.'}
+          ? t('emptyFilteredDescription')
+          : t('emptyUnfilteredDescription')}
       </Caption1>
       {!isFiltered && onCreateClick && (
         <Button appearance="primary" size="large" onClick={onCreateClick}>
-          Create Meeting
+          {t('createMeeting')}
         </Button>
       )}
     </div>

@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import {
   TableRow,
   TableCell,
@@ -34,25 +35,26 @@ interface MeetingRowProps {
 
 export function MeetingRow({ meeting }: MeetingRowProps) {
   const styles = useStyles();
+  const t = useTranslations('Meetings');
 
   const getStatusBadge = () => {
     switch (meeting.status) {
       case 'active':
         return (
           <Badge appearance="filled" color="success" size="small">
-            Active
+            {t('status.active')}
           </Badge>
         );
       case 'completed':
         return (
           <Badge appearance="filled" color="informative" size="small">
-            Completed
+            {t('status.completed')}
           </Badge>
         );
       case 'cancelled':
         return (
           <Badge appearance="filled" color="danger" size="small">
-            Cancelled
+            {t('status.cancelled')}
           </Badge>
         );
       default:
@@ -65,11 +67,11 @@ export function MeetingRow({ meeting }: MeetingRowProps) {
   };
 
   const formatStartTime = () => {
-    if (!meeting.start_time) return 'No date set';
+    if (!meeting.start_time) return t('noDateSet');
     try {
       return format(new Date(meeting.start_time), 'PPp');
     } catch {
-      return 'Invalid date';
+      return t('invalidDate');
     }
   };
 
@@ -78,7 +80,7 @@ export function MeetingRow({ meeting }: MeetingRowProps) {
       <TableCell>
         <div style={{ display: 'flex', alignItems: 'center' }}>
           <Text className={styles.titleCell}>
-            {meeting.title || 'Untitled Meeting'}
+            {meeting.title || t('untitledMeeting')}
           </Text>
           {meeting.is_personal && (
             <Badge
@@ -87,7 +89,7 @@ export function MeetingRow({ meeting }: MeetingRowProps) {
               color="brand"
               className={styles.personalBadge}
             >
-              Personal
+              {t('badges.personal')}
             </Badge>
           )}
         </div>
@@ -103,8 +105,7 @@ export function MeetingRow({ meeting }: MeetingRowProps) {
       <TableCell>{getStatusBadge()}</TableCell>
       <TableCell>
         <Caption1>
-          {meeting.projects?.length || 0}{' '}
-          {meeting.projects?.length === 1 ? 'project' : 'projects'}
+          {t('projectCount', { count: meeting.projects?.length || 0 })}
         </Caption1>
       </TableCell>
       <TableCell>

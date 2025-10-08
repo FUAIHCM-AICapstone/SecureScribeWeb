@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import {
   Card,
   CardHeader,
@@ -118,25 +119,26 @@ interface MeetingCardProps {
 
 export function MeetingCard({ meeting }: MeetingCardProps) {
   const styles = useStyles();
+  const t = useTranslations('Meetings');
 
   const getStatusBadge = () => {
     switch (meeting.status) {
       case 'active':
         return (
           <Badge appearance="filled" color="success" size="small">
-            Active
+            {t('status.active')}
           </Badge>
         );
       case 'completed':
         return (
           <Badge appearance="filled" color="informative" size="small">
-            Completed
+            {t('status.completed')}
           </Badge>
         );
       case 'cancelled':
         return (
           <Badge appearance="filled" color="danger" size="small">
-            Cancelled
+            {t('status.cancelled')}
           </Badge>
         );
       default:
@@ -149,11 +151,11 @@ export function MeetingCard({ meeting }: MeetingCardProps) {
   };
 
   const formatStartTime = () => {
-    if (!meeting.start_time) return 'No date set';
+    if (!meeting.start_time) return t('noDateSet');
     try {
       return format(new Date(meeting.start_time), 'PPp');
     } catch {
-      return 'Invalid date';
+      return t('invalidDate');
     }
   };
 
@@ -164,7 +166,7 @@ export function MeetingCard({ meeting }: MeetingCardProps) {
         header={
           <div className={styles.headerContent}>
             <Text className={styles.title}>
-              {meeting.title || 'Untitled Meeting'}
+              {meeting.title || t('untitledMeeting')}
             </Text>
             <MeetingActionsMenu meeting={meeting} />
           </div>
@@ -176,7 +178,7 @@ export function MeetingCard({ meeting }: MeetingCardProps) {
           {getStatusBadge()}
           {meeting.is_personal && (
             <Badge appearance="outline" size="small" color="brand">
-              Personal
+              {t('badges.personal')}
             </Badge>
           )}
         </div>
@@ -194,8 +196,7 @@ export function MeetingCard({ meeting }: MeetingCardProps) {
 
         {meeting.projects && meeting.projects.length > 0 && (
           <Caption1 className={styles.projectsInfo}>
-            {meeting.projects.length}{' '}
-            {meeting.projects.length === 1 ? 'project' : 'projects'}
+            {t('projectCount', { count: meeting.projects.length })}
           </Caption1>
         )}
       </div>
@@ -207,7 +208,7 @@ export function MeetingCard({ meeting }: MeetingCardProps) {
             icon={<PersonCircle20Regular />}
             aria-label="Meeting creator"
           />
-          <Caption1 className={styles.creatorName}>Created by user</Caption1>
+          <Caption1 className={styles.creatorName}>{t('createdBy')}</Caption1>
         </div>
       </CardFooter>
     </Card>

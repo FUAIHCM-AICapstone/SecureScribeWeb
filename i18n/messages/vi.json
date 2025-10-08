@@ -228,5 +228,57 @@
         "secondaryAction": "Tạo hành động"
       }
     }
+  },
+  "Meetings": {
+    "title": "Cuộc họp",
+    "searchPlaceholder": "Tìm kiếm cuộc họp...",
+    "searchButton": "Tìm kiếm",
+    "allMeetings": "Tất cả cuộc họp",
+    "personalMeetings": "Cá nhân",
+    "noMeetingsFound": "Không tìm thấy cuộc họp",
+    "noMeetingsYet": "Chưa có cuộc họp",
+    "createMeeting": "Tạo cuộc họp",
+    "loading": "Đang tải cuộc họp...",
+    "searching": "Đang tìm kiếm...",
+    "errorTitle": "Không thể tải cuộc họp",
+    "retry": "Thử lại",
+    "previous": "Trước",
+    "next": "Tiếp",
+    "pageInfo": "Trang {current} / {total}",
+    "fromDate": "Từ ngày",
+    "toDate": "Đến ngày",
+    "gridView": "Dạng lưới",
+    "listView": "Dạng danh sách",
+    "meetingsCount": "{count} cuộc họp",
+    "emptyFilteredDescription": "Thử điều chỉnh bộ lọc hoặc từ khóa tìm kiếm để tìm những gì bạn đang tìm kiếm.",
+    "emptyUnfilteredDescription": "Bắt đầu bằng cách tạo cuộc họp đầu tiên để cộng tác với nhóm của bạn.",
+    "untitledMeeting": "Cuộc họp chưa đặt tên",
+    "noDateSet": "Chưa đặt ngày",
+    "invalidDate": "Ngày không hợp lệ",
+    "createdBy": "Tạo bởi người dùng",
+    "projectCount": "{count} dự án",
+    "status": {
+      "active": "Đang hoạt động",
+      "completed": "Đã hoàn thành",
+      "cancelled": "Đã hủy"
+    },
+    "actions": {
+      "label": "Hành động",
+      "view": "Xem chi tiết",
+      "edit": "Chỉnh sửa",
+      "share": "Chia sẻ",
+      "archive": "Lưu trữ",
+      "delete": "Xóa"
+    },
+    "table": {
+      "title": "Tiêu đề",
+      "startTime": "Thời gian bắt đầu",
+      "status": "Trạng thái",
+      "projects": "Dự án",
+      "actions": "Hành động"
+    },
+    "badges": {
+      "personal": "Cá nhân"
+    }
   }
 }

@@ -228,5 +228,57 @@
         "secondaryAction": "Create Action"
       }
     }
+  },
+  "Meetings": {
+    "title": "Meetings",
+    "searchPlaceholder": "Search meetings...",
+    "searchButton": "Search",
+    "allMeetings": "All Meetings",
+    "personalMeetings": "Personal",
+    "noMeetingsFound": "No meetings found",
+    "noMeetingsYet": "No meetings yet",
+    "createMeeting": "Create Meeting",
+    "loading": "Loading meetings...",
+    "searching": "Searching...",
+    "errorTitle": "Failed to load meetings",
+    "retry": "Try Again",
+    "previous": "Previous",
+    "next": "Next",
+    "pageInfo": "Page {current} of {total}",
+    "fromDate": "From date",
+    "toDate": "To date",
+    "gridView": "Grid view",
+    "listView": "List view",
+    "meetingsCount": "{count} {count, plural, =1 {meeting} other {meetings}}",
+    "emptyFilteredDescription": "Try adjusting your filters or search terms to find what you're looking for.",
+    "emptyUnfilteredDescription": "Get started by creating your first meeting to collaborate with your team.",
+    "untitledMeeting": "Untitled Meeting",
+    "noDateSet": "No date set",
+    "invalidDate": "Invalid date",
+    "createdBy": "Created by user",
+    "projectCount": "{count} {count, plural, =1 {project} other {projects}}",
+    "status": {
+      "active": "Active",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "actions": {
+      "label": "Meeting actions",
+      "view": "View Details",
+      "edit": "Edit Meeting",
+      "share": "Share",
+      "archive": "Archive",
+      "delete": "Delete"
+    },
+    "table": {
+      "title": "Meeting Title",
+      "startTime": "Start Time",
+      "status": "Status",
+      "projects": "Projects",
+      "actions": "Actions"
+    },
+    "badges": {
+      "personal": "Personal"
+    }
   }
 }
