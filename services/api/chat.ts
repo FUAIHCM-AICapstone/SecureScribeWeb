@@ -4,6 +4,7 @@ import type {
     ChatMessageResponse,
     ConversationCreate,
     ConversationResponse,
+    ConversationUpdate,
     Mention
 } from '../../types/chat.type';
 import axiosInstance from './axiosInstance';
@@ -54,6 +55,29 @@ export const getConversation = async (
 
     return ApiWrapper.execute(() =>
         axiosInstance.get(`/conversations/${conversationId}${queryString}`)
+    );
+};
+
+/**
+ * Update a conversation
+ */
+export const updateConversation = async (
+    conversationId: string,
+    conversationData: ConversationUpdate
+): Promise<ConversationResponse> => {
+    return ApiWrapper.execute(() =>
+        axiosInstance.put(`/conversations/${conversationId}`, conversationData)
+    );
+};
+
+/**
+ * Delete a conversation
+ */
+export const deleteConversation = async (
+    conversationId: string
+): Promise<void> => {
+    return ApiWrapper.executeVoid(() =>
+        axiosInstance.delete(`/conversations/${conversationId}`)
     );
 };
 

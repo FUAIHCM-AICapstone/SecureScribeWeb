@@ -2,8 +2,8 @@
 /* eslint-disable @typescript-eslint/no-empty-object-type */
 'use client'
 
-import { Button, Tab, TabList, Tooltip, makeStyles, tokens } from '@fluentui/react-components'
-import { Add24Regular } from '@fluentui/react-icons'
+import { Button, Input, Tab, TabList, Tooltip, makeStyles, tokens } from '@fluentui/react-components'
+import { Add24Regular, Dismiss16Regular, Edit16Regular, Checkmark16Regular } from '@fluentui/react-icons'
 import { useTranslations } from 'next-intl'
 import { useEffect, useRef, useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
@@ -18,6 +18,8 @@ import {
     getConversations,
     getConversation,
     sendChatMessage,
+    updateConversation,
+    deleteConversation,
     connectToChatSSE,
     disconnectFromChatSSE
 } from '../../services/api/chat'
@@ -71,18 +73,21 @@ const useStyles = makeStyles({
     tabItem: {
         display: 'flex',
         alignItems: 'center',
+        justifyContent: 'space-between',
         columnGap: '8px',
-        maxWidth: '220px'
+        maxWidth: '280px',
+        width: '100%'
     },
     tabName: {
         display: 'inline-block',
-        maxWidth: '180px',
+        flex: 1,
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap'
     },
     renameInput: {
-        width: '160px'
+        flex: 1,
+        maxWidth: '200px'
     },
     content: {
         flex: 1,
@@ -98,6 +103,8 @@ export default function ChatClientWrapper({ }: ChatClientWrapperProps) {
     const [activeConversationId, setActiveConversationId] = useState<string | null>(null)
     const [isTyping, setIsTyping] = useState<boolean>(false)
     const [sseEventSource, setSseEventSource] = useState<EventSource | null>(null)
+    const [renamingId, setRenamingId] = useState<string | null>(null)
+    const [renameValue, setRenameValue] = useState<string>('')
     const tabListContainerRef = useRef<HTMLDivElement>(null)
 
     // React Query for data fetching
@@ -194,6 +201,27 @@ export default function ChatClientWrapper({ }: ChatClientWrapperProps) {
                     ['chat', 'conversations', conversationId],
                     context.previousConversation
                 )
+            }
+        },
+    })
+
+    const deleteConversationMutation = useMutation({
+        mutationFn: deleteConversation,
+        onSuccess: (_, conversationId) => {
+            // Remove conversation from cache
+            queryClient.setQueryData(['chat', 'conversations'], (oldData: ConversationResponse[] | undefined) => {
+                if (!oldData) return oldData
+                return oldData.filter(conv => conv.id !== conversationId)
+            })
+
+            // If deleted conversation was active, switch to another one
+            if (activeConversationId === conversationId) {
+                const remainingConversations = conversations?.filter(conv => conv.id !== conversationId) || []
+                if (remainingConversations.length > 0) {
+                    setActiveConversationId(remainingConversations[0].id)
+                } else {
+                    setActiveConversationId(null)
+                }
             }
         },
     })
@@ -306,7 +334,56 @@ export default function ChatClientWrapper({ }: ChatClientWrapperProps) {
         }
     }, [])
 
-    // Note: Rename functionality removed as updateConversation API is not available in current schema
+    // Handle conversation rename using mutation
+    const renameConversationMutation = useMutation({
+        mutationFn: ({ conversationId, title }: { conversationId: string; title: string }) =>
+            updateConversation(conversationId, { title }),
+        onSuccess: (updatedConversation, { conversationId, title }) => {
+            // Update conversation in cache
+            queryClient.setQueryData(['chat', 'conversations'], (oldData: ConversationResponse[] | undefined) => {
+                if (!oldData) return oldData
+                return oldData.map(conv =>
+                    conv.id === conversationId
+                        ? { ...conv, title }
+                        : conv
+                )
+            })
+
+            // Reset rename state
+            setRenamingId(null)
+            setRenameValue('')
+        },
+        onError: (error) => {
+            console.error('Failed to rename conversation:', error)
+            // Reset rename state on error
+            setRenamingId(null)
+            setRenameValue('')
+        },
+    })
+
+
+    // Start inline rename
+    const startRename = (conversationId: string, currentTitle: string) => {
+        setRenamingId(conversationId)
+        setRenameValue(currentTitle)
+    }
+
+    const cancelRename = () => {
+        setRenamingId(null)
+        setRenameValue('')
+    }
+
+    // Handle conversation deletion
+    const handleDeleteConversation = (conversationId: string, e?: React.MouseEvent) => {
+        if (e) {
+            e.stopPropagation()
+            e.preventDefault()
+        }
+
+        if (window.confirm('Are you sure you want to delete this conversation?')) {
+            deleteConversationMutation.mutate(conversationId)
+        }
+    }
 
     return (
         <div className={styles.root}>
@@ -338,11 +415,79 @@ export default function ChatClientWrapper({ }: ChatClientWrapperProps) {
                             conversations.map(conv => (
                                 <Tab key={conv.id} value={conv.id}>
                                     <div className={styles.tabItem}>
-                                        <Tooltip content={getConversationTitle(conv)} relationship="label">
-                                            <span className={styles.tabName}>
-                                                {getConversationTitle(conv)}
-                                            </span>
-                                        </Tooltip>
+                                        {renamingId === conv.id ? (
+                                            <Input
+                                                appearance="underline"
+                                                size="medium"
+                                                value={renameValue}
+                                                onChange={(_, data) => setRenameValue(data.value)}
+                                                onBlur={() => {
+                                                    if (renameValue.trim()) {
+                                                        renameConversationMutation.mutate({
+                                                            conversationId: conv.id,
+                                                            title: renameValue.trim()
+                                                        })
+                                                    } else {
+                                                        cancelRename()
+                                                    }
+                                                }}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter' && renameValue.trim()) {
+                                                        renameConversationMutation.mutate({
+                                                            conversationId: conv.id,
+                                                            title: renameValue.trim()
+                                                        })
+                                                    }
+                                                    if (e.key === 'Escape') cancelRename()
+                                                }}
+                                                className={styles.renameInput}
+                                                disabled={renameConversationMutation.isPending}
+                                            />
+                                        ) : (
+                                            <div style={{ cursor: 'default' }}>
+                                                <Tooltip content={getConversationTitle(conv)} relationship="label">
+                                                    <span className={styles.tabName}>
+                                                        {getConversationTitle(conv)}
+                                                    </span>
+                                                </Tooltip>
+                                            </div>
+                                        )}
+                                        <div style={{ display: 'flex', gap: '4px', marginLeft: '8px' }}>
+                                            <Tooltip content={renamingId === conv.id ? tTabs('confirmRename') : tTabs('rename')} relationship="label">
+                                                <Button
+                                                    appearance="subtle"
+                                                    size="small"
+                                                    icon={renamingId === conv.id ? <Checkmark16Regular /> : <Edit16Regular />}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation()
+                                                        if (renamingId === conv.id) {
+                                                            if (renameValue.trim()) {
+                                                                renameConversationMutation.mutate({
+                                                                    conversationId: conv.id,
+                                                                    title: renameValue.trim()
+                                                                })
+                                                            } else {
+                                                                cancelRename()
+                                                            }
+                                                        } else {
+                                                            startRename(conv.id, getConversationTitle(conv))
+                                                        }
+                                                    }}
+                                                    disabled={renameConversationMutation.isPending}
+                                                    aria-label={renamingId === conv.id ? tTabs('confirmRename') : tTabs('rename')}
+                                                />
+                                            </Tooltip>
+                                            <Tooltip content={tTabs('delete')} relationship="label">
+                                                <Button
+                                                    appearance="subtle"
+                                                    size="small"
+                                                    icon={<Dismiss16Regular />}
+                                                    onClick={(e) => handleDeleteConversation(conv.id, e)}
+                                                    disabled={deleteConversationMutation.isPending}
+                                                    aria-label={tTabs('delete')}
+                                                />
+                                            </Tooltip>
+                                        </div>
                                     </div>
                                 </Tab>
                             ))
