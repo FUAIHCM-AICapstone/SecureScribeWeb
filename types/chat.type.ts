@@ -1,145 +1,99 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
-// ============================================
-// MESSAGE TYPES
-// ============================================
-
-export interface MessageResponse {
-    id: string
-    conversation_id: string
-    role: 'user' | 'assistant'
-    content: string
-    timestamp: string
+export interface Mention {
+    entity_type: string; // "project", "meeting", "file"
+    entity_id: string;   // UUID string
+    offset_start: number;
+    offset_end: number;
 }
 
-export interface MessageListRequest {
-    before_message_id?: string
-    limit?: number
+export type MentionType = 'project' | 'meeting' | 'file';
+
+export interface MentionSearchItem {
+    id: string;
+    name: string;
+    type: MentionType;
 }
 
-export interface SendMessageRequest {
-    conversation_id: string
-    content: string
-    mentions?: import('./mention.type').MentionOccurrence[]
+export interface MentionOccurrence {
+    type: MentionType;
+    id: string;
+    name: string;
+    offset: number;
+    length: number;
 }
 
-export interface SendMessageResponse {
-    user_message: MessageResponse
-    ai_message: MessageResponse
+export interface ChatMessageCreate {
+    content: string;
+    mentions?: Mention[];
 }
 
-// ============================================
-// UI SEND PAYLOAD (for client components)
-// ============================================
-
-export interface SendMessagePayload {
-    content: string
-    mentions: import('./mention.type').MentionOccurrence[]
+export interface ChatMessageResponse {
+    id: string; // UUID as string
+    conversation_id: string; // UUID as string
+    role: string; // "user", "assistant", "system"
+    content: string;
+    timestamp: string; // ISO datetime string
+    mentions?: Mention[];
 }
 
-// ============================================
-// CONVERSATION TYPES
-// ============================================
+export interface ChatConversationResponse {
+    id: string; // UUID as string
+    title?: string;
+    created_at: string; // ISO datetime string
+    updated_at?: string; // ISO datetime string
+    is_active: boolean;
+    messages: ChatMessageResponse[];
+}
+
+export interface ConversationCreate {
+    title?: string;
+}
+
+export interface ConversationUpdate {
+    title?: string;
+    is_active?: boolean;
+}
 
 export interface ConversationResponse {
-    id: string
-    name: string
-    message_count: number
-    last_activity: string
-    create_date: string
-    update_date?: string
+    id: string; // UUID as string
+    user_id: string; // UUID as string
+    agno_session_id: string;
+    title?: string;
+    created_at: string; // ISO datetime string
+    updated_at?: string; // ISO datetime string
+    is_active: boolean;
 }
 
-export interface ConversationListRequest {
-    search?: string
-    order_by?: string
-    order_direction?: 'asc' | 'desc'
+export interface ConversationsPaginatedResponse {
+    success: boolean;
+    message: string;
+    data: ConversationResponse[];
+    pagination?: {
+        page: number;
+        limit: number;
+        total: number;
+        total_pages: number;
+        has_next: boolean;
+        has_prev: boolean;
+    };
 }
 
-export interface CreateConversationRequest {
-    name: string
-    initial_message?: string
+export interface ChatMessageApiResponse {
+    success: boolean;
+    message: string;
+    data: ChatMessageResponse | {
+        user_message: ChatMessageResponse;
+        ai_message: ChatMessageResponse;
+    };
 }
 
-export interface UpdateConversationRequest {
-    name?: string
+export interface ChatConversationApiResponse {
+    success: boolean;
+    message: string;
+    data: ChatConversationResponse;
 }
 
-// ============================================
-// UI STATE TYPES FOR CHATCLIENTWRAPPER
-// ============================================
-
-export interface Conversation {
-    id: string
-    name: string
-    messages: Message[]
-    lastActivity: Date
-    messageCount: number
-    systemPrompt?: string
-}
-
-export interface Message {
-    id: string
-    role: 'user' | 'assistant'
-    content: string
-    timestamp: Date
-    isStreaming?: boolean
-    response_time_ms?: string
-}
-
-export interface ChatState {
-    conversations: Conversation[]
-    activeConversationId: string | null
-    messages: Message[]
-    isLoading: boolean
-    isTyping: boolean
-    error: string | null
-    wsToken: string | null
-}
-
-export function convertToUIConversation(apiConversation: ConversationResponse): Conversation {
-    return {
-        id: apiConversation.id,
-        name: apiConversation.name,
-        messages: [], // Will be loaded separately
-        lastActivity: new Date(apiConversation.last_activity),
-        messageCount: apiConversation.message_count,
-    }
-}
-
-export function convertToUIMessage(apiMessage: MessageResponse): Message {
-    return {
-        id: apiMessage.id,
-        role: apiMessage.role,
-        content: apiMessage.content,
-        timestamp: new Date(apiMessage.timestamp),
-    }
-}
-
-// ============================================
-// ERROR TYPES
-// ============================================
-
-export interface ChatError {
-    code: string
-    message: string
-    details?: string
-}
-
-export interface ChatMessage {
-    id: string;
-    role: 'user' | 'assistant';
-    content: string;
-    timestamp: string | Date;
-    conversation_id?: string;
-    response_time_ms?: number;
-    isStreaming?: boolean;
-}
-
-export interface ChatHistory {
-    messages: ChatMessage[];
-    total_count: number;
-    page: number;
-    page_size: number;
-    total_pages: number;
+export interface ConversationApiResponse {
+    success: boolean;
+    message: string;
+    data: ConversationResponse;
 }

@@ -45,6 +45,11 @@ export const queryKeys = {
     searchMeetings: (query: string) => ['search', 'meetings', query] as const,
     searchFiles: (query: string) => ['search', 'files', query] as const,
     searchUsers: (query: string) => ['search', 'users', query] as const,
+
+    // Chat queries
+    conversations: ['chat', 'conversations'] as const,
+    conversation: (id: string) => ['chat', 'conversations', id] as const,
+    conversationMessages: (id: string) => ['chat', 'conversations', id, 'messages'] as const,
 };
 
 export default queryClient;

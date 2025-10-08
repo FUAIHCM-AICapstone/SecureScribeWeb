@@ -3,7 +3,7 @@
 import * as React from 'react'
 import { getCaretViewportPosition } from './caretUtils'
 import { findTriggerRange, replaceRangeWithMention } from './tokenUtils'
-import type { MentionSearchItem, Mention } from 'types/mention.type'
+import type { MentionSearchItem, Mention } from '../../types/chat.type'
 
 type UseMentionInputOptions = {
     editorRef: React.RefObject<HTMLElement>
@@ -45,6 +45,21 @@ export function useMentionInput({ editorRef, search, limit = 8 }: UseMentionInpu
             setOpen(true)
         }
     }, [search, limit])
+
+    const commit = React.useCallback((item: MentionSearchItem) => {
+        const editor = editorRef.current
+        const r = triggerRangeRef.current
+        if (!editor || !r) return false
+        const m: Mention = {
+            entity_type: item.type,
+            entity_id: item.id,
+            offset_start: 0,
+            offset_end: 0
+        }
+        replaceRangeWithMention(editor, r, m)
+        close()
+        return true
+    }, [editorRef, close])
 
     const onInput = React.useCallback(() => {
         const editor = editorRef.current
@@ -91,17 +106,7 @@ export function useMentionInput({ editorRef, search, limit = 8 }: UseMentionInpu
             return false
         }
         return false
-    }, [open, items, focusedIndex])
-
-    const commit = React.useCallback((item: MentionSearchItem) => {
-        const editor = editorRef.current
-        const r = triggerRangeRef.current
-        if (!editor || !r) return false
-        const m: Mention = { type: item.type, id: item.id, name: item.name }
-        replaceRangeWithMention(editor, r, m)
-        close()
-        return true
-    }, [editorRef, close])
+    }, [open, items, focusedIndex, close, commit])
 
     React.useEffect(() => () => { if (debounceRef.current) window.clearTimeout(debounceRef.current) }, [])
 

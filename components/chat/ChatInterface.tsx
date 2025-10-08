@@ -4,40 +4,12 @@ import { useEffect } from 'react';
 import { ChatWelcome } from './ChatWelcome';
 import { useTranslations } from 'next-intl';
 import { MessagesContainer } from './MessageContainer';
-import { makeStyles, tokens } from '@fluentui/react-components';
+import type { ChatMessageResponse } from '../../types/chat.type';
 
-const useStyles = makeStyles({
-  root: {
-    display: 'flex',
-    flexDirection: 'column',
-    height: 'calc(100vh - 185px)',
-    backgroundColor: tokens.colorNeutralBackground2,
-  },
-});
-
-interface Message {
-  id: string;
-  role: 'user' | 'assistant';
-  content: string;
-  timestamp: Date;
-  isStreaming?: boolean;
-  model_used?: string;
-  response_time_ms?: string;
-  file_attachments?: string[];
-}
-
-interface Conversation {
-  id: string;
-  name: string;
-  messages: Message[];
-  lastActivity: Date;
-  messageCount: number;
-}
 
 interface ChatInterfaceProps {
-  conversation: Conversation | null;
   activeConversationId: string | null;
-  messages: Message[];
+  messages: ChatMessageResponse[];
   isLoading: boolean;
   isTyping: boolean;
   error: string | null;
@@ -45,14 +17,12 @@ interface ChatInterfaceProps {
 }
 
 export function ChatInterface({
-  conversation,
   activeConversationId,
   messages,
   isTyping,
   error,
 }: ChatInterfaceProps) {
   const t = useTranslations('Chat.Interface');
-  const styles = useStyles();
 
   // Note: input moved to ChatClientWrapper; this component renders messages only
 
@@ -68,7 +38,7 @@ export function ChatInterface({
   }, [activeConversationId]);
 
   // If no conversation is selected, show welcome screen
-  if (!conversation && !activeConversationId) {
+  if (!activeConversationId) {
     return (
       <ChatWelcome
         welcomeTitle={t('welcomeTitle')}
@@ -78,7 +48,12 @@ export function ChatInterface({
   }
 
   return (
-    <div className={styles.root}>
+    <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      height: 'calc(100vh - 185px)',
+      backgroundColor: '#f5f5f5'
+    }}>
       {/* Messages Area */}
       <MessagesContainer
         messages={messages}

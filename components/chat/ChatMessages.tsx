@@ -10,6 +10,7 @@ import Image from 'next/image';
 import { MessageCodeBlock } from './MessageCodeBlock';
 import { useTranslations } from 'next-intl';
 import { makeStyles, tokens } from '@fluentui/react-components';
+import type { ChatMessageResponse } from '../../types/chat.type';
 
 const useStyles = makeStyles({
   userMessage: {
@@ -97,31 +98,12 @@ const useStyles = makeStyles({
   },
 });
 
-interface Message {
-  id: string;
-  role: 'user' | 'assistant';
-  content: string;
-  timestamp: Date;
-  isStreaming?: boolean;
-  model_used?: string;
-  response_time_ms?: string;
-  file_attachments?: string[];
-}
-
-interface User {
-  profile_picture?: string;
-  name?: string;
-  username?: string;
-}
-
 interface ChatMessageProps {
-  message: Message;
-  user?: User;
+  message: ChatMessageResponse;
 }
 
 export function ChatMessage({
   message,
-  user,
 }: ChatMessageProps) {
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
   const tMsg = useTranslations('Chat.Messages');
@@ -135,6 +117,11 @@ export function ChatMessage({
       contentSnippet: message.content.substring(0, 100) + '...',
       messageTimestamp: message.timestamp
     })
+  }
+
+  // Helper function to format timestamp for display
+  const formatTimestamp = (timestamp: string): string => {
+    return new Date(timestamp).toLocaleTimeString();
   }
   const handleCopyMessage = async (messageId: string, content: string) => {
     try {
@@ -186,34 +173,14 @@ export function ChatMessage({
         <div className={styles.userBubble}>
           <div className={styles.userMessageInner}>
             <div className={styles.userAvatar}>
-              {user?.profile_picture ? (
-                <Image
-                  src={user.profile_picture}
-                  alt="User Avatar"
-                  width={32}
-                  height={32}
-                  className="w-8 h-8 object-cover rounded-full"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.style.display = 'none';
-                    const fallback = target.parentElement?.querySelector('.fallback-icon');
-                    if (fallback) {
-                      (fallback as HTMLElement).style.display = 'flex';
-                    }
-                  }}
-                />
-              ) : null}
-              <Person24Regular
-                className={`text-sm text-white ${user?.profile_picture ? 'fallback-icon hidden' : ''}`}
-                style={{ display: user?.profile_picture ? 'none' : 'block' }}
-              />
+              <Person24Regular className="text-sm text-white" />
             </div>
             <div className={styles.userContent}>
               <p className={styles.userContentText}>
                 {renderContentWithMentions(message.content, true)}
               </p>
               <p className={styles.userTimestamp}>
-                {message.timestamp.toLocaleTimeString()}
+                {formatTimestamp(message.timestamp)}
               </p>
             </div>
           </div>
@@ -240,7 +207,7 @@ export function ChatMessage({
           {tMsg('assistantLabel')}
         </span>
         <span className={styles.assistantTimestamp}>
-          {message.timestamp.toLocaleTimeString()}
+          {formatTimestamp(message.timestamp)}
         </span>
       </div>
 
@@ -421,13 +388,6 @@ export function ChatMessage({
             )}
           </Button>
         </div>
-
-        {/* Optional: Message metadata */}
-        {(message.model_used || message.response_time_ms) && (
-          <div className="text-xs text-[color:var(--muted-foreground)] flex gap-4">
-            {/* Add metadata display here if needed */}
-          </div>
-        )}
       </div>
     </div>
   );

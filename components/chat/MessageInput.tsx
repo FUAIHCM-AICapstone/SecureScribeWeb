@@ -6,8 +6,8 @@ import MentionSuggestions from '@/components/mentions/MentionSuggestions';
 import useMentionInput from '@/components/mentions/useMentionInput';
 import { serializeContenteditableToText, parseTokensFromText, createMentionChip } from '@/components/mentions/tokenUtils';
 import { searchMentions } from '@/services/api/mock';
-import type { SendMessagePayload } from 'types/chat.type';
 import { makeStyles, tokens } from '@fluentui/react-components';
+import type { ChatMessageCreate, Mention } from '../../types/chat.type';
 
 const useStyles = makeStyles({
   root: {
@@ -74,7 +74,7 @@ const useStyles = makeStyles({
 });
 
 interface MessageInputProps {
-  onSendMessage: (payload: SendMessagePayload) => void;
+  onSendMessage: (payload: ChatMessageCreate) => void;
   isLoading: boolean;
   canSendMessage: boolean;
   placeholder: string;
@@ -115,7 +115,13 @@ export function MessageInput({
     const range = sel.getRangeAt(0);
     let cursor = range;
     tokens.forEach((t) => {
-      const chip = createMentionChip(t.mention);
+      const mention: Mention = {
+        entity_type: t.mention.entity_type,
+        entity_id: t.mention.entity_id,
+        offset_start: 0,
+        offset_end: 0
+      };
+      const chip = createMentionChip(mention);
       cursor.insertNode(chip);
       const space = document.createTextNode(' ');
       chip.after(space);
@@ -140,7 +146,7 @@ export function MessageInput({
     if (direction === 'backward') {
       if (isText && offset > 0) return false; // normal deletion
       const prev = (isText ? (node.previousSibling || parent?.previousSibling) : (node.previousSibling)) as HTMLElement | null;
-      if (prev && (prev as HTMLElement).dataset && (prev as HTMLElement).dataset.mentionId) {
+      if (prev && (prev as HTMLElement).dataset && (prev as HTMLElement).dataset.mentionId && (prev as HTMLElement).dataset.mentionType) {
         // remove optional preceding space
         const before = prev.previousSibling;
         if (before && before.nodeType === Node.TEXT_NODE && (before as Text).data.endsWith(' ')) {
@@ -153,7 +159,7 @@ export function MessageInput({
     } else {
       if (isText && node.textContent && offset < node.textContent.length) return false; // normal deletion
       const next = (isText ? (node.nextSibling || parent?.nextSibling) : (node.nextSibling)) as HTMLElement | null;
-      if (next && next.dataset && next.dataset.mentionId) {
+      if (next && next.dataset && next.dataset.mentionId && next.dataset.mentionType) {
         // remove optional trailing space after chip
         const after = next.nextSibling;
         if (after && after.nodeType === Node.TEXT_NODE) {
@@ -189,7 +195,15 @@ export function MessageInput({
       if (!el) return;
       const { content, mentions } = serializeContenteditableToText(el);
       if (!content.trim()) return;
-      onSendMessage({ content, mentions });
+      onSendMessage({
+        content,
+        mentions: mentions?.map((m: any) => ({
+          entity_type: m.type,
+          entity_id: m.id,
+          offset_start: m.offset,
+          offset_end: m.offset + m.length
+        })) as Mention[]
+      });
       el.innerHTML = '';
       setIsEmpty(true);
     }
@@ -237,7 +251,15 @@ export function MessageInput({
             if (!el) return;
             const { content, mentions } = serializeContenteditableToText(el);
             if (!content.trim()) return;
-            onSendMessage({ content, mentions });
+            onSendMessage({
+              content,
+              mentions: mentions?.map((m: any) => ({
+                entity_type: m.type,
+                entity_id: m.id,
+                offset_start: m.offset,
+                offset_end: m.offset + m.length
+              })) as Mention[]
+            });
             el.innerHTML = '';
             setIsEmpty(true);
           }}

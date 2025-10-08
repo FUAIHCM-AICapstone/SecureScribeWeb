@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import type { Mention } from 'types/mention.type'
+import type { Mention } from '../../types/chat.type'
 import { CalendarLtr24Regular, Document24Regular, Folder24Regular } from '@fluentui/react-icons'
 import { makeStyles, tokens } from '@fluentui/react-components'
 
@@ -35,18 +35,18 @@ const useStyles = makeStyles({
 
 export default function MentionChip({ mention }: Props) {
     const styles = useStyles()
-    const iconClass = mention.type === 'meeting' ? styles.iconMeeting : mention.type === 'file' ? styles.iconFile : styles.iconProject
-    const icon = mention.type === 'meeting' ? <CalendarLtr24Regular className={iconClass} /> : mention.type === 'file' ? <Document24Regular className={iconClass} /> : <Folder24Regular className={iconClass} />
+    const iconClass = mention.entity_type === 'meeting' ? styles.iconMeeting : mention.entity_type === 'file' ? styles.iconFile : styles.iconProject
+    const icon = mention.entity_type === 'meeting' ? <CalendarLtr24Regular className={iconClass} /> : mention.entity_type === 'file' ? <Document24Regular className={iconClass} /> : <Folder24Regular className={iconClass} />
     return (
         <span
             className={styles.chip}
             contentEditable={false}
-            data-mention-id={mention.id}
-            data-mention-type={mention.type}
-            data-mention-name={mention.name}
+            data-mention-id={mention.entity_id}
+            data-mention-type={mention.entity_type}
+            data-mention-name={mention.entity_type}
         >
             <span>{icon}</span>
-            <span className={styles.name}>{mention.name}</span>
+            <span className={styles.name}>{mention.entity_type}</span>
         </span>
     )
 }

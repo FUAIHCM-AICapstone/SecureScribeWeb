@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react';
 import { ChatMessage } from './ChatMessages';
 import { EmptyChatState } from './EmptyChatState';
 import { makeStyles, tokens } from '@fluentui/react-components';
+import type { ChatMessageResponse } from '../../types/chat.type';
 
 const useStyles = makeStyles({
   container: {
@@ -42,19 +43,9 @@ const useStyles = makeStyles({
   },
 });
 
-interface Message {
-  id: string;
-  role: 'user' | 'assistant';
-  content: string;
-  timestamp: Date;
-  isStreaming?: boolean;
-  model_used?: string;
-  response_time_ms?: string;
-  file_attachments?: string[];
-}
 
 interface MessagesContainerProps {
-  messages: Message[];
+  messages: ChatMessageResponse[];
   isTyping: boolean;
   error: string | null;
   typingText: string;

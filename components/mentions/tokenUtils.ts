@@ -1,4 +1,4 @@
-import type { Mention, MentionOccurrence, MentionType } from 'types/mention.type'
+import type { Mention, MentionOccurrence, MentionType } from '../../types/chat.type'
 
 const TOKEN_REGEX = /@\{(meeting|project|file)\}\{([^}]+)\}/g
 
@@ -6,11 +6,20 @@ export function parseTokensFromText(input: string): { start: number; end: number
     const results: { start: number; end: number; mention: Mention }[] = []
     let match: RegExpExecArray | null
     while ((match = TOKEN_REGEX.exec(input)) !== null) {
-        const [full, type, name] = match
+        const [full, entityType, entityId] = match
         const start = match.index
         const end = start + full.length
-        // No id in the token format; fallback to using name as identifier for pasted content
-        results.push({ start, end, mention: { type: type as MentionType, id: name.trim(), name: name.trim() } })
+        // Use entity_id as both id and fallback for missing name
+        results.push({
+            start,
+            end,
+            mention: {
+                entity_type: entityType as MentionType,
+                entity_id: entityId.trim(),
+                offset_start: start,
+                offset_end: end
+            }
+        })
     }
     return results
 }
@@ -27,13 +36,13 @@ export function serializeContenteditableToText(root: HTMLElement): { content: st
         if (node.nodeType === Node.ELEMENT_NODE) {
             const el = node as HTMLElement
             if (el.dataset && el.dataset.mentionId && el.dataset.mentionType) {
-                const name = el.dataset.mentionName || ''
-                const id = el.dataset.mentionId || name
-                const type = el.dataset.mentionType as MentionType
-                const token = `@{${type}}{${name}}`
+                const entityId = el.dataset.mentionId || ''
+                const entityType = el.dataset.mentionType as MentionType
+                const entityName = el.dataset.mentionName || entityType // fallback to type if no name
+                const token = `@{${entityType}}{${entityId}}`
                 const offset = content.length
                 append(token)
-                mentions.push({ type, id, name, offset, length: token.length })
+                mentions.push({ type: entityType, id: entityId, name: entityName, offset, length: token.length })
                 return // skip subtree
             }
             const tag = el.tagName
@@ -65,7 +74,7 @@ export function serializeContenteditableToText(root: HTMLElement): { content: st
 
 export function createMentionChip(mention: Mention): HTMLSpanElement {
     const chip = document.createElement('span')
-    chip.textContent = `@${mention.name}`
+    chip.textContent = `@${mention.entity_type}`
     chip.contentEditable = 'false'
     chip.className = 'mention-chip'
     chip.style.backgroundColor = 'var(--mention-bg, rgba(0,120,212,0.12))'
@@ -73,9 +82,9 @@ export function createMentionChip(mention: Mention): HTMLSpanElement {
     chip.style.borderRadius = '6px'
     chip.style.padding = '2px 6px'
     chip.style.margin = '0 1px'
-    chip.dataset.mentionId = mention.id
-    chip.dataset.mentionType = mention.type
-    chip.dataset.mentionName = mention.name
+    chip.dataset.mentionId = mention.entity_id
+    chip.dataset.mentionType = mention.entity_type
+    chip.dataset.mentionName = mention.entity_type
     return chip
 }
 
