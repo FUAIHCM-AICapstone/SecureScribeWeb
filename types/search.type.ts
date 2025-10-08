@@ -1,26 +1,24 @@
 // Search Types
 export interface SearchRequest {
-    query: string;
+    search: string;
+    page?: number;
     limit?: number;
     project_id?: string;
     meeting_id?: string;
 }
 
 export interface SearchResult {
-    file_id: string;
-    chunk_index: number;
-    text: string;
-    score: number;
-    chunk_size: number;
-    filename?: string;
-    mime_type?: string;
+    id: string;
+    name: string;
+    created_at: string;
+    type: string;
 }
 
 export interface SearchResponse {
-    query: string;
-    results: SearchResult[];
-    total_results: number;
-    search_time: number;
+    success: boolean;
+    message: string;
+    data: SearchResult[];
+    errors: any;
 }
 
 export interface IndexingStatus {
@@ -84,9 +82,7 @@ export interface IndexingStatusExtended {
 
 
 // Specific Response Types
-export type SearchApiResponse = ApiResponse<SearchResponse>;
-export type IndexingStatusResponse = ApiResponse<IndexingStatus>;
-export type IndexingStatusExtendedResponse = ApiResponse<IndexingStatusExtended>;
+export type SearchApiResponse = SearchResponse;
 
 // RAG Types
 export interface RagRequest {

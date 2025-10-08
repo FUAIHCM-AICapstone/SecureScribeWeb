@@ -2,7 +2,6 @@ import axiosInstance from './axiosInstance';
 import type {
     SearchRequest,
     SearchApiResponse,
-    IndexingStatusResponse,
     ApiResponse,
     RagRequest,
     RagApiResponse,
@@ -10,15 +9,20 @@ import type {
 
 // Search API functions
 
-// Perform semantic search
-export const searchDocuments = async (params: SearchRequest): Promise<SearchApiResponse> => {
-    console.log('🔍 Performing semantic search:', params);
-    const response = await axiosInstance.post('/search', params);
+// Perform dynamic search
+export const dynamicSearch = async (params: SearchRequest): Promise<SearchApiResponse> => {
+    console.log('🔍 Performing dynamic search:', params);
+    const searchParams = new URLSearchParams();
+    searchParams.append('search', params.search);
+    if (params.page) searchParams.append('page', params.page.toString());
+    if (params.limit) searchParams.append('limit', params.limit.toString());
+
+    const response = await axiosInstance.get(`/search/dynamic?${searchParams.toString()}`);
     return response.data;
 };
 
 // Get indexing status for a file
-export const getIndexingStatus = async (fileId: string): Promise<IndexingStatusResponse> => {
+export const getIndexingStatus = async (fileId: string): Promise<ApiResponse<any>> => {
     console.log('📊 Getting indexing status for file:', fileId);
     const response = await axiosInstance.get(`/search/status/${fileId}`);
     return response.data;
@@ -31,28 +35,26 @@ export const getIndexingStatus = async (fileId: string): Promise<IndexingStatusR
 
 // Enhanced Search with Filters
 export const searchDocumentsAdvanced = async (
-    query: string,
+    search: string,
     options: {
+        page?: number;
         limit?: number;
         projectId?: string;
         meetingId?: string;
-        fileTypes?: string[];
-        dateFrom?: string;
-        dateTo?: string;
     } = {}
 ): Promise<SearchApiResponse> => {
-    console.log('🔍 Advanced search:', { query, ...options });
+    console.log('🔍 Advanced search:', { search, ...options });
 
     const params: SearchRequest = {
-        query,
+        search,
+        page: options.page || 1,
         limit: options.limit || 20,
     };
 
     if (options.projectId) params.project_id = options.projectId;
     if (options.meetingId) params.meeting_id = options.meetingId;
 
-    const response = await axiosInstance.post('/search', params);
-    return response.data;
+    return dynamicSearch(params);
 };
 
 // RAG
@@ -109,7 +111,7 @@ export const getSearchAnalytics = async (dateRange?: { from: string; to: string 
 // Export all functions
 const searchApi = {
     // Core search functions
-    searchDocuments,
+    dynamicSearch,
     searchDocumentsAdvanced,
 
     // Indexing functions

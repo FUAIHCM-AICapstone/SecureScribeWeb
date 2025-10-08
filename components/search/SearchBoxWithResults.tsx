@@ -29,36 +29,52 @@ export interface SearchResultsGrouped {
     documents?: SearchResult[];
 }
 
-// Default mock search using existing services/api/mock
+// Default search using real API
 async function defaultSearchEntities(query: string): Promise<SearchResultsGrouped> {
-    const mod = await import("../../services/api/mock");
-    const data = await mod.searchAll(query);
+    const mod = await import("../../services/api/search");
+    const response = await mod.dynamicSearch({
+        search: query,
+        page: 1,
+        limit: 20
+    });
+
+    if (!response.success || !response.data) {
+        return {
+            meetings: [],
+            transcripts: [],
+            meeting_notes: [],
+            files: [],
+            projects: [],
+            users: [],
+            documents: [],
+        };
+    }
+
     const mapType = (t: string): SearchEntityType | null => {
         if (t === "meeting") return "meeting";
-        if (t === "transcript") return "transcript";
-        if (t === "note") return "meeting_note";
-        if (t === "file") return "file";
+        if (t === "project") return "project";
         return null;
     };
-    const mapped: SearchResult[] = data
+
+    const mapped: SearchResult[] = response.data
         .map((x: any) => {
             const mt = mapType(x.type);
             if (!mt) return null;
             return {
                 id: x.id,
                 type: mt,
-                title: x.title,
-                subtitle: x.subtitle,
+                title: x.name,
+                subtitle: `Created ${new Date(x.created_at).toLocaleDateString()}`,
             } as SearchResult;
         })
         .filter(Boolean) as SearchResult[];
 
     return {
         meetings: mapped.filter((i) => i.type === "meeting"),
-        transcripts: mapped.filter((i) => i.type === "transcript"),
-        meeting_notes: mapped.filter((i) => i.type === "meeting_note"),
-        files: mapped.filter((i) => i.type === "file"),
-        projects: [],
+        transcripts: [],
+        meeting_notes: [],
+        files: [],
+        projects: mapped.filter((i) => i.type === "project"),
         users: [],
         documents: [],
     };

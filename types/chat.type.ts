@@ -29,14 +29,15 @@ export interface ChatMessageCreate {
 export interface ChatMessageResponse {
     id: string; // UUID as string
     conversation_id: string; // UUID as string
-    role: string; // "user", "assistant", "system"
+    message_type: string; // "user", "agent", "system"
     content: string;
-    timestamp: string; // ISO datetime string
-    mentions?: Mention[];
+    created_at: string; // ISO datetime string
+    mentions?: Mention[] | null;
 }
 
 export interface ChatConversationResponse {
     id: string; // UUID as string
+    user_id: string; // UUID as string
     title?: string;
     created_at: string; // ISO datetime string
     updated_at?: string; // ISO datetime string
@@ -56,7 +57,6 @@ export interface ConversationUpdate {
 export interface ConversationResponse {
     id: string; // UUID as string
     user_id: string; // UUID as string
-    agno_session_id: string;
     title?: string;
     created_at: string; // ISO datetime string
     updated_at?: string; // ISO datetime string

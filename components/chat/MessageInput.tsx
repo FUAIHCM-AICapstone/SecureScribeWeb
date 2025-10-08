@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 import MentionSuggestions from '@/components/mentions/MentionSuggestions';
 import useMentionInput from '@/components/mentions/useMentionInput';
 import { serializeContenteditableToText, parseTokensFromText, createMentionChip } from '@/components/mentions/tokenUtils';
-import { searchMentions } from '@/services/api/mock';
+import { dynamicSearch } from '@/services/api/search';
 import { makeStyles, tokens } from '@fluentui/react-components';
 import type { ChatMessageCreate, Mention } from '../../types/chat.type';
 
@@ -90,9 +90,33 @@ export function MessageInput({
   const editorRef = useRef<HTMLDivElement>(null);
   const [isEmpty, setIsEmpty] = useState(true);
 
+  // Wrapper function to adapt dynamicSearch API to mention format
+  const searchMentionsAdapter = async (query: string, limit: number = 8) => {
+    try {
+      const response = await dynamicSearch({
+        search: query,
+        page: 1,
+        limit: limit
+      });
+
+      if (response.success && response.data) {
+        return response.data.map(item => ({
+          id: item.id,
+          type: item.type as 'meeting' | 'project' | 'file',
+          name: item.name,
+          subtitle: `Created ${new Date(item.created_at).toLocaleDateString()}`
+        }));
+      }
+      return [];
+    } catch (error) {
+      console.error('Search mentions error:', error);
+      return [];
+    }
+  };
+
   const mention = useMentionInput({
     editorRef,
-    search: (q: string) => searchMentions(q, 8),
+    search: searchMentionsAdapter,
     limit: 8,
   });
 
@@ -251,7 +275,8 @@ export function MessageInput({
             if (!el) return;
             const { content, mentions } = serializeContenteditableToText(el);
             if (!content.trim()) return;
-            onSendMessage({
+
+            const payload = {
               content,
               mentions: mentions?.map((m: any) => ({
                 entity_type: m.type,
@@ -259,7 +284,10 @@ export function MessageInput({
                 offset_start: m.offset,
                 offset_end: m.offset + m.length
               })) as Mention[]
-            });
+            };
+
+            onSendMessage(payload);
+
             el.innerHTML = '';
             setIsEmpty(true);
           }}

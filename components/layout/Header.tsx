@@ -17,7 +17,7 @@ import { getNotifications, markNotificationAsRead, markNotificationAsUnread } fr
 import type { NotificationResponse } from 'types/notification.type';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/queryClient';
-import { searchDocuments } from '@/services/api/search';
+import { dynamicSearch } from '@/services/api/search';
 import { getProjects } from '@/services/api/project';
 import { getMeetings } from '@/services/api/meeting';
 import { getFiles } from '@/services/api/file';
@@ -309,7 +309,7 @@ export default function Header() {
         try {
             // Perform parallel search across all entities
             const [documents, projects, meetings, files, users] = await Promise.allSettled([
-                searchDocuments({ query, limit: 3 }),
+                dynamicSearch({ search: query, limit: 3 }),
                 getProjects({ name: query }, { limit: 3 }),
                 getMeetings({ title: query }, { limit: 3 }),
                 getFiles({ filename: query }, { limit: 3 }),
@@ -326,8 +326,8 @@ export default function Header() {
             const documentsResults: any[] = [];
 
             // Add projects
-            if (projects.status === 'fulfilled' && projects.value.data?.length) {
-                projectsResults.push(...projects.value.data.map(project => ({
+            if (projects.status === 'fulfilled' && projects.value?.data?.length) {
+                projectsResults.push(...projects.value.data.map((project: any) => ({
                     id: project.id,
                     type: 'project',
                     title: project.name,
@@ -336,8 +336,8 @@ export default function Header() {
             }
 
             // Add meetings
-            if (meetings.status === 'fulfilled' && meetings.value.data?.length) {
-                meetingsResults.push(...meetings.value.data.map(meeting => ({
+            if (meetings.status === 'fulfilled' && meetings.value?.data?.length) {
+                meetingsResults.push(...meetings.value.data.map((meeting: any) => ({
                     id: meeting.id,
                     type: 'meeting',
                     title: meeting.title || 'Untitled Meeting',
@@ -346,8 +346,8 @@ export default function Header() {
             }
 
             // Add files
-            if (files.status === 'fulfilled' && files.value.data?.length) {
-                filesResults.push(...files.value.data.map(file => ({
+            if (files.status === 'fulfilled' && files.value?.data?.length) {
+                filesResults.push(...files.value.data.map((file: any) => ({
                     id: file.id,
                     type: 'file',
                     title: file.filename || 'Unnamed File',
@@ -356,8 +356,8 @@ export default function Header() {
             }
 
             // Add users
-            if (users.status === 'fulfilled' && users.value.data?.length) {
-                usersResults.push(...users.value.data.map(user => ({
+            if (users.status === 'fulfilled' && users.value?.data?.length) {
+                usersResults.push(...users.value.data.map((user: any) => ({
                     id: user.id,
                     type: 'user',
                     title: user.name || user.email,
@@ -365,13 +365,13 @@ export default function Header() {
                 })));
             }
 
-            // Add document search results
-            if (documents.status === 'fulfilled' && documents.value?.data?.results?.length) {
-                documentsResults.push(...documents.value.data.results.map((result: any) => ({
-                    id: result.file_id + '_' + result.chunk_index,
+            // Add document search results (now using same API as other searches)
+            if (documents.status === 'fulfilled' && documents.value?.data?.length) {
+                documentsResults.push(...documents.value.data.map((result: any) => ({
+                    id: result.id,
                     type: 'document',
-                    title: result.filename || 'Document',
-                    subtitle: `Found: ${result.text.substring(0, 100)}...`,
+                    title: result.name || 'Document',
+                    subtitle: `Created ${new Date(result.created_at).toLocaleDateString()}`,
                 })));
             }
 

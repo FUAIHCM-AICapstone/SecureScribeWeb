@@ -147,17 +147,21 @@
       "closeAria": "Close conversation",
       "rename": "Rename conversation",
       "delete": "Delete conversation",
-      "confirmRename": "Confirm rename"
+      "confirmRename": "Confirm rename",
+      "loadingConversations": "Loading conversations...",
+      "noConversations": "No conversations yet"
     },
     "Interface": {
       "welcomeTitle": "Welcome to Chat",
       "welcomeDescription": "Select a conversation to start chatting",
       "typing": "Assistant is typing...",
+      "aiResponding": "AI is thinking...",
       "noMessages": "No messages yet",
       "startConversation": "Start a conversation",
       "inputPlaceholder": "Type your message...",
       "send": "Send",
-      "sendAria": "Send message"
+      "sendAria": "Send message",
+      "loadingMessages": "Loading messages..."
     },
     "Messages": {
       "assistantLabel": "Assistant",

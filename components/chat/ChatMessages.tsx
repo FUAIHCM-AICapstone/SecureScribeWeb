@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Button } from '@fluentui/react-components';
@@ -109,13 +109,16 @@ export function ChatMessage({
   const tMsg = useTranslations('Chat.Messages');
   const styles = useStyles();
 
+  useEffect(() => {
+    console.log("check message in chat messages", message);
+  }, [message]);
 
   // Enhanced debug logging
-  if (message.role === 'assistant') {
+  if (message.message_type === 'agent') {
     console.log('[ChatMessage] Assistant message analysis:', {
       messageId: message.id,
       contentSnippet: message.content.substring(0, 100) + '...',
-      messageTimestamp: message.timestamp
+      messageTimestamp: message.created_at
     })
   }
 
@@ -167,7 +170,7 @@ export function ChatMessage({
     )
   }
 
-  if (message.role === 'user') {
+  if (message.message_type === 'user') {
     return (
       <div className={styles.userMessage}>
         <div className={styles.userBubble}>
@@ -180,7 +183,7 @@ export function ChatMessage({
                 {renderContentWithMentions(message.content, true)}
               </p>
               <p className={styles.userTimestamp}>
-                {formatTimestamp(message.timestamp)}
+                {formatTimestamp(message.created_at)}
               </p>
             </div>
           </div>
@@ -207,7 +210,7 @@ export function ChatMessage({
           {tMsg('assistantLabel')}
         </span>
         <span className={styles.assistantTimestamp}>
-          {formatTimestamp(message.timestamp)}
+          {formatTimestamp(message.created_at)}
         </span>
       </div>
 

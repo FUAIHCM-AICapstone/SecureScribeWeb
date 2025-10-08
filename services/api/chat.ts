@@ -45,16 +45,11 @@ export const getConversations = async (
  */
 export const getConversation = async (
     conversationId: string,
-    limit: number = 50
 ): Promise<ChatConversationResponse> => {
-    const queryParams = {
-        limit,
-    };
 
-    const queryString = QueryBuilder.build(queryParams);
 
     return ApiWrapper.execute(() =>
-        axiosInstance.get(`/conversations/${conversationId}${queryString}`)
+        axiosInstance.get(`/conversations/${conversationId}/messages`)
     );
 };
 

@@ -147,17 +147,21 @@
       "closeAria": "Đóng cuộc trò chuyện",
       "rename": "Đổi tên cuộc trò chuyện",
       "delete": "Xóa cuộc trò chuyện",
-      "confirmRename": "Xác nhận đổi tên"
+      "confirmRename": "Xác nhận đổi tên",
+      "loadingConversations": "Đang tải cuộc trò chuyện...",
+      "noConversations": "Chưa có cuộc trò chuyện nào"
     },
     "Interface": {
       "welcomeTitle": "Chào mừng đến với Trò chuyện",
       "welcomeDescription": "Chọn một cuộc trò chuyện để bắt đầu",
       "typing": "Trợ lý đang nhập...",
+      "aiResponding": "AI đang suy nghĩ...",
       "noMessages": "Chưa có tin nhắn",
       "startConversation": "Bắt đầu cuộc trò chuyện",
       "inputPlaceholder": "Nhập tin nhắn...",
       "send": "Gửi",
-      "sendAria": "Gửi tin nhắn"
+      "sendAria": "Gửi tin nhắn",
+      "loadingMessages": "Đang tải tin nhắn..."
     },
     "Messages": {
       "assistantLabel": "Trợ lý",

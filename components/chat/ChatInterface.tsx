@@ -10,8 +10,9 @@ import type { ChatMessageResponse } from '../../types/chat.type';
 interface ChatInterfaceProps {
   activeConversationId: string | null;
   messages: ChatMessageResponse[];
-  isLoading: boolean;
+  isLoading?: boolean;
   isTyping: boolean;
+  isAIResponding?: boolean;
   error: string | null;
   onOpenMobileSidebar: () => void;
 }
@@ -20,7 +21,9 @@ export function ChatInterface({
   activeConversationId,
   messages,
   isTyping,
+  isAIResponding = false,
   error,
+  isLoading = false,
 }: ChatInterfaceProps) {
   const t = useTranslations('Chat.Interface');
 
@@ -58,10 +61,13 @@ export function ChatInterface({
       <MessagesContainer
         messages={messages}
         isTyping={isTyping}
+        isAIResponding={isAIResponding}
         error={error}
         typingText={t('typing')}
+        aiRespondingText={t('aiResponding')}
         noMessagesText={t('noMessages')}
         startConversationText={t('startConversation')}
+        isLoading={isLoading}
       />
     </div>
   );

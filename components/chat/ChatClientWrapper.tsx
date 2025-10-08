@@ -2,35 +2,13 @@
 /* eslint-disable @typescript-eslint/no-empty-object-type */
 'use client'
 
-import { Button, Input, Tab, TabList, Tooltip, makeStyles, tokens } from '@fluentui/react-components'
-import { Add24Regular, Dismiss16Regular, Edit16Regular, Checkmark16Regular } from '@fluentui/react-icons'
-import { useTranslations } from 'next-intl'
-import { useEffect, useRef, useState } from 'react'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import type {
-    ConversationResponse,
-    ChatConversationResponse,
-    ChatMessageResponse,
-    ChatMessageCreate
-} from '../../types/chat.type'
-import {
-    createConversation,
-    getConversations,
-    getConversation,
-    sendChatMessage,
-    updateConversation,
-    deleteConversation,
-    connectToChatSSE,
-    disconnectFromChatSSE
-} from '../../services/api/chat'
+import { makeStyles } from '@fluentui/react-components'
+import { useEffect, useState } from 'react'
 import { ChatInterface } from './ChatInterface'
 import { MessageInput } from './MessageInput'
-
-// Helper function to format conversation title
-const getConversationTitle = (conversation: ConversationResponse): string => {
-    return conversation.title || 'Untitled';
-}
-
+import { ConversationTabs } from './ConversationTabs'
+import { useConversationManager } from '../../hooks/useConversationManager'
+import { useSSEManager } from '../../hooks/useSSEManager'
 
 interface ChatClientWrapperProps {
     // No props needed for standalone version
@@ -42,53 +20,6 @@ const useStyles = makeStyles({
         display: 'flex',
         flexDirection: 'column'
     },
-    header: {
-        padding: '8px 12px',
-        display: 'flex',
-        alignItems: 'center',
-        columnGap: '8px',
-        position: 'sticky',
-        top: 0,
-        backgroundColor: tokens.colorNeutralBackground1,
-        zIndex: 10,
-        boxShadow: tokens.shadow4,
-    },
-    tabListContainer: {
-        flex: 1,
-        width: '100%',
-        overflowX: 'auto',
-        overflowY: 'hidden',
-        msOverflowStyle: 'none',
-        scrollbarWidth: 'none',
-        selectors: {
-            '&::-webkit-scrollbar': {
-                width: '0px',
-                height: '0px'
-            }
-        }
-    },
-    tabList: {
-        minWidth: '100%'
-    },
-    tabItem: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        columnGap: '8px',
-        maxWidth: '280px',
-        width: '100%'
-    },
-    tabName: {
-        display: 'inline-block',
-        flex: 1,
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        whiteSpace: 'nowrap'
-    },
-    renameInput: {
-        flex: 1,
-        maxWidth: '200px'
-    },
     content: {
         flex: 1,
     }
@@ -96,424 +27,62 @@ const useStyles = makeStyles({
 
 export default function ChatClientWrapper({ }: ChatClientWrapperProps) {
     const styles = useStyles()
-    const tTabs = useTranslations('Chat.Tabs')
-    const queryClient = useQueryClient()
 
-    // State for UI interactions
-    const [activeConversationId, setActiveConversationId] = useState<string | null>(null)
-    const [isTyping, setIsTyping] = useState<boolean>(false)
-    const [sseEventSource, setSseEventSource] = useState<EventSource | null>(null)
-    const [renamingId, setRenamingId] = useState<string | null>(null)
-    const [renameValue, setRenameValue] = useState<string>('')
-    const tabListContainerRef = useRef<HTMLDivElement>(null)
+    // Use custom hooks for state management
+    const conversationManager = useConversationManager()
+    useSSEManager(conversationManager.activeConversationId, conversationManager.setIsAIResponding)
 
-    // React Query for data fetching
-    const { data: conversations, isLoading: conversationsLoading } = useQuery({
-        queryKey: ['chat', 'conversations'],
-        queryFn: () => getConversations(),
-        staleTime: 2 * 60 * 1000, // 2 minutes
-    })
+    // State for tab list key forcing re-render
+    const [tabListKey, setTabListKey] = useState<number>(0)
 
-    const { data: activeConversationResponse, isLoading: conversationLoading } = useQuery({
-        queryKey: ['chat', 'conversations', activeConversationId || ''],
-        queryFn: () => getConversation(activeConversationId!),
-        enabled: !!activeConversationId,
-        staleTime: 30 * 1000, // 30 seconds for conversation data
-    })
-
-    // Mutations for write operations
-    const createConversationMutation = useMutation({
-        mutationFn: ({ title }: { title: string }) => createConversation({ title }),
-        onSuccess: (newConversation) => {
-            // Invalidate conversations list to refetch
-            queryClient.invalidateQueries({ queryKey: ['chat', 'conversations'] })
-
-            // Set as active and connect to SSE
-            if (newConversation) {
-                setActiveConversationId(newConversation.id)
-                connectToSSE(newConversation.id)
-            }
-        },
-    })
-
-    const sendMessageMutation = useMutation({
-        mutationFn: ({ conversationId, payload }: { conversationId: string; payload: ChatMessageCreate }) =>
-            sendChatMessage(conversationId, payload),
-        onMutate: async ({ conversationId, payload }) => {
-            // Cancel outgoing refetches
-            await queryClient.cancelQueries({ queryKey: ['chat', 'conversations', conversationId] })
-
-            // Snapshot the previous value
-            const previousConversation = queryClient.getQueryData(['chat', 'conversations', conversationId])
-
-            // Add optimistic user message
-            const optimisticUserMessage: ChatMessageResponse = {
-                id: `temp-user-${Date.now()}`,
-                conversation_id: conversationId,
-                role: 'user',
-                content: payload.content,
-                timestamp: new Date().toISOString(),
-                mentions: payload.mentions,
-            }
-
-            // Optimistically update the cache
-            queryClient.setQueryData(
-                ['chat', 'conversations', conversationId],
-                (oldData: ChatConversationResponse | undefined) => {
-                    if (!oldData) return oldData
-
-                    return {
-                        ...oldData,
-                        messages: [...oldData.messages, optimisticUserMessage],
-                    }
-                }
-            )
-
-            return { previousConversation, optimisticUserMessage }
-        },
-        onSuccess: (response, { conversationId }, context) => {
-            if (response && response.user_message && response.ai_message) {
-                // Replace optimistic user message with real one and add AI message
-                queryClient.setQueryData(
-                    ['chat', 'conversations', conversationId],
-                    (oldData: ChatConversationResponse | undefined) => {
-                        if (!oldData) return oldData
-
-                        const messagesWithoutOptimistic = oldData.messages.filter(
-                            msg => msg.id !== context?.optimisticUserMessage.id
-                        )
-
-                        return {
-                            ...oldData,
-                            messages: [...messagesWithoutOptimistic, response.user_message, response.ai_message],
-                        }
-                    }
-                )
-
-                // Invalidate conversations to update message counts
-                queryClient.invalidateQueries({ queryKey: ['chat', 'conversations'] })
-            }
-        },
-        onError: (error, { conversationId }, context) => {
-            // Rollback optimistic update on error
-            if (context?.previousConversation) {
-                queryClient.setQueryData(
-                    ['chat', 'conversations', conversationId],
-                    context.previousConversation
-                )
-            }
-        },
-    })
-
-    const deleteConversationMutation = useMutation({
-        mutationFn: deleteConversation,
-        onSuccess: (_, conversationId) => {
-            // Remove conversation from cache
-            queryClient.setQueryData(['chat', 'conversations'], (oldData: ConversationResponse[] | undefined) => {
-                if (!oldData) return oldData
-                return oldData.filter(conv => conv.id !== conversationId)
-            })
-
-            // If deleted conversation was active, switch to another one
-            if (activeConversationId === conversationId) {
-                const remainingConversations = conversations?.filter(conv => conv.id !== conversationId) || []
-                if (remainingConversations.length > 0) {
-                    setActiveConversationId(remainingConversations[0].id)
-                } else {
-                    setActiveConversationId(null)
-                }
-            }
-        },
-    })
-
-    // Use API data directly
-    const messages = activeConversationResponse?.messages || []
-    const isLoading = conversationsLoading || conversationLoading || sendMessageMutation.isPending
-
-    // Debug logging (remove in production)
-    // console.log('ChatClientWrapper state:', {
-    //     conversations: conversations,
-    //     conversationsLength: conversations?.length || 0,
-    //     activeConversationId,
-    //     activeConversationResponse,
-    //     messages: messages,
-    //     isLoading
-    // });
-
-    // Set first conversation as active when conversations load
+    // Force TabList re-render when activeConversationId changes
     useEffect(() => {
-        if (conversations && conversations.length > 0 && !activeConversationId) {
-            setActiveConversationId(conversations[0].id)
+        if (conversationManager.activeConversationId) {
+            setTabListKey(prev => prev + 1)
         }
-    }, [conversations, activeConversationId])
+    }, [conversationManager.activeConversationId])
 
-    // Connect to SSE for real-time messages
-    const connectToSSE = (conversationId: string) => {
-        // Disconnect existing SSE if any
-        if (sseEventSource) {
-            disconnectFromChatSSE(sseEventSource)
-            setSseEventSource(null)
-        }
-
-        try {
-            const eventSource = connectToChatSSE(
-                conversationId,
-                (data: any) => {
-                    // Handle incoming SSE message
-                    if (data && data.type === 'message') {
-                        // Update conversation messages in cache
-                        queryClient.setQueryData(
-                            ['chat', 'conversations', conversationId],
-                            (oldData: ChatConversationResponse | undefined) => {
-                                if (!oldData) return oldData
-
-                                return {
-                                    ...oldData,
-                                    messages: [...oldData.messages, data.data],
-                                }
-                            }
-                        )
-
-                        // Invalidate conversations to update message counts
-                        queryClient.invalidateQueries({ queryKey: ['chat', 'conversations'] })
-                    }
-                },
-                (error: any) => {
-                    console.error('SSE error:', error)
-                },
-                () => {
-                    console.log('SSE connection opened')
-                }
-            )
-            setSseEventSource(eventSource)
-        } catch (error) {
-            console.error('Failed to connect to SSE:', error)
-        }
-    }
-
-    // Disconnect from SSE
-    const disconnectFromSSE = () => {
-        if (sseEventSource) {
-            disconnectFromChatSSE(sseEventSource)
-            setSseEventSource(null)
-        }
-    }
-
-    // Handle conversation selection
-    const handleConversationChange = (conversationId: string) => {
-        setActiveConversationId(conversationId)
-        connectToSSE(conversationId)
-    }
-
-    // Handle sending new message
-    const handleSendMessage = (payload: ChatMessageCreate) => {
-        if (!activeConversationId) return
-
-        setIsTyping(true)
-        sendMessageMutation.mutate({
-            conversationId: activeConversationId,
-            payload,
-        }, {
-            onSettled: () => {
-                setIsTyping(false)
-            }
-        })
-    }
-
-    // Create a new conversation and focus it
-    const handleCreateConversation = () => {
-        createConversationMutation.mutate({
-            title: 'New conversation'
-        })
-    }
-
-    // Cleanup SSE on unmount
-    useEffect(() => {
-        return () => {
-            disconnectFromSSE()
-        }
-    }, [])
-
-    // Handle conversation rename using mutation
-    const renameConversationMutation = useMutation({
-        mutationFn: ({ conversationId, title }: { conversationId: string; title: string }) =>
-            updateConversation(conversationId, { title }),
-        onSuccess: (updatedConversation, { conversationId, title }) => {
-            // Update conversation in cache
-            queryClient.setQueryData(['chat', 'conversations'], (oldData: ConversationResponse[] | undefined) => {
-                if (!oldData) return oldData
-                return oldData.map(conv =>
-                    conv.id === conversationId
-                        ? { ...conv, title }
-                        : conv
-                )
-            })
-
-            // Reset rename state
-            setRenamingId(null)
-            setRenameValue('')
-        },
-        onError: (error) => {
-            console.error('Failed to rename conversation:', error)
-            // Reset rename state on error
-            setRenamingId(null)
-            setRenameValue('')
-        },
-    })
-
-
-    // Start inline rename
-    const startRename = (conversationId: string, currentTitle: string) => {
-        setRenamingId(conversationId)
-        setRenameValue(currentTitle)
-    }
-
-    const cancelRename = () => {
-        setRenamingId(null)
-        setRenameValue('')
-    }
-
-    // Handle conversation deletion
-    const handleDeleteConversation = (conversationId: string, e?: React.MouseEvent) => {
-        if (e) {
-            e.stopPropagation()
-            e.preventDefault()
-        }
-
-        if (window.confirm('Are you sure you want to delete this conversation?')) {
-            deleteConversationMutation.mutate(conversationId)
-        }
-    }
+    // Destructure values from conversation manager
+    const {
+        conversations,
+        messages,
+        conversationsLoading,
+        conversationLoading,
+        isSendingMessage,
+        isDeletingConversation,
+        isRenamingConversation,
+        handleConversationChange,
+        handleSendMessage,
+        handleCreateConversation,
+        handleDeleteConversation,
+        handleRenameConversation,
+    } = conversationManager
 
     return (
         <div className={styles.root}>
             {/* Conversation Tabs Header */}
-            <div className={styles.header}>
-                <div
-                    className={styles.tabListContainer}
-                    ref={tabListContainerRef}
-                    onWheel={(e) => {
-                        if (e.deltaY !== 0) {
-                            e.preventDefault()
-                            const el = tabListContainerRef.current
-                            if (el) {
-                                el.scrollLeft += e.deltaY
-                            }
-                        }
-                    }}
-                >
-                    <TabList
-                        appearance="subtle"
-                        size="small"
-                        selectedValue={activeConversationId || undefined}
-                        onTabSelect={(_, data) => handleConversationChange(String(data.value))}
-                        className={styles.tabList}
-                    >
-                        {conversationsLoading ? (
-                            <div style={{ padding: '8px 12px', color: '#666' }}>Loading conversations...</div>
-                        ) : conversations && conversations.length > 0 ? (
-                            conversations.map(conv => (
-                                <Tab key={conv.id} value={conv.id}>
-                                    <div className={styles.tabItem}>
-                                        {renamingId === conv.id ? (
-                                            <Input
-                                                appearance="underline"
-                                                size="medium"
-                                                value={renameValue}
-                                                onChange={(_, data) => setRenameValue(data.value)}
-                                                onBlur={() => {
-                                                    if (renameValue.trim()) {
-                                                        renameConversationMutation.mutate({
-                                                            conversationId: conv.id,
-                                                            title: renameValue.trim()
-                                                        })
-                                                    } else {
-                                                        cancelRename()
-                                                    }
-                                                }}
-                                                onKeyDown={(e) => {
-                                                    if (e.key === 'Enter' && renameValue.trim()) {
-                                                        renameConversationMutation.mutate({
-                                                            conversationId: conv.id,
-                                                            title: renameValue.trim()
-                                                        })
-                                                    }
-                                                    if (e.key === 'Escape') cancelRename()
-                                                }}
-                                                className={styles.renameInput}
-                                                disabled={renameConversationMutation.isPending}
-                                            />
-                                        ) : (
-                                            <div style={{ cursor: 'default' }}>
-                                                <Tooltip content={getConversationTitle(conv)} relationship="label">
-                                                    <span className={styles.tabName}>
-                                                        {getConversationTitle(conv)}
-                                                    </span>
-                                                </Tooltip>
-                                            </div>
-                                        )}
-                                        <div style={{ display: 'flex', gap: '4px', marginLeft: '8px' }}>
-                                            <Tooltip content={renamingId === conv.id ? tTabs('confirmRename') : tTabs('rename')} relationship="label">
-                                                <Button
-                                                    appearance="subtle"
-                                                    size="small"
-                                                    icon={renamingId === conv.id ? <Checkmark16Regular /> : <Edit16Regular />}
-                                                    onClick={(e) => {
-                                                        e.stopPropagation()
-                                                        if (renamingId === conv.id) {
-                                                            if (renameValue.trim()) {
-                                                                renameConversationMutation.mutate({
-                                                                    conversationId: conv.id,
-                                                                    title: renameValue.trim()
-                                                                })
-                                                            } else {
-                                                                cancelRename()
-                                                            }
-                                                        } else {
-                                                            startRename(conv.id, getConversationTitle(conv))
-                                                        }
-                                                    }}
-                                                    disabled={renameConversationMutation.isPending}
-                                                    aria-label={renamingId === conv.id ? tTabs('confirmRename') : tTabs('rename')}
-                                                />
-                                            </Tooltip>
-                                            <Tooltip content={tTabs('delete')} relationship="label">
-                                                <Button
-                                                    appearance="subtle"
-                                                    size="small"
-                                                    icon={<Dismiss16Regular />}
-                                                    onClick={(e) => handleDeleteConversation(conv.id, e)}
-                                                    disabled={deleteConversationMutation.isPending}
-                                                    aria-label={tTabs('delete')}
-                                                />
-                                            </Tooltip>
-                                        </div>
-                                    </div>
-                                </Tab>
-                            ))
-                        ) : (
-                            <div style={{ padding: '8px 12px', color: '#666' }}>No conversations yet</div>
-                        )}
-                    </TabList>
-                </div>
-                <Tooltip content={tTabs('new')} relationship="label">
-                    <Button
-                        appearance="subtle"
-                        icon={<Add24Regular />}
-                        onClick={handleCreateConversation}
-                        aria-label={tTabs('new')}
-                    />
-                </Tooltip>
-            </div>
+            <ConversationTabs
+                key={tabListKey}
+                conversations={conversations}
+                conversationsLoading={conversationsLoading}
+                activeConversationId={conversationManager.activeConversationId}
+                onConversationChange={handleConversationChange}
+                onCreateConversation={handleCreateConversation}
+                onDeleteConversation={handleDeleteConversation}
+                onRenameConversation={handleRenameConversation}
+                isDeletingConversation={isDeletingConversation}
+                isRenamingConversation={isRenamingConversation}
+            />
 
             {/* Chat Interface */}
             <div className={styles.content}>
                 {conversations && conversations.length > 0 ? (
                     <ChatInterface
-                        activeConversationId={activeConversationId}
+                        activeConversationId={conversationManager.activeConversationId}
                         messages={messages}
-                        isLoading={isLoading}
-                        isTyping={isTyping}
+                        isLoading={conversationLoading}
+                        isTyping={conversationManager.isTyping}
+                        isAIResponding={conversationManager.isAIResponding}
                         error={null}
                         onOpenMobileSidebar={() => { }}
                     />
@@ -527,19 +96,20 @@ export default function ChatClientWrapper({ }: ChatClientWrapperProps) {
                         messages={[]}
                         isLoading={false}
                         isTyping={false}
+                        isAIResponding={false}
                         error={null}
                         onOpenMobileSidebar={() => { }}
                     />
                 )}
             </div>
 
-            {/* Input Area moved here */}
+            {/* Input Area */}
             <div style={{ padding: '0' }}>
                 <MessageInput
                     onSendMessage={handleSendMessage}
-                    isLoading={isLoading}
-                    canSendMessage={Boolean(activeConversationId)}
-                    placeholder="Type your message..."
+                    isLoading={isSendingMessage}
+                    canSendMessage={Boolean(conversationManager.activeConversationId) && !isSendingMessage}
+                    placeholder={isSendingMessage ? "Sending message..." : "Type your message..."}
                 />
             </div>
         </div>

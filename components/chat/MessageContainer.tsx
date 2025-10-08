@@ -47,19 +47,25 @@ const useStyles = makeStyles({
 interface MessagesContainerProps {
   messages: ChatMessageResponse[];
   isTyping: boolean;
+  isAIResponding?: boolean;
   error: string | null;
   typingText: string;
+  aiRespondingText?: string;
   noMessagesText: string;
   startConversationText: string;
+  isLoading?: boolean;
 }
 
 export function MessagesContainer({
   messages,
   isTyping,
+  isAIResponding = false,
   error,
   typingText,
+  aiRespondingText = "AI is thinking...",
   noMessagesText,
   startConversationText,
+  isLoading = false,
 }: MessagesContainerProps) {
   const styles = useStyles();
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -73,6 +79,8 @@ export function MessagesContainer({
   // Auto scroll when messages change
   useEffect(() => {
     scrollToBottom();
+    console.log("check messages", messages);
+
   }, [messages, isTyping]);
 
   return (
@@ -86,7 +94,11 @@ export function MessagesContainer({
         </div>
       )}
 
-      {messages.length === 0 ? (
+      {isLoading ? (
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
+          <div>Loading messages...</div>
+        </div>
+      ) : messages.length === 0 ? (
         <EmptyChatState
           noMessagesText={noMessagesText}
           startConversationText={startConversationText}
@@ -100,9 +112,9 @@ export function MessagesContainer({
               />
             </div>
           ))}
-          {isTyping && (
+          {(isTyping || isAIResponding) && (
             <div className={styles.typing}>
-              {typingText}
+              {isAIResponding ? aiRespondingText : typingText}
             </div>
           )}
         </div>
