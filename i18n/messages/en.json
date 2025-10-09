@@ -280,5 +280,58 @@
     "badges": {
       "personal": "Personal"
     }
+  },
+  "Projects": {
+    "title": "Projects",
+    "searchPlaceholder": "Search projects...",
+    "searchButton": "Search",
+    "allProjects": "All Projects",
+    "activeProjects": "Active",
+    "archivedProjects": "Archived",
+    "noProjectsFound": "No projects found",
+    "noProjectsYet": "No projects yet",
+    "createProject": "Create Project",
+    "loading": "Loading projects...",
+    "searching": "Searching...",
+    "errorTitle": "Failed to load projects",
+    "retry": "Try Again",
+    "previous": "Previous",
+    "next": "Next",
+    "pageInfo": "Page {current} of {total}",
+    "fromDate": "From date",
+    "toDate": "To date",
+    "gridView": "Grid view",
+    "listView": "List view",
+    "projectsCount": "{count} {count, plural, =1 {project} other {projects}}",
+    "emptyFilteredDescription": "Try adjusting your filters or search terms to find what you're looking for.",
+    "emptyUnfilteredDescription": "Get started by creating your first project to organize your work.",
+    "untitledProject": "Untitled Project",
+    "noDateSet": "No date set",
+    "invalidDate": "Invalid date",
+    "createdBy": "Created by",
+    "memberCount": "{count} {count, plural, =1 {member} other {members}}",
+    "status": {
+      "active": "Active",
+      "archived": "Archived"
+    },
+    "actions": {
+      "label": "Project actions",
+      "view": "View Details",
+      "edit": "Edit Project",
+      "archive": "Archive",
+      "unarchive": "Unarchive",
+      "delete": "Delete"
+    },
+    "table": {
+      "name": "Project Name",
+      "description": "Description",
+      "members": "Members",
+      "status": "Status",
+      "createdDate": "Created Date",
+      "actions": "Actions"
+    },
+    "badges": {
+      "archived": "Archived"
+    }
   }
 }

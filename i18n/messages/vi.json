@@ -280,5 +280,58 @@
     "badges": {
       "personal": "Cá nhân"
     }
+  },
+  "Projects": {
+    "title": "Dự án",
+    "searchPlaceholder": "Tìm kiếm dự án...",
+    "searchButton": "Tìm kiếm",
+    "allProjects": "Tất cả dự án",
+    "activeProjects": "Đang hoạt động",
+    "archivedProjects": "Đã lưu trữ",
+    "noProjectsFound": "Không tìm thấy dự án",
+    "noProjectsYet": "Chưa có dự án nào",
+    "createProject": "Tạo dự án",
+    "loading": "Đang tải dự án...",
+    "searching": "Đang tìm kiếm...",
+    "errorTitle": "Không thể tải dự án",
+    "retry": "Thử lại",
+    "previous": "Trước",
+    "next": "Tiếp",
+    "pageInfo": "Trang {current} / {total}",
+    "fromDate": "Từ ngày",
+    "toDate": "Đến ngày",
+    "gridView": "Xem dạng lưới",
+    "listView": "Xem dạng danh sách",
+    "projectsCount": "{count} dự án",
+    "emptyFilteredDescription": "Thử điều chỉnh bộ lọc hoặc từ khóa tìm kiếm để tìm thấy dự án bạn cần.",
+    "emptyUnfilteredDescription": "Bắt đầu bằng cách tạo dự án đầu tiên để tổ chức công việc của bạn.",
+    "untitledProject": "Dự án chưa đặt tên",
+    "noDateSet": "Chưa đặt ngày",
+    "invalidDate": "Ngày không hợp lệ",
+    "createdBy": "Tạo bởi",
+    "memberCount": "{count} thành viên",
+    "status": {
+      "active": "Đang hoạt động",
+      "archived": "Đã lưu trữ"
+    },
+    "actions": {
+      "label": "Hành động dự án",
+      "view": "Xem chi tiết",
+      "edit": "Chỉnh sửa dự án",
+      "archive": "Lưu trữ",
+      "unarchive": "Bỏ lưu trữ",
+      "delete": "Xóa"
+    },
+    "table": {
+      "name": "Tên dự án",
+      "description": "Mô tả",
+      "members": "Thành viên",
+      "status": "Trạng thái",
+      "createdDate": "Ngày tạo",
+      "actions": "Hành động"
+    },
+    "badges": {
+      "archived": "Đã lưu trữ"
+    }
   }
 }
