@@ -52,7 +52,7 @@ const useStyles = makeStyles({
     ...shorthands.gap('8px'),
   },
   title: {
-    fontSize: '16px',
+    fontSize: tokens.fontSizeBase300,
     fontWeight: 600,
     color: tokens.colorNeutralForeground1,
     lineHeight: '1.4',
@@ -83,7 +83,7 @@ const useStyles = makeStyles({
   },
   description: {
     color: tokens.colorNeutralForeground2,
-    fontSize: '13px',
+    fontSize: tokens.fontSizeBase200,
     lineHeight: '1.5',
     display: '-webkit-box',
     WebkitLineClamp: 2,
@@ -92,7 +92,7 @@ const useStyles = makeStyles({
   },
   projectsInfo: {
     color: tokens.colorNeutralForeground3,
-    fontSize: '12px',
+    fontSize: tokens.fontSizeBase100,
   },
   footer: {
     ...shorthands.padding('12px', '16px'),
@@ -108,7 +108,7 @@ const useStyles = makeStyles({
     ...shorthands.gap('8px'),
   },
   creatorName: {
-    fontSize: '12px',
+    fontSize: tokens.fontSizeBase100,
     color: tokens.colorNeutralForeground2,
   },
 });

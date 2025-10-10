@@ -7,7 +7,6 @@ import { useTranslations } from 'next-intl';
 import {
   Button,
   Text,
-  Spinner,
   makeStyles,
   tokens,
   shorthands,
@@ -15,6 +14,7 @@ import {
 import { ArrowLeft20Regular, ArrowRight20Regular } from '@fluentui/react-icons';
 import { getProjects } from '@/services/api/project';
 import { queryKeys } from '@/lib/queryClient';
+import { LoadingToast } from '@/components/loading/LoadingToast';
 import { ProjectsHeader } from './ProjectsHeader';
 import { ProjectsGrid } from './ProjectsGrid';
 import { ProjectsList } from './ProjectsList';
@@ -26,9 +26,9 @@ const useStyles = makeStyles({
     width: '100%',
     maxWidth: '1600px',
     margin: '0 auto',
-    ...shorthands.padding('24px', '32px'),
+    ...shorthands.padding('40px', '32px', '24px'),
     '@media (max-width: 768px)': {
-      ...shorthands.padding('16px'),
+      ...shorthands.padding('24px', '16px', '16px'),
     },
   },
   content: {
@@ -317,6 +317,8 @@ export function ProjectsPageClient() {
   // Main content
   return (
     <div className={styles.container}>
+      <LoadingToast message={t('searching')} show={isFetching} />
+
       <ProjectsHeader
         viewMode={viewMode}
         onViewModeChange={handleViewModeChange}
@@ -329,13 +331,6 @@ export function ProjectsPageClient() {
         onDateRangeChange={handleDateRangeChange}
         totalCount={totalCount}
       />
-
-      {isFetching && (
-        <div className={styles.loadingIndicator}>
-          <Spinner size="tiny" />
-          <Text className={styles.loadingText}>{t('searching')}</Text>
-        </div>
-      )}
 
       <div className={styles.content}>
         {viewMode === 'grid' ? (
