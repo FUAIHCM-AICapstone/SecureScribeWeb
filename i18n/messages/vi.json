@@ -186,5 +186,158 @@
     "hintArrows": "Dùng ↑/↓ để di chuyển",
     "hintEnter": "Enter để chọn",
     "hintEsc": "Esc để đóng"
+  },
+  "Dashboard": {
+    "title": "Bảng điều khiển",
+    "description": "Theo dõi nhiệm vụ cá nhân, sáng kiến nhóm và kiến thức được chia sẻ mà không cần rời khỏi không gian làm việc này.",
+    "cards": {
+      "myTasks": {
+        "title": "Nhiệm vụ của tôi",
+        "updatedAt": "5:40 SA",
+        "description": "Quản lý công việc cá nhân, theo dõi trạng thái và đáp ứng thời hạn. Tạo nhiệm vụ mới hoặc cập nhật tiến độ nhanh chóng.",
+        "primaryAction": "Kiểm tra nhiệm vụ",
+        "secondaryAction": "Nhiệm vụ mới"
+      },
+      "teamProject": {
+        "title": "Dự án nhóm",
+        "updatedAt": "5:40 SA",
+        "description": "Xem lại các dự án bạn tham gia. Xem thành viên, tiến độ, tài liệu liên quan hoặc khởi động sáng kiến mới.",
+        "primaryAction": "Cập nhật dự án",
+        "secondaryAction": "Dự án mới"
+      },
+      "myMeetings": {
+        "title": "Cuộc họp của tôi",
+        "updatedAt": "5:40 SA",
+        "description": "Kiểm tra các cuộc họp sắp tới, truy cập ghi chú, bảng ghi và tài liệu hỗ trợ mà không cần rời khỏi bảng điều khiển.",
+        "primaryAction": "Kiểm tra cuộc họp",
+        "secondaryAction": "Cuộc họp mới"
+      },
+      "recentTranscripts": {
+        "title": "Bảng ghi gần đây",
+        "updatedAt": "5:40 SA",
+        "description": "Nhanh chóng mở các bảng ghi mới nhất với tham chiếu âm thanh và tìm kiếm toàn văn để giữ ngữ cảnh tiện lợi.",
+        "primaryAction": "Kiểm tra bảng ghi",
+        "secondaryAction": "Tải âm thanh"
+      },
+      "recentNotes": {
+        "title": "Ghi chú gần đây",
+        "updatedAt": "5:40 SA",
+        "description": "Xem lại các ghi chú được chỉnh sửa hoặc chia sẻ gần đây, xem ai đã cập nhật chúng và quay lại công việc cộng tác.",
+        "primaryAction": "Kiểm tra ghi chú",
+        "secondaryAction": "Ghi chú mới"
+      },
+      "quickActions": {
+        "title": "Hành động nhanh",
+        "updatedAt": "5:40 SA",
+        "description": "Khởi chạy các hành động thường xuyên ngay lập tức: tạo cuộc họp, tải tệp và giao nhiệm vụ mà không cần chuyển tab.",
+        "primaryAction": "Kiểm tra hành động",
+        "secondaryAction": "Tạo hành động"
+      }
+    }
+  },
+  "Meetings": {
+    "title": "Cuộc họp",
+    "searchPlaceholder": "Tìm kiếm cuộc họp...",
+    "searchButton": "Tìm kiếm",
+    "allMeetings": "Tất cả cuộc họp",
+    "personalMeetings": "Cá nhân",
+    "noMeetingsFound": "Không tìm thấy cuộc họp",
+    "noMeetingsYet": "Chưa có cuộc họp",
+    "createMeeting": "Tạo cuộc họp",
+    "loading": "Đang tải cuộc họp...",
+    "searching": "Đang tìm kiếm...",
+    "errorTitle": "Không thể tải cuộc họp",
+    "retry": "Thử lại",
+    "previous": "Trước",
+    "next": "Tiếp",
+    "pageInfo": "Trang {current} / {total}",
+    "fromDate": "Từ ngày",
+    "toDate": "Đến ngày",
+    "gridView": "Dạng lưới",
+    "listView": "Dạng danh sách",
+    "meetingsCount": "{count} cuộc họp",
+    "emptyFilteredDescription": "Thử điều chỉnh bộ lọc hoặc từ khóa tìm kiếm để tìm những gì bạn đang tìm kiếm.",
+    "emptyUnfilteredDescription": "Bắt đầu bằng cách tạo cuộc họp đầu tiên để cộng tác với nhóm của bạn.",
+    "untitledMeeting": "Cuộc họp chưa đặt tên",
+    "noDateSet": "Chưa đặt ngày",
+    "invalidDate": "Ngày không hợp lệ",
+    "createdBy": "Tạo bởi người dùng",
+    "projectCount": "{count} dự án",
+    "status": {
+      "active": "Đang hoạt động",
+      "completed": "Đã hoàn thành",
+      "cancelled": "Đã hủy"
+    },
+    "actions": {
+      "label": "Hành động",
+      "view": "Xem chi tiết",
+      "edit": "Chỉnh sửa",
+      "share": "Chia sẻ",
+      "archive": "Lưu trữ",
+      "delete": "Xóa"
+    },
+    "table": {
+      "title": "Tiêu đề",
+      "startTime": "Thời gian bắt đầu",
+      "status": "Trạng thái",
+      "projects": "Dự án",
+      "actions": "Hành động"
+    },
+    "badges": {
+      "personal": "Cá nhân"
+    }
+  },
+  "Projects": {
+    "title": "Dự án",
+    "searchPlaceholder": "Tìm kiếm dự án...",
+    "searchButton": "Tìm kiếm",
+    "allProjects": "Tất cả dự án",
+    "activeProjects": "Đang hoạt động",
+    "archivedProjects": "Đã lưu trữ",
+    "noProjectsFound": "Không tìm thấy dự án",
+    "noProjectsYet": "Chưa có dự án nào",
+    "createProject": "Tạo dự án",
+    "loading": "Đang tải dự án...",
+    "searching": "Đang tìm kiếm...",
+    "errorTitle": "Không thể tải dự án",
+    "retry": "Thử lại",
+    "previous": "Trước",
+    "next": "Tiếp",
+    "pageInfo": "Trang {current} / {total}",
+    "fromDate": "Từ ngày",
+    "toDate": "Đến ngày",
+    "gridView": "Xem dạng lưới",
+    "listView": "Xem dạng danh sách",
+    "projectsCount": "{count} dự án",
+    "emptyFilteredDescription": "Thử điều chỉnh bộ lọc hoặc từ khóa tìm kiếm để tìm thấy dự án bạn cần.",
+    "emptyUnfilteredDescription": "Bắt đầu bằng cách tạo dự án đầu tiên để tổ chức công việc của bạn.",
+    "untitledProject": "Dự án chưa đặt tên",
+    "noDateSet": "Chưa đặt ngày",
+    "invalidDate": "Ngày không hợp lệ",
+    "createdBy": "Tạo bởi",
+    "memberCount": "{count} thành viên",
+    "status": {
+      "active": "Đang hoạt động",
+      "archived": "Đã lưu trữ"
+    },
+    "actions": {
+      "label": "Hành động dự án",
+      "view": "Xem chi tiết",
+      "edit": "Chỉnh sửa dự án",
+      "archive": "Lưu trữ",
+      "unarchive": "Bỏ lưu trữ",
+      "delete": "Xóa"
+    },
+    "table": {
+      "name": "Tên dự án",
+      "description": "Mô tả",
+      "members": "Thành viên",
+      "status": "Trạng thái",
+      "createdDate": "Ngày tạo",
+      "actions": "Hành động"
+    },
+    "badges": {
+      "archived": "Đã lưu trữ"
+    }
   }
 }
