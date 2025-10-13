@@ -339,5 +339,37 @@
     "badges": {
       "archived": "Đã lưu trữ"
     }
+  },
+  "Profile": {
+    "profile": "Hồ sơ",
+    "profileSubtitle": "Quản lý thông tin cá nhân",
+    "loading": "Đang tải hồ sơ...",
+    "changeAvatar": "Đổi ảnh đại diện",
+    "avatarUploaded": "Đã tải ảnh đại diện",
+    "avatarUploadFailed": "Tải ảnh thất bại",
+    "accountInfo": "Thông tin tài khoản",
+    "accountInfoSubtitle": "Thông tin hiển thị công khai",
+    "name": "Họ và tên",
+    "namePlaceholder": "Nhập họ và tên",
+    "position": "Chức danh",
+    "positionPlaceholder": "Vai trò hoặc chức danh",
+    "bio": "Giới thiệu",
+    "bioPlaceholder": "Giới thiệu ngắn gọn về bạn",
+    "bioHelper": "Hãy súc tích. Tối đa 500 ký tự.",
+    "save": "Lưu thay đổi",
+    "saving": "Đang lưu...",
+    "updated": "Đã cập nhật hồ sơ",
+    "updateFailed": "Cập nhật thất bại",
+    "reset": "Đặt lại",
+    "noName": "Chưa đặt tên",
+    "email": "Email",
+    "createdAt": "Ngày tạo",
+    "updatedAt": "Ngày cập nhật",
+    "nameTooShort": "Tên phải có ít nhất 2 ký tự",
+    "nameTooLong": "Tên tối đa 100 ký tự",
+    "positionTooLong": "Chức danh tối đa 100 ký tự",
+    "bioTooLong": "Giới thiệu tối đa 500 ký tự",
+    "savedAnnouncement": "Đã lưu hồ sơ",
+    "readOnly": "Thông tin chỉ đọc"
   }
 }

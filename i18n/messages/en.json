@@ -339,5 +339,37 @@
     "badges": {
       "archived": "Archived"
     }
+  },
+  "Profile": {
+    "profile": "Profile",
+    "profileSubtitle": "Manage your personal information",
+    "loading": "Loading profile...",
+    "changeAvatar": "Change avatar",
+    "avatarUploaded": "Avatar uploaded",
+    "avatarUploadFailed": "Failed to upload avatar",
+    "accountInfo": "Account Information",
+    "accountInfoSubtitle": "Your public details",
+    "name": "Full name",
+    "namePlaceholder": "Enter your name",
+    "position": "Position",
+    "positionPlaceholder": "Your role or title",
+    "bio": "Bio",
+    "bioPlaceholder": "A short introduction about you",
+    "bioHelper": "Keep it concise. Max 500 characters.",
+    "save": "Save changes",
+    "saving": "Saving...",
+    "updated": "Profile updated",
+    "updateFailed": "Failed to update profile",
+    "reset": "Reset",
+    "noName": "Unnamed user",
+    "email": "Email",
+    "createdAt": "Created at",
+    "updatedAt": "Updated at",
+    "nameTooShort": "Name must be at least 2 characters",
+    "nameTooLong": "Name must be at most 100 characters",
+    "positionTooLong": "Position must be at most 100 characters",
+    "bioTooLong": "Bio must be at most 500 characters",
+    "savedAnnouncement": "Profile saved",
+    "readOnly": "Read-only information"
   }
 }
