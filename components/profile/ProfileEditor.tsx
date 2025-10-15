@@ -15,10 +15,12 @@ import {
   makeStyles,
   tokens,
   Tooltip,
+  shorthands,
 } from '@fluentui/react-components';
 import {
   Camera24Regular,
   CheckmarkCircle24Regular,
+  ContactCard24Regular,
 } from '@fluentui/react-icons';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getMe, updateMe } from '@/services/api/user';
@@ -29,18 +31,52 @@ import { showToast } from '@/hooks/useShowToast';
 import { formatDate } from '@/lib/utils/dateFormatter';
 
 const useStyles = makeStyles({
-  cover: {
-    width: '100%',
-    minHeight: '140px',
-    borderRadius: tokens.borderRadiusLarge,
+  header: {
+    display: 'flex',
+    flexDirection: 'column',
+    ...shorthands.gap('20px'),
+    marginBottom: '32px',
+    ...shorthands.padding('24px'),
     background:
-      'linear-gradient(135deg, var(--colorBrandBackground) 0%, var(--colorBrandBackgroundHover) 100%)',
-    color: 'var(--colorNeutralForegroundOnBrand)',
-    padding: '20px 20px',
+      'linear-gradient(135deg, rgba(17, 94, 163, 0.03) 0%, rgba(91, 155, 213, 0.05) 100%)',
+    ...shorthands.borderRadius('16px'),
+    ...shorthands.border('1px', 'solid', 'rgba(17, 94, 163, 0.15)'),
+    boxShadow: '0 2px 8px rgba(17, 94, 163, 0.08)',
+    '@media (max-width: 768px)': {
+      ...shorthands.padding('16px'),
+    },
+  },
+  topRow: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    ...shorthands.gap('16px'),
+  },
+  titleContainer: {
     display: 'flex',
     alignItems: 'center',
-    boxShadow: tokens.shadow16,
-    marginBottom: '16px',
+    ...shorthands.gap('12px'),
+  },
+  iconBadge: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '48px',
+    height: '48px',
+    ...shorthands.borderRadius('12px'),
+    background: 'linear-gradient(135deg, #115ea3 0%, #5b9bd5 100%)',
+    boxShadow: '0 4px 12px rgba(17, 94, 163, 0.25)',
+    color: '#ffffff',
+  },
+  title: {
+    fontSize: tokens.fontSizeHero900,
+    fontWeight: 700,
+    color: '#115ea3',
+  },
+  subtitle: {
+    color: tokens.colorNeutralForeground2,
+    marginTop: '6px',
   },
   wrap: {
     display: 'grid',
@@ -62,6 +98,12 @@ const useStyles = makeStyles({
     position: 'relative',
     width: '160px',
     height: '160px',
+    display: 'grid',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: '9999px',
+    border: `1px solid ${tokens.colorNeutralStroke1}`,
+    backgroundColor: 'var(--colorNeutralBackground2)',
   },
   avatarCamera: {
     position: 'absolute',
@@ -215,14 +257,19 @@ export default function ProfileEditor() {
 
   return (
     <>
-      <section className={styles.cover} aria-label={t('profile')}>
-        <div>
-          <h1 style={{ fontSize: 24, fontWeight: 700, margin: 0 }}>
-            {t('profile')}
-          </h1>
-          <p style={{ margin: '6px 0 0 0' }}>{t('profileSubtitle')}</p>
+      <div className={styles.header} aria-label={t('profile')}>
+        <div className={styles.topRow}>
+          <div className={styles.titleContainer}>
+            <div className={styles.iconBadge}>
+              <ContactCard24Regular />
+            </div>
+            <div>
+              <h1 className={styles.title}>{t('profile')}</h1>
+              <p className={styles.subtitle}>{t('profileSubtitle')}</p>
+            </div>
+          </div>
         </div>
-      </section>
+      </div>
 
       <div className={styles.wrap}>
         <Card className={styles.card}>
@@ -244,7 +291,7 @@ export default function ProfileEditor() {
                 <Avatar
                   name={me.name || me.email}
                   image={displayAvatar ? { src: displayAvatar } : undefined}
-                  size={160 as any}
+                  size={148 as any}
                 />
                 <Tooltip content={t('changeAvatar')} relationship="label">
                   <Button
