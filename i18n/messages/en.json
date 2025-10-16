@@ -344,6 +344,8 @@
     "profile": "Profile",
     "profileSubtitle": "Manage your personal information",
     "loading": "Loading profile...",
+    "avatar": "Profile Picture",
+    "avatarSubtitle": "Your profile photo",
     "changeAvatar": "Change avatar",
     "avatarUploaded": "Avatar uploaded",
     "avatarUploadFailed": "Failed to upload avatar",
@@ -353,11 +355,14 @@
     "namePlaceholder": "Enter your name",
     "position": "Position",
     "positionPlaceholder": "Your role or title",
+    "noPosition": "No position set",
     "bio": "Bio",
     "bioPlaceholder": "A short introduction about you",
     "bioHelper": "Keep it concise. Max 500 characters.",
+    "edit": "Edit Profile",
     "save": "Save changes",
     "saving": "Saving...",
+    "cancel": "Cancel",
     "updated": "Profile updated",
     "updateFailed": "Failed to update profile",
     "reset": "Reset",
@@ -370,6 +375,8 @@
     "positionTooLong": "Position must be at most 100 characters",
     "bioTooLong": "Bio must be at most 500 characters",
     "savedAnnouncement": "Profile saved",
-    "readOnly": "Read-only information"
+    "readOnly": "Read-only information",
+    "invalidImageType": "Please select a valid image file",
+    "imageTooLarge": "Image size must be less than 5MB"
   }
 }

@@ -98,21 +98,37 @@ const useStyles = makeStyles({
     position: 'relative',
     width: '160px',
     height: '160px',
-    display: 'grid',
+    display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  avatarCircle: {
+    width: '100%',
+    height: '100%',
     borderRadius: '9999px',
     border: `1px solid ${tokens.colorNeutralStroke1}`,
     backgroundColor: 'var(--colorNeutralBackground2)',
+    overflow: 'hidden',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  avatarImage: {
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
   },
   avatarCamera: {
     position: 'absolute',
-    right: 0,
-    bottom: 0,
-    transform: 'translate(25%, 25%)',
+    right: '0px',
+    bottom: '0px',
+    transform: 'translate(20%, 20%)',
     borderRadius: '9999px',
-    border: `1px solid ${tokens.colorNeutralStroke1}`,
+    border: `2px solid ${tokens.colorNeutralBackground1}`,
     boxShadow: tokens.shadow16,
+    zIndex: 10,
+    minWidth: '40px',
+    minHeight: '40px',
   },
   form: { display: 'grid', gap: '12px', maxWidth: '800px' },
   row: {
@@ -154,6 +170,7 @@ export default function ProfileEditor() {
     staleTime: 5 * 60 * 1000,
   });
 
+  const [isEditMode, setIsEditMode] = useState(false);
   const [form, setForm] = useState<UserUpdate>({});
   const [previewUrl, setPreviewUrl] = useState<string | undefined>(undefined);
   const [errors, setErrors] = useState<{
@@ -227,16 +244,44 @@ export default function ProfileEditor() {
   const onChangeFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      showToast('error', t('invalidImageType'));
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    const maxSize = 5 * 1024 * 1024;
+    if (file.size > maxSize) {
+      showToast('error', t('imageTooLarge'));
+      return;
+    }
+
     const url = URL.createObjectURL(file);
     setPreviewUrl(url);
+
     try {
       const resp = await uploadFile({ file });
+      console.log('Upload response:', resp);
+
       const newUrl = resp.storage_url;
-      if (!newUrl) throw new Error('no_storage_url');
+      if (!newUrl) {
+        console.error('No storage_url in response:', resp);
+        throw new Error('no_storage_url');
+      }
+
+      // Update form state (will be saved when user clicks "Save changes")
       setForm((f) => ({ ...f, avatar_url: newUrl }));
       showToast('success', t('avatarUploaded'));
-    } catch {
+    } catch (error) {
+      console.error('Avatar upload failed:', error);
       showToast('error', t('avatarUploadFailed'));
+      // Clean up preview on error
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+        setPreviewUrl(undefined);
+      }
     }
   };
 
@@ -245,6 +290,22 @@ export default function ProfileEditor() {
     const hasError = Object.keys(invalids).length > 0;
     if (hasError || !isDirty) return;
     updateMutation.mutate(form);
+    setIsEditMode(false);
+  };
+
+  const onCancel = () => {
+    setForm({
+      name: me?.name,
+      bio: me?.bio,
+      position: me?.position,
+      avatar_url: me?.avatar_url,
+    });
+    setErrors({});
+    setIsEditMode(false);
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+      setPreviewUrl(undefined);
+    }
   };
 
   if (isLoading || !me) {
@@ -274,8 +335,8 @@ export default function ProfileEditor() {
       <div className={styles.wrap}>
         <Card className={styles.card}>
           <CardHeader
-            header={<b>{t('profile')}</b>}
-            description={t('profileSubtitle')}
+            header={<b>{t('avatar')}</b>}
+            description={t('avatarSubtitle')}
           />
           <CardPreview>
             <div
@@ -284,23 +345,29 @@ export default function ProfileEditor() {
                 flexDirection: 'column',
                 gap: 12,
                 alignItems: 'center',
-                padding: 16,
+                padding: 24,
+                paddingTop: 32,
               }}
             >
               <div className={styles.avatarWrap}>
-                <Avatar
-                  name={me.name || me.email}
-                  image={displayAvatar ? { src: displayAvatar } : undefined}
-                  size={148 as any}
-                />
-                <Tooltip content={t('changeAvatar')} relationship="label">
-                  <Button
-                    appearance="primary"
-                    icon={<Camera24Regular />}
-                    className={styles.avatarCamera}
-                    onClick={onPickAvatar}
+                <div className={styles.avatarCircle}>
+                  <Avatar
+                    name={me.name || me.email}
+                    image={displayAvatar ? { src: displayAvatar } : undefined}
+                    size={160 as any}
+                    style={{ width: '100%', height: '100%' }}
                   />
-                </Tooltip>
+                </div>
+                {isEditMode && (
+                  <Tooltip content={t('changeAvatar')} relationship="label">
+                    <Button
+                      appearance="primary"
+                      icon={<Camera24Regular />}
+                      className={styles.avatarCamera}
+                      onClick={onPickAvatar}
+                    />
+                  </Tooltip>
+                )}
                 <input
                   ref={fileRef}
                   type="file"
@@ -313,8 +380,13 @@ export default function ProfileEditor() {
                 <div style={{ fontWeight: 600, fontSize: 18 }}>
                   {me.name || t('noName')}
                 </div>
-                <div style={{ color: 'var(--colorNeutralForeground3)' }}>
-                  {me.email}
+                <div
+                  style={{
+                    color: 'var(--colorNeutralForeground3)',
+                    fontSize: 14,
+                  }}
+                >
+                  {me.position || t('noPosition')}
                 </div>
               </div>
             </div>
@@ -325,61 +397,92 @@ export default function ProfileEditor() {
           <CardHeader
             header={<b>{t('accountInfo')}</b>}
             description={t('accountInfoSubtitle')}
+            action={
+              !isEditMode ? (
+                <Button
+                  appearance="primary"
+                  onClick={() => setIsEditMode(true)}
+                >
+                  {t('edit')}
+                </Button>
+              ) : null
+            }
           />
           <div className={styles.form} style={{ padding: 16 }}>
-            <div className={styles.row}>
-              <Field
-                label={t('name')}
-                validationMessage={errors.name}
-                validationState={errors.name ? 'error' : 'none'}
-              >
-                <Input
-                  value={form.name || ''}
-                  onChange={(e) => {
-                    const v = e.target.value;
-                    const next = { ...form, name: v };
-                    setForm(next);
-                    validate(next);
-                  }}
-                  placeholder={t('namePlaceholder')}
-                />
-              </Field>
-              <Field
-                label={t('position')}
-                validationMessage={errors.position}
-                validationState={errors.position ? 'error' : 'none'}
-              >
-                <Input
-                  value={form.position || ''}
-                  onChange={(e) => {
-                    const v = e.target.value;
-                    const next = { ...form, position: v };
-                    setForm(next);
-                    validate(next);
-                  }}
-                  placeholder={t('positionPlaceholder')}
-                />
-              </Field>
-            </div>
+            {isEditMode ? (
+              <>
+                <div className={styles.row}>
+                  <Field
+                    label={t('name')}
+                    validationMessage={errors.name}
+                    validationState={errors.name ? 'error' : 'none'}
+                  >
+                    <Input
+                      value={form.name || ''}
+                      onChange={(e) => {
+                        const v = e.target.value;
+                        const next = { ...form, name: v };
+                        setForm(next);
+                        validate(next);
+                      }}
+                      placeholder={t('namePlaceholder')}
+                    />
+                  </Field>
+                  <Field
+                    label={t('position')}
+                    validationMessage={errors.position}
+                    validationState={errors.position ? 'error' : 'none'}
+                  >
+                    <Input
+                      value={form.position || ''}
+                      onChange={(e) => {
+                        const v = e.target.value;
+                        const next = { ...form, position: v };
+                        setForm(next);
+                        validate(next);
+                      }}
+                      placeholder={t('positionPlaceholder')}
+                    />
+                  </Field>
+                </div>
 
-            <Field
-              label={t('bio')}
-              validationMessage={errors.bio}
-              validationState={errors.bio ? 'error' : 'none'}
-            >
-              <Textarea
-                resize="vertical"
-                value={form.bio || ''}
-                onChange={(e) => {
-                  const v = e.target.value;
-                  const next = { ...form, bio: v };
-                  setForm(next);
-                  validate(next);
-                }}
-                placeholder={t('bioPlaceholder')}
-              />
-              <div className={styles.helper}>{t('bioHelper')}</div>
-            </Field>
+                <Field
+                  label={t('bio')}
+                  validationMessage={errors.bio}
+                  validationState={errors.bio ? 'error' : 'none'}
+                >
+                  <Textarea
+                    resize="vertical"
+                    value={form.bio || ''}
+                    onChange={(e) => {
+                      const v = e.target.value;
+                      const next = { ...form, bio: v };
+                      setForm(next);
+                      validate(next);
+                    }}
+                    placeholder={t('bioPlaceholder')}
+                  />
+                  <div className={styles.helper}>{t('bioHelper')}</div>
+                </Field>
+              </>
+            ) : (
+              <>
+                <div className={styles.readOnlyRow}>
+                  <div className={styles.readOnlyKey}>{t('name')}</div>
+                  <div className={styles.readOnlyValue}>{me.name || '-'}</div>
+                </div>
+                <div className={styles.readOnlyRow}>
+                  <div className={styles.readOnlyKey}>{t('position')}</div>
+                  <div className={styles.readOnlyValue}>
+                    {me.position || '-'}
+                  </div>
+                </div>
+                <div className={styles.readOnlyRow}>
+                  <div className={styles.readOnlyKey}>{t('bio')}</div>
+                  <div className={styles.readOnlyValue}>{me.bio || '-'}</div>
+                </div>
+              </>
+            )}
 
             <div className={styles.readOnlyRow} aria-label={t('readOnly')}>
               <div className={styles.readOnlyKey}>{t('email')}</div>
@@ -398,33 +501,25 @@ export default function ProfileEditor() {
               </div>
             </div>
 
-            <div className={styles.actions}>
-              <Button
-                appearance="primary"
-                icon={<CheckmarkCircle24Regular />}
-                onClick={onSave}
-                disabled={
-                  updateMutation.isPending ||
-                  !isDirty ||
-                  Object.keys(errors).length > 0
-                }
-              >
-                {updateMutation.isPending ? t('saving') : t('save')}
-              </Button>
-              <Button
-                appearance="secondary"
-                onClick={() =>
-                  setForm({
-                    name: me.name,
-                    bio: me.bio,
-                    position: me.position,
-                    avatar_url: me.avatar_url,
-                  })
-                }
-              >
-                {t('reset')}
-              </Button>
-            </div>
+            {isEditMode && (
+              <div className={styles.actions}>
+                <Button
+                  appearance="primary"
+                  icon={<CheckmarkCircle24Regular />}
+                  onClick={onSave}
+                  disabled={
+                    updateMutation.isPending ||
+                    !isDirty ||
+                    Object.keys(errors).length > 0
+                  }
+                >
+                  {updateMutation.isPending ? t('saving') : t('save')}
+                </Button>
+                <Button appearance="secondary" onClick={onCancel}>
+                  {t('cancel')}
+                </Button>
+              </div>
+            )}
           </div>
         </Card>
       </div>

@@ -344,6 +344,8 @@
     "profile": "Hồ sơ",
     "profileSubtitle": "Quản lý thông tin cá nhân",
     "loading": "Đang tải hồ sơ...",
+    "avatar": "Ảnh đại diện",
+    "avatarSubtitle": "Ảnh hồ sơ của bạn",
     "changeAvatar": "Đổi ảnh đại diện",
     "avatarUploaded": "Đã tải ảnh đại diện",
     "avatarUploadFailed": "Tải ảnh thất bại",
@@ -353,11 +355,14 @@
     "namePlaceholder": "Nhập họ và tên",
     "position": "Chức danh",
     "positionPlaceholder": "Vai trò hoặc chức danh",
+    "noPosition": "Chưa đặt chức danh",
     "bio": "Giới thiệu",
     "bioPlaceholder": "Giới thiệu ngắn gọn về bạn",
     "bioHelper": "Hãy súc tích. Tối đa 500 ký tự.",
+    "edit": "Chỉnh sửa",
     "save": "Lưu thay đổi",
     "saving": "Đang lưu...",
+    "cancel": "Hủy",
     "updated": "Đã cập nhật hồ sơ",
     "updateFailed": "Cập nhật thất bại",
     "reset": "Đặt lại",
@@ -370,6 +375,8 @@
     "positionTooLong": "Chức danh tối đa 100 ký tự",
     "bioTooLong": "Giới thiệu tối đa 500 ký tự",
     "savedAnnouncement": "Đã lưu hồ sơ",
-    "readOnly": "Thông tin chỉ đọc"
+    "readOnly": "Thông tin chỉ đọc",
+    "invalidImageType": "Vui lòng chọn file ảnh hợp lệ",
+    "imageTooLarge": "Kích thước ảnh phải nhỏ hơn 5MB"
   }
 }
