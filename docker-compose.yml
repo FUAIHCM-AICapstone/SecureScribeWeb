@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  securescribe-web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: securescribe-web
+    ports:
+      - "1111:3030"
+    environment:
+      - NEXT_PUBLIC_API_BASE_URL=https://securescribe.wc504.io.vn/api
+    restart: unless-stopped
+    networks:
+      - securescribe-network
+
+networks:
+  securescribe-network:
+    driver: bridge
