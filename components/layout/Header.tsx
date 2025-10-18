@@ -1,6 +1,7 @@
 'use client';
 
 import MeetingSchedulerModal from '@/components/modal/MeetingSchedulerModal';
+import { FileUploadModal } from '@/components/modal/FileUploadModal';
 import SearchBoxWithResults from '@/components/search/SearchBoxWithResults';
 import { showToast } from '@/hooks/useShowToast';
 import { usePathname, useRouter } from '@/i18n/navigation';
@@ -197,8 +198,10 @@ export default function Header() {
   const { toggle } = useSidebar();
   const { user, logout } = useAuth();
 
-  const [isNotiOpen, setIsNotiOpen] = useState(false);
+  // Modals state
   const [isSchedulerOpen, setIsSchedulerOpen] = useState(false);
+  const [isUploadOpen, setIsUploadOpen] = useState(false);
+  const [isNotiOpen, setIsNotiOpen] = useState(false);
   const queryClient = useQueryClient();
 
   // Fetch notifications with React Query
@@ -356,88 +359,99 @@ export default function Header() {
     showToast('info', `Preview ${result.type}: ${result.title}`);
   };
 
-    // Custom search function that returns SearchResultsGrouped format
-    const customSearchEntities = async (query: string) => {
-        if (!query.trim()) {
-            return {
-                meetings: [],
-                transcripts: [],
-                meeting_notes: [],
-                files: [],
-                projects: [],
-                users: [],
-                documents: []
-            };
-        }
+  // Custom search function that returns SearchResultsGrouped format
+  const customSearchEntities = async (query: string) => {
+    if (!query.trim()) {
+      return {
+        meetings: [],
+        transcripts: [],
+        meeting_notes: [],
+        files: [],
+        projects: [],
+        users: [],
+        documents: [],
+      };
+    }
 
-        try {
-            // Perform parallel search across all entities
-            const [documents, projects, meetings, files, users] = await Promise.allSettled([
-                dynamicSearch({ search: query, limit: 3 }),
-                getProjects({ name: query }, { limit: 3 }),
-                getMeetings({ title: query }, { limit: 3 }),
-                getFiles({ filename: query }, { limit: 3 }),
-                getUsers({ name: query, limit: 3 })
-            ]);
+    try {
+      // Perform parallel search across all entities
+      const [documents, projects, meetings, files, users] =
+        await Promise.allSettled([
+          dynamicSearch({ search: query, limit: 3 }),
+          getProjects({ name: query }, { limit: 3 }),
+          getMeetings({ title: query }, { limit: 3 }),
+          getFiles({ filename: query }, { limit: 3 }),
+          getUsers({ name: query, limit: 3 }),
+        ]);
 
-            // Transform results to SearchResultsGrouped format
-            const meetingsResults: any[] = [];
-            const transcripts: any[] = [];
-            const meeting_notes: any[] = [];
-            const filesResults: any[] = [];
-            const projectsResults: any[] = [];
-            const usersResults: any[] = [];
-            const documentsResults: any[] = [];
+      // Transform results to SearchResultsGrouped format
+      const meetingsResults: any[] = [];
+      const transcripts: any[] = [];
+      const meeting_notes: any[] = [];
+      const filesResults: any[] = [];
+      const projectsResults: any[] = [];
+      const usersResults: any[] = [];
+      const documentsResults: any[] = [];
 
-            // Add projects
-            if (projects.status === 'fulfilled' && projects.value?.data?.length) {
-                projectsResults.push(...projects.value.data.map((project: any) => ({
-                    id: project.id,
-                    type: 'project',
-                    title: project.name,
-                    subtitle: project.description || 'Project',
-                })));
-            }
+      // Add projects
+      if (projects.status === 'fulfilled' && projects.value?.data?.length) {
+        projectsResults.push(
+          ...projects.value.data.map((project: any) => ({
+            id: project.id,
+            type: 'project',
+            title: project.name,
+            subtitle: project.description || 'Project',
+          })),
+        );
+      }
 
-            // Add meetings
-            if (meetings.status === 'fulfilled' && meetings.value?.data?.length) {
-                meetingsResults.push(...meetings.value.data.map((meeting: any) => ({
-                    id: meeting.id,
-                    type: 'meeting',
-                    title: meeting.title || 'Untitled Meeting',
-                    subtitle: meeting.description || 'Meeting',
-                })));
-            }
+      // Add meetings
+      if (meetings.status === 'fulfilled' && meetings.value?.data?.length) {
+        meetingsResults.push(
+          ...meetings.value.data.map((meeting: any) => ({
+            id: meeting.id,
+            type: 'meeting',
+            title: meeting.title || 'Untitled Meeting',
+            subtitle: meeting.description || 'Meeting',
+          })),
+        );
+      }
 
-            // Add files
-            if (files.status === 'fulfilled' && files.value?.data?.length) {
-                filesResults.push(...files.value.data.map((file: any) => ({
-                    id: file.id,
-                    type: 'file',
-                    title: file.filename || 'Unnamed File',
-                    subtitle: `File • ${file.file_type || 'Unknown type'}`,
-                })));
-            }
+      // Add files
+      if (files.status === 'fulfilled' && files.value?.data?.length) {
+        filesResults.push(
+          ...files.value.data.map((file: any) => ({
+            id: file.id,
+            type: 'file',
+            title: file.filename || 'Unnamed File',
+            subtitle: `File • ${file.file_type || 'Unknown type'}`,
+          })),
+        );
+      }
 
-            // Add users
-            if (users.status === 'fulfilled' && users.value?.data?.length) {
-                usersResults.push(...users.value.data.map((user: any) => ({
-                    id: user.id,
-                    type: 'user',
-                    title: user.name || user.email,
-                    subtitle: user.position || 'User',
-                })));
-            }
+      // Add users
+      if (users.status === 'fulfilled' && users.value?.data?.length) {
+        usersResults.push(
+          ...users.value.data.map((user: any) => ({
+            id: user.id,
+            type: 'user',
+            title: user.name || user.email,
+            subtitle: user.position || 'User',
+          })),
+        );
+      }
 
-            // Add document search results (now using same API as other searches)
-            if (documents.status === 'fulfilled' && documents.value?.data?.length) {
-                documentsResults.push(...documents.value.data.map((result: any) => ({
-                    id: result.id,
-                    type: 'document',
-                    title: result.name || 'Document',
-                    subtitle: `Created ${new Date(result.created_at).toLocaleDateString()}`,
-                })));
-            }
+      // Add document search results (now using same API as other searches)
+      if (documents.status === 'fulfilled' && documents.value?.data?.length) {
+        documentsResults.push(
+          ...documents.value.data.map((result: any) => ({
+            id: result.id,
+            type: 'document',
+            title: result.name || 'Document',
+            subtitle: `Created ${new Date(result.created_at).toLocaleDateString()}`,
+          })),
+        );
+      }
 
       return {
         meetings: meetingsResults,
@@ -466,18 +480,8 @@ export default function Header() {
     router.push('/', { locale });
   };
 
-  const onUpload = async () => {
-    try {
-      const input = document.createElement('input');
-      input.type = 'file';
-      input.multiple = true;
-      input.onchange = () => {
-        showToast('success', 'Selected files uploaded (mock)');
-      };
-      input.click();
-    } catch {
-      showToast('error', 'Upload failed');
-    }
+  const onUpload = () => {
+    setIsUploadOpen(true);
   };
 
   const onSchedule = () => {
@@ -726,6 +730,10 @@ export default function Header() {
       <MeetingSchedulerModal
         open={isSchedulerOpen}
         onOpenChange={setIsSchedulerOpen}
+      />
+      <FileUploadModal
+        open={isUploadOpen}
+        onClose={() => setIsUploadOpen(false)}
       />
     </>
   );
