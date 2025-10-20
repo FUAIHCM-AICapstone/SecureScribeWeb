@@ -144,36 +144,17 @@ export function getFileIcon(mimeType: string) {
 
 /**
  * Get file type category from MIME type
+ * Simplified to only PDF and Document types
  */
 export function getFileTypeFromMime(mimeType: string): string {
-  if (!mimeType) return 'other';
+  if (!mimeType) return 'document';
 
   const type = mimeType.toLowerCase();
 
-  if (type.startsWith('image/')) return 'image';
+  // Only PDF gets special treatment, everything else is a document
   if (type === 'application/pdf') return 'pdf';
-  if (
-    type === 'application/vnd.ms-excel' ||
-    type ===
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
-    type === 'text/csv'
-  )
-    return 'spreadsheet';
-  if (
-    type === 'application/vnd.ms-powerpoint' ||
-    type ===
-      'application/vnd.openxmlformats-officedocument.presentationml.presentation'
-  )
-    return 'presentation';
-  if (
-    type === 'application/msword' ||
-    type ===
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
-    type === 'text/plain'
-  )
-    return 'document';
 
-  return 'other';
+  return 'document';
 }
 
 /**
@@ -301,17 +282,11 @@ export function getFileTypeBadgeColor(
   const type = getFileTypeFromMime(mimeType);
 
   switch (type) {
-    case 'image':
-      return 'success';
     case 'pdf':
-      return 'danger';
+      return 'danger'; // Red for PDF
     case 'document':
-      return 'informative';
-    case 'spreadsheet':
-      return 'success';
-    case 'presentation':
-      return 'warning';
+      return 'informative'; // Blue for documents
     default:
-      return 'important';
+      return 'informative';
   }
 }

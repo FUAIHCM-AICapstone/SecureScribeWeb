@@ -128,11 +128,12 @@ export function FilesPageClient() {
     localStorage.setItem(VIEW_MODE_KEY, viewMode);
   }, [viewMode]);
 
-  // Fetch projects for filter
+  // Fetch projects for filter - with aggressive caching
   const { data: projectsData } = useQuery({
     queryKey: [...queryKeys.projects],
     queryFn: () => getProjects({}, { limit: 100 }),
-    staleTime: 5 * 60 * 1000,
+    staleTime: 10 * 60 * 1000, // 10 minutes
+    gcTime: 30 * 60 * 1000, // 30 minutes cache
   });
 
   // Fetch meetings for filter (filtered by project if selected)
@@ -142,7 +143,8 @@ export function FilesPageClient() {
       : [...queryKeys.meetings],
     queryFn: () =>
       getMeetings(projectId ? { project_id: projectId } : {}, { limit: 100 }),
-    staleTime: 5 * 60 * 1000,
+    staleTime: 10 * 60 * 1000, // 10 minutes
+    gcTime: 30 * 60 * 1000, // 30 minutes cache
     enabled: !!projectId,
   });
 
@@ -150,6 +152,7 @@ export function FilesPageClient() {
   const meetings = meetingsData?.data || [];
 
   // Check if a file's MIME type matches the selected category
+  // Only supporting 'pdf' and 'document' types
   const matchesMimeTypeCategory = (
     mimeType: string,
     category?: string,
@@ -160,31 +163,25 @@ export function FilesPageClient() {
     switch (category) {
       case 'pdf':
         return mime === 'application/pdf';
-      case 'image':
-        return mime.startsWith('image/');
       case 'document':
         return (
           mime.includes('word') ||
           mime === 'application/msword' ||
           mime ===
             'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
-          mime === 'text/plain' // Include .txt files as documents
-        );
-      case 'spreadsheet':
-        return (
-          mime.includes('sheet') ||
+          mime === 'text/plain' || // .txt files
+          mime.startsWith('image/') || // images as documents
+          mime.includes('sheet') || // spreadsheets as documents
           mime.includes('excel') ||
           mime === 'application/vnd.ms-excel' ||
           mime ===
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-        );
-      case 'presentation':
-        return (
-          mime.includes('presentation') ||
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
+          mime.includes('presentation') || // presentations as documents
           mime.includes('powerpoint') ||
           mime === 'application/vnd.ms-powerpoint' ||
           mime ===
-            'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+            'application/vnd.openxmlformats-officedocument.presentationml.presentation' ||
+          mime === 'text/csv'
         );
       default:
         return true;
@@ -212,15 +209,17 @@ export function FilesPageClient() {
     [currentPage, limit],
   );
 
-  // Fetch files with React Query
+  // Fetch files with React Query - aggressive caching for smooth navigation
   const { data, isLoading, isFetching, isError, error, refetch } = useQuery({
     queryKey: [...queryKeys.files, apiFilters, apiParams],
     queryFn: async () => {
       return getFiles(apiFilters, apiParams);
     },
-    staleTime: 2 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
+    staleTime: 5 * 60 * 1000, // 5 minutes - consider data fresh
+    gcTime: 15 * 60 * 1000, // 15 minutes - keep in cache
     placeholderData: keepPreviousData,
+    refetchOnWindowFocus: false, // Don't refetch on tab focus
+    refetchOnMount: false, // Don't refetch if data is fresh
   });
 
   const isRefetchingData = isFetching && !isLoading;

@@ -157,7 +157,7 @@ export const getReadNotifications = async (
 
 // WebSocket URL builder
 export const getWebSocketUrl = (token?: string): string => {
-    const baseUrl = (globalThis as any).process?.env?.NEXT_PUBLIC_API_BASE_URL || 'https://securescribe.wc504.io.vn';
+    const baseUrl = (globalThis as any).process?.env?.NEXT_PUBLIC_API_BASE_URL || 'https://securescribe.wc504.io.vn/be/api';
     const apiVersion = 'v1';
     const wsProtocol = baseUrl.startsWith('https') ? 'wss' : 'ws';
     const wsBase = baseUrl.replace(/^https?/, wsProtocol);

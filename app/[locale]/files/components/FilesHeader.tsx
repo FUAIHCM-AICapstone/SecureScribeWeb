@@ -171,14 +171,11 @@ export function FilesHeader({
   const styles = useStyles();
   const t = useTranslations('Files');
 
+  // Only PDF and Docs types
   const fileTypes = [
     { value: '', label: t('allTypes') },
-    { value: 'document', label: t('fileTypes.document') },
-    { value: 'image', label: t('fileTypes.image') },
     { value: 'pdf', label: t('fileTypes.pdf') },
-    { value: 'spreadsheet', label: t('fileTypes.spreadsheet') },
-    { value: 'presentation', label: t('fileTypes.presentation') },
-    { value: 'other', label: t('fileTypes.other') },
+    { value: 'document', label: t('fileTypes.document') },
   ];
 
   return (
