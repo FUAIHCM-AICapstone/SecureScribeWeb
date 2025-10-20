@@ -9,7 +9,7 @@ services:
     ports:
       - "1111:3030"
     environment:
-      - NEXT_PUBLIC_API_BASE_URL=https://securescribe.wc504.io.vn/api
+      - NEXT_PUBLIC_API_BASE_URL=https://securescribe.wc504.io.vn/be/api
     restart: unless-stopped
     networks:
       - securescribe-network
