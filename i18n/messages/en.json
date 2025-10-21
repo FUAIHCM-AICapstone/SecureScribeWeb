@@ -340,6 +340,62 @@
       "archived": "Archived"
     }
   },
+  "Tasks": {
+    "title": "Tasks",
+    "searchPlaceholder": "Search tasks...",
+    "searchButton": "Search",
+    "allTasks": "All Tasks",
+    "myTasks": "My Tasks",
+    "noTasksFound": "No tasks found",
+    "noTasksYet": "No tasks yet",
+    "createTask": "Create Task",
+    "loading": "Loading tasks...",
+    "searching": "Searching...",
+    "errorTitle": "Failed to load tasks",
+    "retry": "Try Again",
+    "previous": "Previous",
+    "next": "Next",
+    "pageInfo": "Page {current} of {total}",
+    "gridView": "Grid view",
+    "listView": "List view",
+    "tasksCount": "{count} {count, plural, =1 {task} other {tasks}}",
+    "emptyFilteredDescription": "Try adjusting your filters or search terms to find what you're looking for.",
+    "emptyUnfilteredDescription": "Get started by creating your first task to track your work.",
+    "untitledTask": "Untitled Task",
+    "noDateSet": "No due date",
+    "invalidDate": "Invalid date",
+    "overdue": "Overdue",
+    "dueToday": "Due today",
+    "dueTomorrow": "Due tomorrow",
+    "createdBy": "Created by",
+    "assignedTo": "Assigned to",
+    "unassigned": "Unassigned",
+    "noDescription": "No description",
+    "status": {
+      "todo": "To Do",
+      "in_progress": "In Progress",
+      "done": "Done"
+    },
+    "statusFilter": {
+      "all": "All Status",
+      "todo": "To Do",
+      "in_progress": "In Progress",
+      "done": "Done"
+    },
+    "actions": {
+      "label": "Task actions",
+      "view": "View Details",
+      "edit": "Edit Task",
+      "delete": "Delete"
+    },
+    "table": {
+      "title": "Task Title",
+      "status": "Status",
+      "assignee": "Assignee",
+      "dueDate": "Due Date",
+      "actions": "Actions"
+    }
+  },
   "Profile": {
     "profile": "Profile",
     "profileSubtitle": "Manage your personal information",
