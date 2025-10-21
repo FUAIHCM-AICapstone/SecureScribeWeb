@@ -10,7 +10,7 @@ RUN corepack enable && \
     adduser -S nextjs -u 1001
 
 # Set build-time environment variables
-ENV NEXT_PUBLIC_API_BASE_URL=https://securescribe.wc504.io.vn/api
+ENV NEXT_PUBLIC_API_BASE_URL=https://securescribe.wc504.io.vn/be/api
 
 # Copy package files first for better layer caching
 COPY package.json yarn.lock ./

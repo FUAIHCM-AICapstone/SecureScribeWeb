@@ -18,14 +18,24 @@ import {
   List20Regular,
   Search20Regular,
   CalendarLtr20Regular,
+  FolderOpen24Regular,
 } from '@fluentui/react-icons';
 
 const useStyles = makeStyles({
   header: {
     display: 'flex',
     flexDirection: 'column',
-    ...shorthands.gap('16px'),
-    marginBottom: '24px',
+    ...shorthands.gap('20px'),
+    marginBottom: '32px',
+    ...shorthands.padding('24px'),
+    background:
+      'linear-gradient(135deg, rgba(17, 94, 163, 0.03) 0%, rgba(91, 155, 213, 0.05) 100%)',
+    ...shorthands.borderRadius('16px'),
+    ...shorthands.border('1px', 'solid', 'rgba(17, 94, 163, 0.15)'),
+    boxShadow: '0 2px 8px rgba(17, 94, 163, 0.08)',
+    '@media (max-width: 768px)': {
+      ...shorthands.padding('16px'),
+    },
   },
   topRow: {
     display: 'flex',
@@ -34,14 +44,30 @@ const useStyles = makeStyles({
     flexWrap: 'wrap',
     ...shorthands.gap('16px'),
   },
+  titleContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    ...shorthands.gap('12px'),
+  },
+  iconBadge: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '48px',
+    height: '48px',
+    ...shorthands.borderRadius('12px'),
+    background: 'linear-gradient(135deg, #115ea3 0%, #5b9bd5 100%)',
+    boxShadow: '0 4px 12px rgba(17, 94, 163, 0.25)',
+    color: '#ffffff',
+  },
   title: {
-    fontSize: '28px',
+    fontSize: tokens.fontSizeHero900,
     fontWeight: 700,
-    color: tokens.colorNeutralForeground1,
+    color: '#115ea3',
   },
   viewToggle: {
     display: 'flex',
-    ...shorthands.gap('4px'),
+    ...shorthands.gap('8px'),
   },
   filtersRow: {
     display: 'flex',
@@ -136,7 +162,12 @@ export function ProjectsHeader({
   return (
     <div className={styles.header}>
       <div className={styles.topRow}>
-        <Text className={styles.title}>{t('title')}</Text>
+        <div className={styles.titleContainer}>
+          <div className={styles.iconBadge}>
+            <FolderOpen24Regular />
+          </div>
+          <Text className={styles.title}>{t('title')}</Text>
+        </div>
         <div className={styles.viewToggle}>
           <Button
             appearance={viewMode === 'grid' ? 'primary' : 'secondary'}

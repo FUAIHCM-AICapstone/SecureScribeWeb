@@ -7,7 +7,6 @@ import { useTranslations } from 'next-intl';
 import {
   Button,
   Text,
-  Spinner,
   makeStyles,
   tokens,
   shorthands,
@@ -15,6 +14,7 @@ import {
 import { ArrowLeft20Regular, ArrowRight20Regular } from '@fluentui/react-icons';
 import { getMeetings } from '@/services/api/meeting';
 import { queryKeys } from '@/lib/queryClient';
+import { LoadingToast } from '@/components/loading/LoadingToast';
 import { MeetingsHeader } from './MeetingsHeader';
 import { MeetingsGrid } from './MeetingsGrid';
 import { MeetingsList } from './MeetingsList';
@@ -26,9 +26,9 @@ const useStyles = makeStyles({
     width: '100%',
     maxWidth: '1600px',
     margin: '0 auto',
-    ...shorthands.padding('24px', '32px'),
+    ...shorthands.padding('40px', '32px', '24px'),
     '@media (max-width: 768px)': {
-      ...shorthands.padding('16px'),
+      ...shorthands.padding('24px', '16px', '16px'),
     },
   },
   content: {
@@ -235,15 +235,24 @@ export function MeetingsPageClient() {
   const isInitialLoading = isLoading && !data;
   const isRefetchingData = isFetching && !!data;
 
-  // Initial loading state - show full skeleton
+  // Initial loading state - show header + skeleton
   if (isInitialLoading) {
     return (
       <div className={styles.container}>
-        <Text className={styles.errorTitle} style={{ marginBottom: '24px' }}>
-          {t('loading')}
-        </Text>
+        <MeetingsHeader
+          viewMode={viewMode}
+          onViewModeChange={handleViewModeChange}
+          isPersonal={isPersonal}
+          onPersonalChange={handlePersonalChange}
+          searchQuery={searchQuery}
+          onSearchChange={handleSearchChange}
+          startDateFrom={startDateFrom}
+          startDateTo={startDateTo}
+          onDateRangeChange={handleDateRangeChange}
+          totalCount={0}
+        />
         <div className={styles.skeletonGrid}>
-          {Array.from({ length: 6 }).map((_, i) => (
+          {Array.from({ length: viewMode === 'grid' ? 12 : 8 }).map((_, i) => (
             <MeetingCardSkeleton key={i} />
           ))}
         </div>
@@ -279,6 +288,8 @@ export function MeetingsPageClient() {
 
   return (
     <div className={styles.container}>
+      <LoadingToast message={t('searching')} show={isRefetchingData} />
+
       <MeetingsHeader
         viewMode={viewMode}
         onViewModeChange={handleViewModeChange}
@@ -291,13 +302,6 @@ export function MeetingsPageClient() {
         onDateRangeChange={handleDateRangeChange}
         totalCount={totalCount}
       />
-
-      {isRefetchingData && (
-        <div className={styles.loadingIndicator}>
-          <Spinner size="tiny" />
-          <Text className={styles.loadingText}>{t('searching')}</Text>
-        </div>
-      )}
 
       <div className={styles.content}>
         {meetings.length === 0 ? (
