@@ -184,7 +184,11 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
   const tMeetings = useTranslations('Meetings');
   const router = useRouter();
 
-  const { data: meeting, isLoading, isError } = useQuery<MeetingWithProjects>({
+  const {
+    data: meeting,
+    isLoading,
+    isError,
+  } = useQuery<MeetingWithProjects>({
     queryKey: queryKeys.meeting(meetingId),
     queryFn: () => getMeeting(meetingId),
   });
@@ -299,9 +303,7 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
           <div className={styles.metaItem}>
             <People20Regular />
             <div>
-              <Caption1 className={styles.metaLabel}>
-                {t('projects')}
-              </Caption1>
+              <Caption1 className={styles.metaLabel}>{t('projects')}</Caption1>
               <Body1 className={styles.metaValue}>
                 {t('projectsCount', {
                   count: meeting.projects?.length || 0,
@@ -321,7 +323,9 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
               <Title3>{t('description')}</Title3>
             </div>
             {meeting.description ? (
-              <Body1 className={styles.description}>{meeting.description}</Body1>
+              <Body1 className={styles.description}>
+                {meeting.description}
+              </Body1>
             ) : (
               <Body1 className={styles.noContent}>{t('noDescription')}</Body1>
             )}
@@ -407,7 +411,9 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
               <Document20Regular />
               <Title3>{t('overview')}</Title3>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div
+              style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}
+            >
               <div>
                 <Caption1 style={{ color: tokens.colorNeutralForeground2 }}>
                   {t('createdAt')}
@@ -424,7 +430,9 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
                 <Caption1 style={{ color: tokens.colorNeutralForeground2 }}>
                   {t('status')}
                 </Caption1>
-                <div style={{ marginTop: '4px' }}>{getStatusBadge(meeting.status)}</div>
+                <div style={{ marginTop: '4px' }}>
+                  {getStatusBadge(meeting.status)}
+                </div>
               </div>
             </div>
           </Card>

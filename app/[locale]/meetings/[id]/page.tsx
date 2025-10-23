@@ -32,5 +32,3 @@ export default async function MeetingDetailPage({ params }: PageProps) {
     notFound();
   }
 }
-
-
