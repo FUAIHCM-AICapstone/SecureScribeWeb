@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
 import {
   Menu,
   MenuTrigger,
@@ -27,25 +28,28 @@ interface MeetingActionsMenuProps {
 
 export function MeetingActionsMenu({ meeting }: MeetingActionsMenuProps) {
   const t = useTranslations('Meetings');
+  const router = useRouter();
 
   const handleAction = (action: string) => {
-    console.log(`Action ${action} for meeting ${meeting.id}`);
-    // TODO: Implement actual actions later
     switch (action) {
       case 'view':
-        console.log('View meeting details:', meeting.title);
+        router.push(`/meetings/${meeting.id}`);
         break;
       case 'edit':
         console.log('Edit meeting:', meeting.title);
+        // TODO: Implement edit functionality
         break;
       case 'share':
         console.log('Share meeting:', meeting.title);
+        // TODO: Implement share functionality
         break;
       case 'archive':
         console.log('Archive meeting:', meeting.title);
+        // TODO: Implement archive functionality
         break;
       case 'delete':
         console.log('Delete meeting:', meeting.title);
+        // TODO: Implement delete functionality
         break;
       default:
         break;

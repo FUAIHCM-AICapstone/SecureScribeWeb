@@ -287,6 +287,32 @@
       "personal": "Personal"
     }
   },
+  "MeetingDetail": {
+    "backToMeetings": "Back to Meetings",
+    "loading": "Loading meeting details...",
+    "notFound": "Meeting not found",
+    "notFoundDescription": "The meeting you're looking for doesn't exist or has been deleted.",
+    "errorTitle": "Failed to load meeting",
+    "overview": "Overview",
+    "description": "Description",
+    "noDescription": "No description provided",
+    "startTime": "Start Time",
+    "endTime": "End Time",
+    "status": "Status",
+    "meetingType": "Type",
+    "meetingUrl": "Meeting URL",
+    "openUrl": "Open meeting",
+    "createdAt": "Created",
+    "updatedAt": "Last updated",
+    "projects": "Related Projects",
+    "noProjects": "No projects linked",
+    "projectsCount": "{count} {count, plural, =1 {project} other {projects}}",
+    "notes": "Meeting Notes",
+    "transcripts": "Transcripts",
+    "files": "Files",
+    "noFiles": "No files uploaded",
+    "filesCount": "{count} {count, plural, =1 {file} other {files}}"
+  },
   "Projects": {
     "title": "Projects",
     "searchPlaceholder": "Search projects...",

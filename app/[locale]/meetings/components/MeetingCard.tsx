@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
 import {
   Card,
   CardHeader,
@@ -120,6 +121,7 @@ interface MeetingCardProps {
 export function MeetingCard({ meeting }: MeetingCardProps) {
   const styles = useStyles();
   const t = useTranslations('Meetings');
+  const router = useRouter();
 
   const getStatusBadge = () => {
     switch (meeting.status) {
@@ -159,8 +161,16 @@ export function MeetingCard({ meeting }: MeetingCardProps) {
     }
   };
 
+  const handleCardClick = (e: React.MouseEvent) => {
+    // Don't navigate if clicking on the actions menu
+    if ((e.target as HTMLElement).closest('[role="button"]')) {
+      return;
+    }
+    router.push(`/meetings/${meeting.id}`);
+  };
+
   return (
-    <Card className={styles.card}>
+    <Card className={styles.card} onClick={handleCardClick}>
       <CardHeader
         className={styles.header}
         header={

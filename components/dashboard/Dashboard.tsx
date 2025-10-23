@@ -14,6 +14,7 @@ import {
   Title3,
   makeStyles,
   tokens,
+  shorthands,
 } from '@fluentui/react-components';
 import type { ButtonProps } from '@fluentui/react-components';
 import {
@@ -23,6 +24,7 @@ import {
   DocumentText24Regular,
   NotebookSection24Regular,
   Flash24Regular,
+  Home24Regular,
 } from '@fluentui/react-icons';
 import { useTranslations } from 'next-intl';
 
@@ -35,11 +37,9 @@ const useStyles = makeStyles({
   },
   intro: {
     display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'baseline',
-    gap: '16px',
+    flexDirection: 'column',
+    ...shorthands.gap('20px'),
     marginBottom: '0',
-    flexWrap: 'nowrap',
     padding: '24px',
     borderRadius: tokens.borderRadiusXLarge,
     background: `linear-gradient(135deg, rgba(17, 94, 163, 0.03) 0%, rgba(91, 155, 213, 0.05) 100%)`,
@@ -49,10 +49,40 @@ const useStyles = makeStyles({
       padding: '16px',
     },
   },
+  topRow: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    ...shorthands.gap('16px'),
+  },
+  titleContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    ...shorthands.gap('12px'),
+  },
+  iconBadge: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '48px',
+    height: '48px',
+    ...shorthands.borderRadius('12px'),
+    background: 'linear-gradient(135deg, #115ea3 0%, #5b9bd5 100%)',
+    boxShadow: '0 4px 12px rgba(17, 94, 163, 0.25)',
+    color: '#ffffff',
+  },
   introTitle: {
     color: '#115ea3',
     fontWeight: 700,
     fontSize: tokens.fontSizeHero900,
+  },
+  bottomRow: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    ...shorthands.gap('12px'),
   },
   introDescription: {
     color: tokens.colorNeutralForeground2,
@@ -60,9 +90,6 @@ const useStyles = makeStyles({
     lineHeight: '1.5',
     margin: '0',
     fontWeight: '400',
-    whiteSpace: 'nowrap',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis',
   },
   grid: {
     display: 'grid',
@@ -346,8 +373,20 @@ const Dashboard: React.FC = () => {
   return (
     <section className={styles.root}>
       <div className={styles.intro}>
-        <Title1 className={styles.introTitle}>{t('title')}</Title1>
-        <Body1 className={styles.introDescription}>{t('description')}</Body1>
+        {/* Top Row: Title with Icon */}
+        <div className={styles.topRow}>
+          <div className={styles.titleContainer}>
+            <div className={styles.iconBadge}>
+              <Home24Regular />
+            </div>
+            <Title1 className={styles.introTitle}>{t('title')}</Title1>
+          </div>
+        </div>
+
+        {/* Bottom Row: Description */}
+        <div className={styles.bottomRow}>
+          <Body1 className={styles.introDescription}>{t('description')}</Body1>
+        </div>
       </div>
 
       <div className={styles.grid}>

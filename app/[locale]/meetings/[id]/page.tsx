@@ -1,15 +1,36 @@
+import {
+  HydrationBoundary,
+  QueryClient,
+  dehydrate,
+} from '@tanstack/react-query';
+import { queryKeys } from '@/lib/queryClient';
+import { getMeeting } from '@/services/api/meeting';
+import { MeetingDetailClient } from './components/MeetingDetailClient';
+import { notFound } from 'next/navigation';
+
 type PageProps = { params: Promise<{ id: string }> };
 
 export default async function MeetingDetailPage({ params }: PageProps) {
-    const { id } = await params;
+  const { id } = await params;
+
+  const queryClient = new QueryClient();
+
+  try {
+    // Prefetch meeting data
+    await queryClient.prefetchQuery({
+      queryKey: queryKeys.meeting(id),
+      queryFn: () => getMeeting(id),
+    });
+
     return (
-        <>
-            <main className='overflow-x-hidden px-3 lg:px-32'>
-                <h1 className='text-2xl font-semibold'>Meeting Detail</h1>
-                <p className='mt-2 text-sm text-gray-500'>ID: {id}</p>
-            </main>
-        </>
+      <HydrationBoundary state={dehydrate(queryClient)}>
+        <MeetingDetailClient meetingId={id} />
+      </HydrationBoundary>
     );
+  } catch (error) {
+    console.error('Failed to fetch meeting:', error);
+    notFound();
+  }
 }
 
 

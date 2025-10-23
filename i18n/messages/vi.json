@@ -287,6 +287,32 @@
       "personal": "Cá nhân"
     }
   },
+  "MeetingDetail": {
+    "backToMeetings": "Quay lại danh sách",
+    "loading": "Đang tải chi tiết cuộc họp...",
+    "notFound": "Không tìm thấy cuộc họp",
+    "notFoundDescription": "Cuộc họp bạn đang tìm kiếm không tồn tại hoặc đã bị xóa.",
+    "errorTitle": "Không thể tải cuộc họp",
+    "overview": "Tổng quan",
+    "description": "Mô tả",
+    "noDescription": "Không có mô tả",
+    "startTime": "Thời gian bắt đầu",
+    "endTime": "Thời gian kết thúc",
+    "status": "Trạng thái",
+    "meetingType": "Loại",
+    "meetingUrl": "Link cuộc họp",
+    "openUrl": "Mở cuộc họp",
+    "createdAt": "Tạo lúc",
+    "updatedAt": "Cập nhật lần cuối",
+    "projects": "Dự án liên quan",
+    "noProjects": "Không có dự án liên kết",
+    "projectsCount": "{count} dự án",
+    "notes": "Ghi chú cuộc họp",
+    "transcripts": "Bản ghi âm",
+    "files": "Tệp tin",
+    "noFiles": "Chưa có tệp tin",
+    "filesCount": "{count} tệp tin"
+  },
   "Projects": {
     "title": "Dự án",
     "searchPlaceholder": "Tìm kiếm dự án...",
