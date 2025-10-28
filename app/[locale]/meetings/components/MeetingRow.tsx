@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { useTranslations } from 'next-intl';
-import { useRouter } from 'next/navigation';
 import {
   TableRow,
   TableCell,
@@ -18,7 +17,6 @@ import { MeetingActionsMenu } from './MeetingActionsMenu';
 
 const useStyles = makeStyles({
   row: {
-    cursor: 'pointer',
     ':hover': {
       backgroundColor: tokens.colorNeutralBackground1Hover,
     },
@@ -38,7 +36,6 @@ interface MeetingRowProps {
 export function MeetingRow({ meeting }: MeetingRowProps) {
   const styles = useStyles();
   const t = useTranslations('Meetings');
-  const router = useRouter();
 
   const getStatusBadge = () => {
     switch (meeting.status) {
@@ -78,16 +75,8 @@ export function MeetingRow({ meeting }: MeetingRowProps) {
     }
   };
 
-  const handleRowClick = (e: React.MouseEvent) => {
-    // Don't navigate if clicking on the actions menu
-    if ((e.target as HTMLElement).closest('[role="button"]')) {
-      return;
-    }
-    router.push(`/meetings/${meeting.id}`);
-  };
-
   return (
-    <TableRow className={styles.row} onClick={handleRowClick}>
+    <TableRow className={styles.row}>
       <TableCell>
         <div style={{ display: 'flex', alignItems: 'center' }}>
           <Text className={styles.titleCell}>

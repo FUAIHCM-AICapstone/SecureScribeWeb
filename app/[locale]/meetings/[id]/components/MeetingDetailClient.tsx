@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import {
   Text,
-  Title3,
   Caption1,
   Body1,
   Badge,
@@ -43,21 +42,30 @@ const useStyles = makeStyles({
   },
   header: {
     marginBottom: '32px',
+    ...shorthands.padding('32px'),
+    backgroundColor: tokens.colorBrandBackground2,
+    ...shorthands.borderRadius(tokens.borderRadiusXLarge),
+    ...shorthands.border('1px', 'solid', tokens.colorBrandStroke1),
   },
   titleRow: {
     display: 'flex',
     alignItems: 'flex-start',
     justifyContent: 'space-between',
     ...shorthands.gap('16px'),
-    marginBottom: '16px',
+    marginBottom: '24px',
     flexWrap: 'wrap',
   },
   titleSection: {
     display: 'flex',
     flexDirection: 'column',
-    ...shorthands.gap('8px'),
+    ...shorthands.gap('12px'),
     flex: 1,
     minWidth: '0',
+  },
+  title: {
+    fontSize: '28px',
+    fontWeight: 700,
+    color: tokens.colorNeutralForeground1,
   },
   badgesRow: {
     display: 'flex',
@@ -68,23 +76,34 @@ const useStyles = makeStyles({
   metaRow: {
     display: 'flex',
     flexWrap: 'wrap',
-    ...shorthands.gap('24px'),
-    ...shorthands.padding('16px', '0'),
-    ...shorthands.borderTop('1px', 'solid', tokens.colorNeutralStroke2),
-    ...shorthands.borderBottom('1px', 'solid', tokens.colorNeutralStroke2),
+    ...shorthands.gap('32px'),
+    ...shorthands.padding('20px', '0', '0'),
+    ...shorthands.borderTop('1px', 'solid', tokens.colorBrandStroke2),
+    marginTop: '20px',
   },
   metaItem: {
     display: 'flex',
-    alignItems: 'center',
-    ...shorthands.gap('8px'),
+    alignItems: 'flex-start',
+    ...shorthands.gap('12px'),
+  },
+  metaIcon: {
+    color: tokens.colorBrandForeground1,
+    marginTop: '2px',
+  },
+  metaContent: {
+    display: 'flex',
+    flexDirection: 'column',
+    ...shorthands.gap('4px'),
   },
   metaLabel: {
-    color: tokens.colorNeutralForeground2,
+    color: tokens.colorNeutralForeground3,
     fontSize: tokens.fontSizeBase200,
+    fontWeight: 600,
   },
   metaValue: {
     fontWeight: 600,
-    fontSize: tokens.fontSizeBase200,
+    fontSize: tokens.fontSizeBase300,
+    color: tokens.colorNeutralForeground1,
   },
   content: {
     display: 'grid',
@@ -105,50 +124,79 @@ const useStyles = makeStyles({
     ...shorthands.gap('24px'),
   },
   section: {
-    ...shorthands.padding('24px'),
+    ...shorthands.padding('28px'),
     backgroundColor: tokens.colorNeutralBackground1,
     ...shorthands.border('1px', 'solid', tokens.colorNeutralStroke2),
     ...shorthands.borderRadius(tokens.borderRadiusXLarge),
+    boxShadow: tokens.shadow4,
+    ...shorthands.transition('box-shadow', '0.2s', 'ease'),
+    ':hover': {
+      boxShadow: tokens.shadow8,
+    },
   },
   sectionTitle: {
-    marginBottom: '16px',
+    marginBottom: '20px',
+    paddingBottom: '16px',
+    ...shorthands.borderBottom('2px', 'solid', tokens.colorBrandStroke2),
     display: 'flex',
     alignItems: 'center',
-    ...shorthands.gap('8px'),
+    ...shorthands.gap('12px'),
+  },
+  sectionIcon: {
+    color: tokens.colorBrandForeground1,
+  },
+  sectionHeading: {
+    fontSize: tokens.fontSizeBase400,
+    fontWeight: 700,
+    color: tokens.colorNeutralForeground1,
   },
   description: {
-    lineHeight: '1.6',
+    lineHeight: '1.8',
     color: tokens.colorNeutralForeground1,
+    fontSize: tokens.fontSizeBase300,
   },
   noContent: {
     color: tokens.colorNeutralForeground3,
     fontStyle: 'italic',
+    textAlign: 'center',
+    ...shorthands.padding('24px'),
   },
   projectsList: {
     display: 'flex',
     flexDirection: 'column',
-    ...shorthands.gap('8px'),
+    ...shorthands.gap('12px'),
   },
   projectItem: {
-    ...shorthands.padding('12px', '16px'),
-    backgroundColor: tokens.colorNeutralBackground2,
+    ...shorthands.padding('16px', '20px'),
+    backgroundColor: tokens.colorBrandBackground2,
     ...shorthands.borderRadius(tokens.borderRadiusMedium),
+    ...shorthands.border('1px', 'solid', tokens.colorBrandStroke2),
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
+    ...shorthands.transition('all', '0.2s', 'ease'),
+    ':hover': {
+      backgroundColor: tokens.colorBrandBackground,
+      transform: 'translateX(4px)',
+    },
   },
   projectName: {
     fontWeight: 600,
+    fontSize: tokens.fontSizeBase300,
   },
   urlButton: {
     width: '100%',
   },
   placeholder: {
-    ...shorthands.padding('32px'),
+    ...shorthands.padding('48px', '32px'),
     textAlign: 'center',
     color: tokens.colorNeutralForeground3,
-    backgroundColor: tokens.colorNeutralBackground2,
+    backgroundColor: tokens.colorNeutralBackground3,
     ...shorthands.borderRadius(tokens.borderRadiusMedium),
+    ...shorthands.border('2px', 'dashed', tokens.colorNeutralStroke2),
+  },
+  placeholderText: {
+    fontSize: tokens.fontSizeBase300,
   },
   loadingContainer: {
     display: 'flex',
@@ -171,6 +219,24 @@ const useStyles = makeStyles({
     fontSize: '20px',
     fontWeight: 600,
     color: tokens.colorPaletteRedForeground1,
+  },
+  overviewItem: {
+    display: 'flex',
+    flexDirection: 'column',
+    ...shorthands.gap('8px'),
+    ...shorthands.padding('16px'),
+    backgroundColor: tokens.colorNeutralBackground3,
+    ...shorthands.borderRadius(tokens.borderRadiusMedium),
+  },
+  overviewLabel: {
+    color: tokens.colorNeutralForeground3,
+    fontSize: tokens.fontSizeBase200,
+    fontWeight: 600,
+  },
+  overviewValue: {
+    fontSize: tokens.fontSizeBase300,
+    fontWeight: 500,
+    color: tokens.colorNeutralForeground1,
   },
 });
 
@@ -274,7 +340,9 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
       <div className={styles.header}>
         <div className={styles.titleRow}>
           <div className={styles.titleSection}>
-            <Title3>{meeting.title || tMeetings('untitledMeeting')}</Title3>
+            <Text className={styles.title}>
+              {meeting.title || tMeetings('untitledMeeting')}
+            </Text>
             <div className={styles.badgesRow}>
               {getStatusBadge(meeting.status)}
               {meeting.is_personal && (
@@ -289,10 +357,10 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
         <div className={styles.metaRow}>
           {meeting.start_time && (
             <div className={styles.metaItem}>
-              <CalendarClock20Regular />
-              <div>
+              <CalendarClock20Regular className={styles.metaIcon} />
+              <div className={styles.metaContent}>
                 <Caption1 className={styles.metaLabel}>
-                  {t('startTime')}
+                  {t('startTime')}:
                 </Caption1>
                 <Body1 className={styles.metaValue}>
                   {formatDateTime(meeting.start_time)}
@@ -301,9 +369,9 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
             </div>
           )}
           <div className={styles.metaItem}>
-            <People20Regular />
-            <div>
-              <Caption1 className={styles.metaLabel}>{t('projects')}</Caption1>
+            <People20Regular className={styles.metaIcon} />
+            <div className={styles.metaContent}>
+              <Caption1 className={styles.metaLabel}>{t('projects')}:</Caption1>
               <Body1 className={styles.metaValue}>
                 {t('projectsCount', {
                   count: meeting.projects?.length || 0,
@@ -319,8 +387,8 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
           {/* Description Section */}
           <Card className={styles.section}>
             <div className={styles.sectionTitle}>
-              <Document20Regular />
-              <Title3>{t('description')}</Title3>
+              <Document20Regular className={styles.sectionIcon} />
+              <Text className={styles.sectionHeading}>{t('description')}</Text>
             </div>
             {meeting.description ? (
               <Body1 className={styles.description}>
@@ -334,33 +402,39 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
           {/* Notes Section */}
           <Card className={styles.section}>
             <div className={styles.sectionTitle}>
-              <Document20Regular />
-              <Title3>{t('notes')}</Title3>
+              <Document20Regular className={styles.sectionIcon} />
+              <Text className={styles.sectionHeading}>{t('notes')}</Text>
             </div>
             <div className={styles.placeholder}>
-              <Body1>{t('notes')} - Coming soon</Body1>
+              <Body1 className={styles.placeholderText}>
+                {t('notes')} - Coming soon
+              </Body1>
             </div>
           </Card>
 
           {/* Transcripts Section */}
           <Card className={styles.section}>
             <div className={styles.sectionTitle}>
-              <Document20Regular />
-              <Title3>{t('transcripts')}</Title3>
+              <Document20Regular className={styles.sectionIcon} />
+              <Text className={styles.sectionHeading}>{t('transcripts')}</Text>
             </div>
             <div className={styles.placeholder}>
-              <Body1>{t('transcripts')} - Coming soon</Body1>
+              <Body1 className={styles.placeholderText}>
+                {t('transcripts')} - Coming soon
+              </Body1>
             </div>
           </Card>
 
           {/* Files Section */}
           <Card className={styles.section}>
             <div className={styles.sectionTitle}>
-              <Document20Regular />
-              <Title3>{t('files')}</Title3>
+              <Document20Regular className={styles.sectionIcon} />
+              <Text className={styles.sectionHeading}>{t('files')}</Text>
             </div>
             <div className={styles.placeholder}>
-              <Body1>{t('filesCount', { count: 0 })}</Body1>
+              <Body1 className={styles.placeholderText}>
+                {t('filesCount', { count: 0 })}
+              </Body1>
             </div>
           </Card>
         </div>
@@ -369,8 +443,8 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
           {/* Related Projects */}
           <Card className={styles.section}>
             <div className={styles.sectionTitle}>
-              <People20Regular />
-              <Title3>{t('projects')}</Title3>
+              <People20Regular className={styles.sectionIcon} />
+              <Text className={styles.sectionHeading}>{t('projects')}</Text>
             </div>
             {meeting.projects && meeting.projects.length > 0 ? (
               <div className={styles.projectsList}>
@@ -391,8 +465,8 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
           {meeting.url && (
             <Card className={styles.section}>
               <div className={styles.sectionTitle}>
-                <Link20Regular />
-                <Title3>{t('meetingUrl')}</Title3>
+                <Link20Regular className={styles.sectionIcon} />
+                <Text className={styles.sectionHeading}>{t('meetingUrl')}</Text>
               </div>
               <Button
                 appearance="primary"
@@ -408,29 +482,33 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
           {/* Metadata */}
           <Card className={styles.section}>
             <div className={styles.sectionTitle}>
-              <Document20Regular />
-              <Title3>{t('overview')}</Title3>
+              <Document20Regular className={styles.sectionIcon} />
+              <Text className={styles.sectionHeading}>{t('overview')}</Text>
             </div>
             <div
-              style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}
+              style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
             >
-              <div>
-                <Caption1 style={{ color: tokens.colorNeutralForeground2 }}>
-                  {t('createdAt')}
+              <div className={styles.overviewItem}>
+                <Caption1 className={styles.overviewLabel}>
+                  {t('createdAt')}:
                 </Caption1>
-                <Body1>{formatDateTime(meeting.created_at)}</Body1>
+                <Body1 className={styles.overviewValue}>
+                  {formatDateTime(meeting.created_at)}
+                </Body1>
               </div>
-              <div>
-                <Caption1 style={{ color: tokens.colorNeutralForeground2 }}>
-                  {t('updatedAt')}
+              <div className={styles.overviewItem}>
+                <Caption1 className={styles.overviewLabel}>
+                  {t('updatedAt')}:
                 </Caption1>
-                <Body1>{formatDateTime(meeting.updated_at || null)}</Body1>
+                <Body1 className={styles.overviewValue}>
+                  {formatDateTime(meeting.updated_at || null)}
+                </Body1>
               </div>
-              <div>
-                <Caption1 style={{ color: tokens.colorNeutralForeground2 }}>
-                  {t('status')}
+              <div className={styles.overviewItem}>
+                <Caption1 className={styles.overviewLabel}>
+                  {t('status')}:
                 </Caption1>
-                <div style={{ marginTop: '4px' }}>
+                <div style={{ marginTop: '8px' }}>
                   {getStatusBadge(meeting.status)}
                 </div>
               </div>
