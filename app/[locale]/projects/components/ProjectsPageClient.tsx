@@ -20,6 +20,7 @@ import { ProjectsGrid } from './ProjectsGrid';
 import { ProjectsList } from './ProjectsList';
 import { EmptyProjectsState } from './EmptyProjectsState';
 import { ProjectCardSkeleton } from './ProjectCardSkeleton';
+import ProjectCreateModal from '@/components/modal/ProjectCreateModal';
 
 const useStyles = makeStyles({
   container: {
@@ -118,6 +119,7 @@ export function ProjectsPageClient() {
   const [currentPage, setCurrentPage] = useState(
     parseInt(searchParams.get('page') || '1', 10),
   );
+  const [showProjectModal, setShowProjectModal] = useState(false);
 
   const limit = viewMode === 'grid' ? 12 : 20;
 
@@ -223,8 +225,7 @@ export function ProjectsPageClient() {
   );
 
   const handleCreateProject = useCallback(() => {
-    // TODO: Implement create project functionality
-    console.log('Create project');
+    setShowProjectModal(true);
   }, []);
 
   // Check if any filters are active
@@ -367,6 +368,12 @@ export function ProjectsPageClient() {
           </Button>
         </div>
       )}
+
+      {/* Project Create Modal */}
+      <ProjectCreateModal
+        open={showProjectModal}
+        onOpenChange={setShowProjectModal}
+      />
     </div>
   );
 }

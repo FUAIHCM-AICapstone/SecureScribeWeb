@@ -43,9 +43,10 @@ const useStyles = makeStyles({
   header: {
     marginBottom: '32px',
     ...shorthands.padding('32px'),
-    backgroundColor: tokens.colorBrandBackground2,
+    backgroundColor: tokens.colorNeutralBackground1,
     ...shorthands.borderRadius(tokens.borderRadiusXLarge),
-    ...shorthands.border('1px', 'solid', tokens.colorBrandStroke1),
+    ...shorthands.border('1px', 'solid', tokens.colorNeutralStroke2),
+    boxShadow: tokens.shadow4,
   },
   titleRow: {
     display: 'flex',
@@ -78,7 +79,7 @@ const useStyles = makeStyles({
     flexWrap: 'wrap',
     ...shorthands.gap('32px'),
     ...shorthands.padding('20px', '0', '0'),
-    ...shorthands.borderTop('1px', 'solid', tokens.colorBrandStroke2),
+    ...shorthands.borderTop('1px', 'solid', tokens.colorNeutralStroke2),
     marginTop: '20px',
   },
   metaItem: {
@@ -87,8 +88,9 @@ const useStyles = makeStyles({
     ...shorthands.gap('12px'),
   },
   metaIcon: {
-    color: tokens.colorBrandForeground1,
+    color: tokens.colorBrandForeground2,
     marginTop: '2px',
+    opacity: 0.8,
   },
   metaContent: {
     display: 'flex',
@@ -137,13 +139,14 @@ const useStyles = makeStyles({
   sectionTitle: {
     marginBottom: '20px',
     paddingBottom: '16px',
-    ...shorthands.borderBottom('2px', 'solid', tokens.colorBrandStroke2),
+    ...shorthands.borderBottom('2px', 'solid', tokens.colorNeutralStroke2),
     display: 'flex',
     alignItems: 'center',
     ...shorthands.gap('12px'),
   },
   sectionIcon: {
-    color: tokens.colorBrandForeground1,
+    color: tokens.colorBrandForeground2,
+    opacity: 0.8,
   },
   sectionHeading: {
     fontSize: tokens.fontSizeBase400,
@@ -168,15 +171,16 @@ const useStyles = makeStyles({
   },
   projectItem: {
     ...shorthands.padding('16px', '20px'),
-    backgroundColor: tokens.colorBrandBackground2,
+    backgroundColor: tokens.colorNeutralBackground2,
     ...shorthands.borderRadius(tokens.borderRadiusMedium),
-    ...shorthands.border('1px', 'solid', tokens.colorBrandStroke2),
+    ...shorthands.border('1px', 'solid', tokens.colorNeutralStroke2),
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
     ...shorthands.transition('all', '0.2s', 'ease'),
     ':hover': {
-      backgroundColor: tokens.colorBrandBackground,
+      backgroundColor: tokens.colorNeutralBackground3,
+      boxShadow: tokens.shadow4,
       transform: 'translateX(4px)',
     },
   },

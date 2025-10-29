@@ -62,7 +62,23 @@
     "titleRequired": "Tiêu đề cuộc họp là bắt buộc",
     "titleMinLength": "Tiêu đề phải có ít nhất 3 ký tự",
     "urlInvalid": "Vui lòng nhập URL hợp lệ (https://...)",
-    "startTimeRequired": "Thời gian bắt đầu là bắt buộc"
+    "startTimeRequired": "Thời gian bắt đầu là bắt buộc",
+    "dateTimeRequired": "Vui lòng chọn ngày và giờ"
+  },
+  "ProjectCreate": {
+    "createProject": "Tạo dự án",
+    "projectName": "Tên dự án",
+    "projectDescription": "Mô tả dự án",
+    "projectNamePlaceholder": "Nhập tên dự án",
+    "projectDescriptionPlaceholder": "Nhập mô tả dự án (tùy chọn)",
+    "projectNameRequired": "Tên dự án là bắt buộc",
+    "projectNameMinLength": "Tên dự án phải có ít nhất 3 ký tự",
+    "projectNameMaxLength": "Tên dự án không được vượt quá 100 ký tự",
+    "projectDescriptionMaxLength": "Mô tả dự án không được vượt quá 500 ký tự",
+    "cancel": "Hủy",
+    "creating": "Đang tạo...",
+    "projectCreated": "Đã tạo dự án thành công!",
+    "projectCreateError": "Không thể tạo dự án. Vui lòng thử lại."
   },
   "Sidebar": {
     "navigation": "Điều hướng",
