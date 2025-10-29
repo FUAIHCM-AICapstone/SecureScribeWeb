@@ -1,92 +1,95 @@
-'use client';
+import { useToastController, Toast, ToastTitle, ToastBody } from '@fluentui/react-toast';
+import { Spinner } from '@fluentui/react-components';
+import * as React from 'react';
 
-import React, { useEffect, useState } from 'react';
-import { createPortal } from 'react-dom';
-import {
-  Spinner,
-  Text,
-  makeStyles,
-  tokens,
-  shorthands,
-} from '@fluentui/react-components';
+// Global toast controller instance for loading toasts
+let loadingToastController: ReturnType<typeof useToastController> | null = null;
 
-const useStyles = makeStyles({
-  toast: {
-    position: 'fixed',
-    top: '24px',
-    right: '24px',
-    zIndex: 9999,
-    display: 'flex',
-    alignItems: 'center',
-    ...shorthands.gap('12px'),
-    ...shorthands.padding('12px', '20px'),
-    backgroundColor: tokens.colorNeutralBackground1,
-    ...shorthands.borderRadius(tokens.borderRadiusLarge),
-    boxShadow: `0 8px 24px ${tokens.colorNeutralShadowAmbient}, 0 2px 8px ${tokens.colorNeutralShadowKey}`,
-    ...shorthands.border('1px', 'solid', tokens.colorNeutralStroke1),
-    opacity: 0,
-    transform: 'translateY(-10px)',
-    ...shorthands.transition('all', '300ms', 'ease-in-out'),
-    '@media (prefers-reduced-motion: reduce)': {
-      transitionDuration: '0ms',
-    },
-  },
-  toastVisible: {
-    opacity: 1,
-    transform: 'translateY(0)',
-  },
-  text: {
-    fontSize: tokens.fontSizeBase200,
-    fontWeight: 500,
-    color: tokens.colorNeutralForeground1,
-  },
-  spinner: {
-    color: tokens.colorBrandForeground1,
-  },
-  '@media (max-width: 768px)': {
-    toast: {
-      top: '16px',
-      right: '16px',
-      left: '16px',
-      maxWidth: 'calc(100vw - 32px)',
-    },
-  },
-});
+// Track current loading toast ID and reference
+let currentLoadingToastId: string | null = null;
+let loadingToastShown: boolean = false;
 
-interface LoadingToastProps {
-  message: string;
-  show: boolean;
-}
+// Function to set the loading toast controller (call this in your app root)
+export const setLoadingToastController = (controller: ReturnType<typeof useToastController>) => {
+  loadingToastController = controller;
+};
 
-export function LoadingToast({ message, show }: LoadingToastProps) {
-  const styles = useStyles();
-  const [mounted, setMounted] = useState(false);
-  const [shouldRender, setShouldRender] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (show) {
-      setShouldRender(true);
-    } else {
-      // Delay unmounting to allow exit animation
-      const timer = setTimeout(() => setShouldRender(false), 300);
-      return () => clearTimeout(timer);
-    }
-  }, [show]);
-
-  if (!mounted || !shouldRender) {
+const showLoadingToast = (message: string) => {
+  if (!loadingToastController) {
+    console.warn('[showLoadingToast] Loading toast controller not initialized. Call setLoadingToastController first.');
     return null;
   }
 
-  const toastElement = (
-    <div className={`${styles.toast} ${show ? styles.toastVisible : ''}`}>
-      <Spinner size="extra-small" className={styles.spinner} />
-      <Text className={styles.text}>{message}</Text>
-    </div>
+  // Dismiss existing loading toast if any
+  if (loadingToastShown && currentLoadingToastId) {
+    loadingToastController.dismissToast(currentLoadingToastId);
+    loadingToastShown = false;
+  }
+
+  // Detect language from path: /vi/... or /en/...
+  let lang: 'vi' | 'en' = 'en';
+  if (typeof window !== 'undefined') {
+    const pathLocale = window.location.pathname.split('/')[1];
+    if (pathLocale === 'vi' || pathLocale === 'en') {
+      lang = pathLocale as 'vi' | 'en';
+    }
+  }
+
+  const titles: Record<'vi' | 'en', string> = {
+    vi: 'Đang tải',
+    en: 'Loading',
+  };
+
+  const toastTitle = titles[lang];
+
+  console.log('[showLoadingToast]', { message, lang, title: toastTitle });
+
+  // Create loading toast content with Spinner using React.createElement
+  const toastContent = React.createElement(
+    Toast,
+    null,
+    React.createElement(ToastTitle, null, toastTitle),
+    React.createElement(
+      ToastBody,
+      null,
+      React.createElement(
+        'div',
+        { style: { display: 'flex', alignItems: 'center', gap: '8px' } },
+        React.createElement(Spinner, { size: 'extra-small' }),
+        React.createElement('span', null, message)
+      )
+    )
   );
 
-  return createPortal(toastElement, document.body);
-}
+  // Dispatch the loading toast without timeout (stays until dismissed)
+  loadingToastController.dispatchToast(toastContent, {
+    intent: 'info',
+    timeout: -1, // No auto-dismiss for loading toasts
+  });
+
+  // Note: FluentUI's dispatchToast returns void in some versions
+  // We generate our own ID for tracking purposes only
+  const toastId = `loading-toast-${Date.now()}`;
+  currentLoadingToastId = toastId;
+  loadingToastShown = true;
+  return toastId;
+};
+
+const hideLoadingToast = () => {
+  if (!loadingToastController) {
+    console.warn('[hideLoadingToast] Loading toast controller not initialized.');
+    return;
+  }
+
+  if (loadingToastShown && currentLoadingToastId) {
+    loadingToastController.dismissToast(currentLoadingToastId);
+    loadingToastShown = false;
+    currentLoadingToastId = null;
+    console.log('[hideLoadingToast] Loading toast dismissed');
+  }
+};
+
+export {
+  showLoadingToast,
+  hideLoadingToast,
+};

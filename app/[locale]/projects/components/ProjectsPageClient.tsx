@@ -14,7 +14,7 @@ import {
 import { ArrowLeft20Regular, ArrowRight20Regular } from '@fluentui/react-icons';
 import { getProjects } from '@/services/api/project';
 import { queryKeys } from '@/lib/queryClient';
-import { LoadingToast } from '@/components/loading/LoadingToast';
+import { showLoadingToast } from '@/components/loading/LoadingToast';
 import { ProjectsHeader } from './ProjectsHeader';
 import { ProjectsGrid } from './ProjectsGrid';
 import { ProjectsList } from './ProjectsList';
@@ -141,7 +141,7 @@ export function ProjectsPageClient() {
   );
 
   // Fetch projects with React Query
-  const { data, isLoading, isFetching, isError, error, refetch } = useQuery({
+  const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: [...queryKeys.projects, apiFilters, apiParams],
     queryFn: async () => {
       return getProjects(apiFilters, apiParams);
@@ -317,7 +317,7 @@ export function ProjectsPageClient() {
   // Main content
   return (
     <div className={styles.container}>
-      <LoadingToast message={t('searching')} show={isFetching} />
+      {showLoadingToast(t('searching'))}
 
       <ProjectsHeader
         viewMode={viewMode}

@@ -32,6 +32,7 @@ const useStyles = makeStyles({
   root: {
     display: 'flex',
     flexDirection: 'column',
+    padding: '24px',
     gap: '32px',
     width: '100%',
   },

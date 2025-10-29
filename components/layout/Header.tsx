@@ -34,7 +34,7 @@ import {
 } from '@fluentui/react-icons';
 import { useLocale, useTranslations } from 'next-intl';
 import Image from 'next/image';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import LanguageSwitcher from './LanguageSwitcher';
 import ThemeToggle from './ThemeToggle';
 import { useSidebar } from '@/context/SidebarContext';
@@ -203,6 +203,32 @@ export default function Header() {
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [isNotiOpen, setIsNotiOpen] = useState(false);
   const queryClient = useQueryClient();
+
+  // Brand configuration state with defaults
+  const [brandName, setBrandName] = useState('SecureScribe');
+  const [brandLogo, setBrandLogo] = useState('/images/logos/logo.png');
+
+  // Fetch brand configuration from API
+  useEffect(() => {
+    const fetchBrandConfig = async () => {
+      try {
+        const response = await fetch('/api/config');
+        const data = await response.json();
+
+        if (data.brand_name) {
+          setBrandName(data.brand_name);
+        }
+        if (data.brand_logo) {
+          setBrandLogo(data.brand_logo);
+        }
+      } catch (error) {
+        console.warn('Failed to fetch brand config, using defaults:', error);
+        // Keep default values on error
+      }
+    };
+
+    fetchBrandConfig();
+  }, []);
 
   // Fetch notifications with React Query
   const {
@@ -510,12 +536,13 @@ export default function Header() {
           }}
         >
           <Image
-            src="/images/logos/logo.png"
-            alt="SecureScribe"
+            src={brandLogo}
+            alt={brandName}
             width={28}
             height={28}
+            style={{ borderRadius: '50%', objectFit: 'cover' }}
           />
-          <strong className={styles.brandText}>SecureScribe</strong>
+          <strong className={styles.brandText}>{brandName}</strong>
         </div>
 
         <div className={styles.breadcrumbs}>

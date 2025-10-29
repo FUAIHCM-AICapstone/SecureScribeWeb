@@ -1,7 +1,7 @@
 import axios, { InternalAxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
 import authApi from './auth';
 
-const DEFAULT_API_BASE_URL = 'https://dev.wc504.io.vn/be/api';
+const DEFAULT_API_BASE_URL = 'https://securescribe.wc504.io.vn/be/api';
 const API_VERSION = 'v1';
 
 let API_BASE_URL = DEFAULT_API_BASE_URL;

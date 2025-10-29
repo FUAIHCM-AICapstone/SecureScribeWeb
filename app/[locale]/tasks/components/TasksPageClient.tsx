@@ -14,7 +14,7 @@ import {
 import { ArrowLeft20Regular, ArrowRight20Regular } from '@fluentui/react-icons';
 import { getTasks } from '@/services/api/task';
 import { queryKeys } from '@/lib/queryClient';
-import { LoadingToast } from '@/components/loading/LoadingToast';
+import { showLoadingToast } from '@/components/loading/LoadingToast';
 import { TasksHeader } from './TasksHeader';
 import { TasksGrid } from './TasksGrid';
 import { TasksList } from './TasksList';
@@ -148,7 +148,7 @@ export function TasksPageClient() {
   );
 
   // Fetch tasks with React Query
-  const { data, isLoading, isFetching, isError, error, refetch } = useQuery({
+  const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey:
       isMyTasks === true
         ? [...queryKeys.myTasks, apiParams]
@@ -239,7 +239,6 @@ export function TasksPageClient() {
 
   // Loading states
   const isInitialLoading = isLoading && !data;
-  const isRefetchingData = isFetching && !!data;
 
   // Initial loading state - show header + skeleton
   if (isInitialLoading) {
@@ -293,7 +292,7 @@ export function TasksPageClient() {
 
   return (
     <div className={styles.container}>
-      <LoadingToast message={t('searching')} show={isRefetchingData} />
+      {showLoadingToast(t('searching'))}
 
       <TasksHeader
         viewMode={viewMode}

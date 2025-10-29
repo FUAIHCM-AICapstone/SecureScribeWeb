@@ -1,12 +1,20 @@
 // next.config.js
 const createNextIntlPlugin = require('next-intl/plugin');
 const withNextIntl = createNextIntlPlugin();
-const path = require('path');
 
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['*',"lh3.googleusercontent.com","images.unsplash.com"], // Allow all hosts for next/image
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**', // Allow all HTTPS domains for flexibility
+      },
+      {
+        protocol: 'http',
+        hostname: 'localhost', // Allow localhost for development
+      },
+    ],
   },
   experimental: {
     turbo: {}, // Enables TurboPack for faster builds

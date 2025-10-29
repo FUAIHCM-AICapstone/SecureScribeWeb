@@ -14,7 +14,7 @@ import {
 import { ArrowLeft20Regular, ArrowRight20Regular } from '@fluentui/react-icons';
 import { getMeetings } from '@/services/api/meeting';
 import { queryKeys } from '@/lib/queryClient';
-import { LoadingToast } from '@/components/loading/LoadingToast';
+import { showLoadingToast } from '@/components/loading/LoadingToast';
 import { MeetingsHeader } from './MeetingsHeader';
 import { MeetingsGrid } from './MeetingsGrid';
 import { MeetingsList } from './MeetingsList';
@@ -141,7 +141,7 @@ export function MeetingsPageClient() {
   );
 
   // Fetch meetings with React Query
-  const { data, isLoading, isFetching, isError, error, refetch } = useQuery({
+  const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey:
       isPersonal === true
         ? [...queryKeys.personalMeetings, apiParams]
@@ -233,7 +233,6 @@ export function MeetingsPageClient() {
 
   // Loading states
   const isInitialLoading = isLoading && !data;
-  const isRefetchingData = isFetching && !!data;
 
   // Initial loading state - show header + skeleton
   if (isInitialLoading) {
@@ -288,7 +287,7 @@ export function MeetingsPageClient() {
 
   return (
     <div className={styles.container}>
-      <LoadingToast message={t('searching')} show={isRefetchingData} />
+      {showLoadingToast(t('searching'))}
 
       <MeetingsHeader
         viewMode={viewMode}

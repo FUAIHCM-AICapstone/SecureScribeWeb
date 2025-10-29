@@ -7,9 +7,11 @@ services:
       dockerfile: Dockerfile
     container_name: securescribe-web
     ports:
-      - "1111:3030"
+      - '1111:3030'
     environment:
       - NEXT_PUBLIC_API_BASE_URL=https://securescribe.wc504.io.vn/be/api
+      - NEXT_PUBLIC_BRAND_NAME=FPT Telecom
+      - NEXT_PUBLIC_BRAND_LOGO=https://scontent.fsgn2-8.fna.fbcdn.net/v/t39.30808-1/425727839_1410613169564661_2646215658812049793_n.jpg?stp=c342.0.1364.1365a_dst-jpg_s480x480_tt6&_nc_cat=102&ccb=1-7&_nc_sid=e99d92&_nc_ohc=XFBysuP7mLQQ7kNvwFomYev&_nc_oc=AdmwznqqXUghExkLEPU1-3i3JpiVhuTsm6FpF25Rsz834c1l5x71JUsluQKJ7Bu38kU&_nc_zt=24&_nc_ht=scontent.fsgn2-8.fna&_nc_gid=jRWHgC4sXzI6t2QMVkBwPg&oh=00_Afcns-9yTfmJ2skL9ceFDWWnKnQ1r45dl3qX2R7IzlMWnw&oe=6907BA14
     restart: unless-stopped
     networks:
       - securescribe-network

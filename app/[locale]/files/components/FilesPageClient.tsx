@@ -16,7 +16,7 @@ import { getFiles } from '@/services/api/file';
 import { getProjects } from '@/services/api/project';
 import { getMeetings } from '@/services/api/meeting';
 import { queryKeys } from '@/lib/queryClient';
-import { LoadingToast } from '@/components/loading/LoadingToast';
+import { showLoadingToast } from '@/components/loading/LoadingToast';
 import { FileUploadModal } from '@/components/modal/FileUploadModal';
 import { FilesHeader } from './FilesHeader';
 import { FilesGrid } from './FilesGrid';
@@ -210,7 +210,7 @@ export function FilesPageClient() {
   );
 
   // Fetch files with React Query - aggressive caching for smooth navigation
-  const { data, isLoading, isFetching, isError, error, refetch } = useQuery({
+  const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: [...queryKeys.files, apiFilters, apiParams],
     queryFn: async () => {
       return getFiles(apiFilters, apiParams);
@@ -221,8 +221,6 @@ export function FilesPageClient() {
     refetchOnWindowFocus: false, // Don't refetch on tab focus
     refetchOnMount: false, // Don't refetch if data is fresh
   });
-
-  const isRefetchingData = isFetching && !isLoading;
 
   // Apply client-side MIME type filtering (must be before conditional returns)
   const files = useMemo(() => {
@@ -315,7 +313,7 @@ export function FilesPageClient() {
 
   return (
     <div className={styles.container}>
-      <LoadingToast message={t('searching')} show={isRefetchingData} />
+      {showLoadingToast(t('searching'))}
 
       <FilesHeader
         viewMode={viewMode}

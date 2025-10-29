@@ -11,11 +11,14 @@ type Props = {
 };
 
 export async function generateMetadata(): Promise<Metadata> {
+  const brandName = process.env.NEXT_PUBLIC_BRAND_NAME || 'SecureScribe';
+  const brandLogo = process.env.NEXT_PUBLIC_BRAND_LOGO || '/images/logos/logo.png';
+
   return {
-    title: 'SecureScribe',
+    title: brandName,
     description: seoConfig.description,
     openGraph: {
-      title: 'SecureScribe',
+      title: brandName,
       description: seoConfig.openGraph.description,
       url: seoConfig.openGraph.url,
       type: seoConfig.openGraph.type as 'website',
@@ -34,10 +37,10 @@ export async function generateMetadata(): Promise<Metadata> {
         {} as Record<string, string>,
       ),
     },
-    authors: [{ name: 'SecureScribe', url: seoConfig.url }],
+    authors: [{ name: brandName, url: seoConfig.url }],
     keywords: seoConfig.keywords,
     icons: {
-      icon: '/images/logos/logo.png',
+      icon: brandLogo,
     },
     other: {
       contact: seoConfig.contact?.email,
