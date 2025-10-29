@@ -1,11 +1,26 @@
-import Dashboard from "@/components/dashboard/Dashboard";
+'use client';
+
+import Dashboard from '@/components/dashboard/Dashboard';
+import { makeStyles, shorthands } from '@fluentui/react-components';
+
+const useStyles = makeStyles({
+  container: {
+    width: '100%',
+    maxWidth: '1600px',
+    margin: '0 auto',
+    ...shorthands.padding('40px', '32px', '24px'),
+    '@media (max-width: 768px)': {
+      ...shorthands.padding('24px', '16px', '16px'),
+    },
+  },
+});
 
 export default function DashboardPage() {
+  const styles = useStyles();
+
   return (
-    <div className="flex h-full w-full overflow-x-hidden overflow-y-auto">
-      <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col px-4 py-6 sm:px-6 lg:px-10">
-        <Dashboard />
-      </div>
+    <div className={styles.container}>
+      <Dashboard />
     </div>
   );
 }

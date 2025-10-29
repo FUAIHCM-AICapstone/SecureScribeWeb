@@ -287,6 +287,32 @@
       "personal": "Cá nhân"
     }
   },
+  "MeetingDetail": {
+    "backToMeetings": "Quay lại danh sách",
+    "loading": "Đang tải chi tiết cuộc họp...",
+    "notFound": "Không tìm thấy cuộc họp",
+    "notFoundDescription": "Cuộc họp bạn đang tìm kiếm không tồn tại hoặc đã bị xóa.",
+    "errorTitle": "Không thể tải cuộc họp",
+    "overview": "Tổng quan",
+    "description": "Mô tả",
+    "noDescription": "Không có mô tả",
+    "startTime": "Thời gian bắt đầu",
+    "endTime": "Thời gian kết thúc",
+    "status": "Trạng thái",
+    "meetingType": "Loại",
+    "meetingUrl": "Link cuộc họp",
+    "openUrl": "Mở cuộc họp",
+    "createdAt": "Tạo lúc",
+    "updatedAt": "Cập nhật lần cuối",
+    "projects": "Dự án liên quan",
+    "noProjects": "Không có dự án liên kết",
+    "projectsCount": "{count} dự án",
+    "notes": "Ghi chú cuộc họp",
+    "transcripts": "Bản ghi âm",
+    "files": "Tệp tin",
+    "noFiles": "Chưa có tệp tin",
+    "filesCount": "{count} tệp tin"
+  },
   "Projects": {
     "title": "Dự án",
     "searchPlaceholder": "Tìm kiếm dự án...",
@@ -338,6 +364,62 @@
     },
     "badges": {
       "archived": "Đã lưu trữ"
+    }
+  },
+  "Tasks": {
+    "title": "Nhiệm vụ",
+    "searchPlaceholder": "Tìm kiếm nhiệm vụ...",
+    "searchButton": "Tìm kiếm",
+    "allTasks": "Tất cả nhiệm vụ",
+    "myTasks": "Nhiệm vụ của tôi",
+    "noTasksFound": "Không tìm thấy nhiệm vụ",
+    "noTasksYet": "Chưa có nhiệm vụ",
+    "createTask": "Tạo nhiệm vụ",
+    "loading": "Đang tải nhiệm vụ...",
+    "searching": "Đang tìm kiếm...",
+    "errorTitle": "Không thể tải nhiệm vụ",
+    "retry": "Thử lại",
+    "previous": "Trước",
+    "next": "Tiếp",
+    "pageInfo": "Trang {current} / {total}",
+    "gridView": "Xem dạng lưới",
+    "listView": "Xem dạng danh sách",
+    "tasksCount": "{count} {count, plural, =1 {nhiệm vụ} other {nhiệm vụ}}",
+    "emptyFilteredDescription": "Thử điều chỉnh bộ lọc hoặc từ khóa tìm kiếm để tìm thấy những gì bạn cần.",
+    "emptyUnfilteredDescription": "Bắt đầu bằng cách tạo nhiệm vụ đầu tiên để theo dõi công việc của bạn.",
+    "untitledTask": "Nhiệm vụ chưa có tên",
+    "noDateSet": "Chưa có hạn",
+    "invalidDate": "Ngày không hợp lệ",
+    "overdue": "Quá hạn",
+    "dueToday": "Hạn hôm nay",
+    "dueTomorrow": "Hạn ngày mai",
+    "createdBy": "Tạo bởi",
+    "assignedTo": "Giao cho",
+    "unassigned": "Chưa giao",
+    "noDescription": "Không có mô tả",
+    "status": {
+      "todo": "Cần làm",
+      "in_progress": "Đang thực hiện",
+      "done": "Hoàn thành"
+    },
+    "statusFilter": {
+      "all": "Tất cả trạng thái",
+      "todo": "Cần làm",
+      "in_progress": "Đang thực hiện",
+      "done": "Hoàn thành"
+    },
+    "actions": {
+      "label": "Hành động nhiệm vụ",
+      "view": "Xem chi tiết",
+      "edit": "Sửa nhiệm vụ",
+      "delete": "Xóa"
+    },
+    "table": {
+      "title": "Tiêu đề nhiệm vụ",
+      "status": "Trạng thái",
+      "assignee": "Người thực hiện",
+      "dueDate": "Hạn hoàn thành",
+      "actions": "Hành động"
     }
   },
   "Profile": {

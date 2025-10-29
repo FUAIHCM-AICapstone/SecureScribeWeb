@@ -35,7 +35,6 @@ const useStyles = makeStyles({
     ...shorthands.transition('all', '0.3s', 'ease'),
     ...shorthands.overflow('hidden'),
     position: 'relative',
-    cursor: 'pointer',
     boxShadow: `0 2px 8px ${tokens.colorNeutralShadowAmbient}`,
     ':hover': {
       transform: 'translateY(-4px)',

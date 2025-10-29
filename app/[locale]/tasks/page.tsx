@@ -1,11 +1,25 @@
+import {
+  HydrationBoundary,
+  QueryClient,
+  dehydrate,
+} from '@tanstack/react-query';
+import { TasksPageClient } from './components/TasksPageClient';
+import { queryKeys } from '@/lib/queryClient';
+import { getTasks } from '@/services/api/task';
+
 export default async function TasksPage() {
-    return (
-        <>
-            <main className='overflow-x-hidden px-3 lg:px-32'>
-                <h1 className='text-2xl font-semibold'>My Tasks</h1>
-            </main>
-        </>
-    );
+  const queryClient = new QueryClient();
+
+  // Prefetch initial data for faster page load
+  await queryClient.prefetchQuery({
+    queryKey: [...queryKeys.tasks, {}, { page: 1, limit: 12 }],
+    queryFn: () => getTasks({}, { page: 1, limit: 12 }),
+    staleTime: 5 * 60 * 1000,
+  });
+
+  return (
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <TasksPageClient />
+    </HydrationBoundary>
+  );
 }
-
-

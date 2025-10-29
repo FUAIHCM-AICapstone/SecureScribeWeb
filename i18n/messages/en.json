@@ -287,6 +287,32 @@
       "personal": "Personal"
     }
   },
+  "MeetingDetail": {
+    "backToMeetings": "Back to Meetings",
+    "loading": "Loading meeting details...",
+    "notFound": "Meeting not found",
+    "notFoundDescription": "The meeting you're looking for doesn't exist or has been deleted.",
+    "errorTitle": "Failed to load meeting",
+    "overview": "Overview",
+    "description": "Description",
+    "noDescription": "No description provided",
+    "startTime": "Start Time",
+    "endTime": "End Time",
+    "status": "Status",
+    "meetingType": "Type",
+    "meetingUrl": "Meeting URL",
+    "openUrl": "Open meeting",
+    "createdAt": "Created",
+    "updatedAt": "Last updated",
+    "projects": "Related Projects",
+    "noProjects": "No projects linked",
+    "projectsCount": "{count} {count, plural, =1 {project} other {projects}}",
+    "notes": "Meeting Notes",
+    "transcripts": "Transcripts",
+    "files": "Files",
+    "noFiles": "No files uploaded",
+    "filesCount": "{count} {count, plural, =1 {file} other {files}}"
+  },
   "Projects": {
     "title": "Projects",
     "searchPlaceholder": "Search projects...",
@@ -338,6 +364,62 @@
     },
     "badges": {
       "archived": "Archived"
+    }
+  },
+  "Tasks": {
+    "title": "Tasks",
+    "searchPlaceholder": "Search tasks...",
+    "searchButton": "Search",
+    "allTasks": "All Tasks",
+    "myTasks": "My Tasks",
+    "noTasksFound": "No tasks found",
+    "noTasksYet": "No tasks yet",
+    "createTask": "Create Task",
+    "loading": "Loading tasks...",
+    "searching": "Searching...",
+    "errorTitle": "Failed to load tasks",
+    "retry": "Try Again",
+    "previous": "Previous",
+    "next": "Next",
+    "pageInfo": "Page {current} of {total}",
+    "gridView": "Grid view",
+    "listView": "List view",
+    "tasksCount": "{count} {count, plural, =1 {task} other {tasks}}",
+    "emptyFilteredDescription": "Try adjusting your filters or search terms to find what you're looking for.",
+    "emptyUnfilteredDescription": "Get started by creating your first task to track your work.",
+    "untitledTask": "Untitled Task",
+    "noDateSet": "No due date",
+    "invalidDate": "Invalid date",
+    "overdue": "Overdue",
+    "dueToday": "Due today",
+    "dueTomorrow": "Due tomorrow",
+    "createdBy": "Created by",
+    "assignedTo": "Assigned to",
+    "unassigned": "Unassigned",
+    "noDescription": "No description",
+    "status": {
+      "todo": "To Do",
+      "in_progress": "In Progress",
+      "done": "Done"
+    },
+    "statusFilter": {
+      "all": "All Status",
+      "todo": "To Do",
+      "in_progress": "In Progress",
+      "done": "Done"
+    },
+    "actions": {
+      "label": "Task actions",
+      "view": "View Details",
+      "edit": "Edit Task",
+      "delete": "Delete"
+    },
+    "table": {
+      "title": "Task Title",
+      "status": "Status",
+      "assignee": "Assignee",
+      "dueDate": "Due Date",
+      "actions": "Actions"
     }
   },
   "Profile": {
