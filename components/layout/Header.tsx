@@ -347,13 +347,20 @@ export default function Header() {
     .replace(/^\/(en|vi)/, '')
     .split('/')
     .filter(Boolean);
-  const crumbLabels = segments.map((seg) => {
-    try {
-      return t(`crumb.${seg}` as any);
-    } catch {
-      return seg;
-    }
-  });
+
+  // Filter out UUID segments (detail page IDs)
+  const isUUID = (str: string) =>
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
+
+  const crumbLabels = segments
+    .filter((seg) => !isUUID(seg)) // Remove UUID segments
+    .map((seg) => {
+      try {
+        return t(`crumb.${seg}` as any);
+      } catch {
+        return seg;
+      }
+    });
 
   const onSelectResult = (result: any) => {
     // Navigate based on result type

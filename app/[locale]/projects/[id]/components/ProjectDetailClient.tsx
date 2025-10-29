@@ -1,0 +1,566 @@
+'use client';
+
+import React, { useState } from 'react';
+import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+  Text,
+  Caption1,
+  Body1,
+  Badge,
+  Button,
+  Card,
+  Spinner,
+  Avatar,
+  Menu,
+  MenuTrigger,
+  MenuPopover,
+  MenuList,
+  MenuItem,
+  makeStyles,
+  tokens,
+  shorthands,
+} from '@fluentui/react-components';
+import {
+  ArrowLeft20Regular,
+  CalendarClock20Regular,
+  People20Regular,
+  Document20Regular,
+  Edit20Regular,
+  Archive20Regular,
+  Delete20Regular,
+  MoreVertical20Regular,
+  PersonCircle20Regular,
+  Folder20Regular,
+  TaskListSquareLtr20Regular,
+  Calendar20Regular,
+} from '@fluentui/react-icons';
+import { format } from 'date-fns';
+import { queryKeys } from '@/lib/queryClient';
+import {
+  getProject,
+  archiveProject,
+  unarchiveProject,
+  deleteProject,
+} from '@/services/api/project';
+import { showToast } from '@/hooks/useShowToast';
+
+const useStyles = makeStyles({
+  container: {
+    maxWidth: '1600px',
+    margin: '0 auto',
+    ...shorthands.padding('40px', '32px', '24px'),
+    '@media (max-width: 768px)': {
+      ...shorthands.padding('24px', '16px', '16px'),
+    },
+  },
+  backButton: {
+    marginBottom: '24px',
+  },
+  header: {
+    marginBottom: '32px',
+    ...shorthands.padding('32px'),
+    backgroundColor: tokens.colorNeutralBackground1,
+    ...shorthands.borderRadius(tokens.borderRadiusXLarge),
+    ...shorthands.border('1px', 'solid', tokens.colorNeutralStroke2),
+    boxShadow: tokens.shadow4,
+  },
+  titleRow: {
+    display: 'flex',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    ...shorthands.gap('16px'),
+    marginBottom: '24px',
+    flexWrap: 'wrap',
+  },
+  titleSection: {
+    display: 'flex',
+    flexDirection: 'column',
+    ...shorthands.gap('12px'),
+    flex: 1,
+    minWidth: '0',
+  },
+  title: {
+    fontSize: '28px',
+    fontWeight: 700,
+    color: tokens.colorNeutralForeground1,
+  },
+  badgesRow: {
+    display: 'flex',
+    alignItems: 'center',
+    ...shorthands.gap('8px'),
+    flexWrap: 'wrap',
+  },
+  actionsRow: {
+    display: 'flex',
+    ...shorthands.gap('8px'),
+    alignItems: 'center',
+  },
+  metaRow: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    ...shorthands.gap('32px'),
+    ...shorthands.padding('20px', '0', '0'),
+    ...shorthands.borderTop('1px', 'solid', tokens.colorNeutralStroke2),
+    marginTop: '20px',
+  },
+  metaItem: {
+    display: 'flex',
+    alignItems: 'flex-start',
+    ...shorthands.gap('12px'),
+  },
+  metaIcon: {
+    color: tokens.colorBrandForeground2,
+    marginTop: '2px',
+    opacity: 0.8,
+  },
+  metaContent: {
+    display: 'flex',
+    flexDirection: 'column',
+    ...shorthands.gap('4px'),
+  },
+  metaLabel: {
+    color: tokens.colorNeutralForeground3,
+    fontSize: tokens.fontSizeBase200,
+    fontWeight: 600,
+  },
+  metaValue: {
+    fontWeight: 600,
+    fontSize: tokens.fontSizeBase300,
+    color: tokens.colorNeutralForeground1,
+  },
+  content: {
+    display: 'grid',
+    gridTemplateColumns: '1fr',
+    ...shorthands.gap('24px'),
+    '@media (min-width: 1024px)': {
+      gridTemplateColumns: '2fr 1fr',
+    },
+  },
+  mainColumn: {
+    display: 'flex',
+    flexDirection: 'column',
+    ...shorthands.gap('24px'),
+  },
+  sideColumn: {
+    display: 'flex',
+    flexDirection: 'column',
+    ...shorthands.gap('24px'),
+  },
+  section: {
+    ...shorthands.padding('28px'),
+    backgroundColor: tokens.colorNeutralBackground1,
+    ...shorthands.border('1px', 'solid', tokens.colorNeutralStroke2),
+    ...shorthands.borderRadius(tokens.borderRadiusXLarge),
+    boxShadow: tokens.shadow4,
+    ...shorthands.transition('box-shadow', '0.2s', 'ease'),
+    ':hover': {
+      boxShadow: tokens.shadow8,
+    },
+  },
+  sectionTitle: {
+    marginBottom: '20px',
+    paddingBottom: '16px',
+    ...shorthands.borderBottom('2px', 'solid', tokens.colorNeutralStroke2),
+    display: 'flex',
+    alignItems: 'center',
+    ...shorthands.gap('12px'),
+  },
+  sectionIcon: {
+    color: tokens.colorBrandForeground2,
+    opacity: 0.8,
+  },
+  sectionHeading: {
+    fontSize: tokens.fontSizeBase400,
+    fontWeight: 700,
+    color: tokens.colorNeutralForeground1,
+  },
+  description: {
+    lineHeight: '1.8',
+    color: tokens.colorNeutralForeground1,
+    fontSize: tokens.fontSizeBase300,
+  },
+  noContent: {
+    color: tokens.colorNeutralForeground3,
+    fontStyle: 'italic',
+    textAlign: 'center',
+    ...shorthands.padding('24px'),
+  },
+  membersList: {
+    display: 'flex',
+    flexDirection: 'column',
+    ...shorthands.gap('12px'),
+  },
+  memberItem: {
+    ...shorthands.padding('16px'),
+    backgroundColor: tokens.colorNeutralBackground2,
+    ...shorthands.borderRadius(tokens.borderRadiusMedium),
+    ...shorthands.border('1px', 'solid', tokens.colorNeutralStroke2),
+    display: 'flex',
+    alignItems: 'center',
+    ...shorthands.gap('12px'),
+    ...shorthands.transition('all', '0.2s', 'ease'),
+    ':hover': {
+      backgroundColor: tokens.colorNeutralBackground3,
+      boxShadow: tokens.shadow4,
+    },
+  },
+  memberInfo: {
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
+    ...shorthands.gap('4px'),
+  },
+  memberName: {
+    fontWeight: 600,
+    fontSize: tokens.fontSizeBase300,
+  },
+  memberMeta: {
+    fontSize: tokens.fontSizeBase200,
+    color: tokens.colorNeutralForeground3,
+  },
+  placeholder: {
+    ...shorthands.padding('48px', '32px'),
+    textAlign: 'center',
+    color: tokens.colorNeutralForeground3,
+    backgroundColor: tokens.colorNeutralBackground3,
+    ...shorthands.borderRadius(tokens.borderRadiusMedium),
+    ...shorthands.border('2px', 'dashed', tokens.colorNeutralStroke2),
+  },
+  loadingContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: '400px',
+    ...shorthands.gap('16px'),
+  },
+  errorContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: '400px',
+    textAlign: 'center',
+    ...shorthands.gap('16px'),
+  },
+  errorTitle: {
+    fontSize: '20px',
+    fontWeight: 600,
+    color: tokens.colorPaletteRedForeground1,
+  },
+});
+
+interface ProjectDetailClientProps {
+  projectId: string;
+}
+
+export function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
+  const styles = useStyles();
+  const t = useTranslations('ProjectDetail');
+  const tProjects = useTranslations('Projects');
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  // Fetch project data
+  const {
+    data: project,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: queryKeys.project(projectId),
+    queryFn: () => getProject(projectId, true),
+  });
+
+  // Archive mutation
+  const archiveMutation = useMutation({
+    mutationFn: () => archiveProject(projectId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.project(projectId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.projects });
+      showToast('success', t('projectArchived'));
+    },
+    onError: (error: any) => {
+      showToast('error', error?.response?.data?.detail || t('archiveError'));
+    },
+  });
+
+  // Unarchive mutation
+  const unarchiveMutation = useMutation({
+    mutationFn: () => unarchiveProject(projectId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.project(projectId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.projects });
+      showToast('success', t('projectUnarchived'));
+    },
+    onError: (error: any) => {
+      showToast('error', error?.response?.data?.detail || t('unarchiveError'));
+    },
+  });
+
+  // Delete mutation
+  const deleteMutation = useMutation({
+    mutationFn: () => deleteProject(projectId),
+    onSuccess: () => {
+      showToast('success', t('projectDeleted'));
+      router.push('/projects');
+    },
+    onError: (error: any) => {
+      showToast('error', error?.response?.data?.detail || t('deleteError'));
+      setIsDeleting(false);
+    },
+  });
+
+  const handleEdit = () => {
+    // TODO: Open edit modal
+    showToast('info', 'Edit functionality coming soon');
+  };
+
+  const handleArchiveToggle = () => {
+    if (project?.is_archived) {
+      unarchiveMutation.mutate();
+    } else {
+      archiveMutation.mutate();
+    }
+  };
+
+  const handleDelete = () => {
+    if (window.confirm(t('deleteConfirmation'))) {
+      setIsDeleting(true);
+      deleteMutation.mutate();
+    }
+  };
+
+  const getStatusBadge = (isArchived: boolean) => {
+    if (isArchived) {
+      return (
+        <Badge appearance="filled" color="warning" size="large">
+          {tProjects('status.archived')}
+        </Badge>
+      );
+    }
+    return (
+      <Badge appearance="filled" color="success" size="large">
+        {tProjects('status.active')}
+      </Badge>
+    );
+  };
+
+  const formatDateTime = (dateString: string | null) => {
+    if (!dateString) return t('noDate');
+    try {
+      return format(new Date(dateString), 'PPpp');
+    } catch {
+      return t('invalidDate');
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.loadingContainer}>
+          <Spinner size="extra-large" />
+          <Text>{t('loading')}</Text>
+        </div>
+      </div>
+    );
+  }
+
+  if (isError || !project) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.errorContainer}>
+          <Text className={styles.errorTitle}>{t('errorTitle')}</Text>
+          <Text>{t('errorMessage')}</Text>
+          <Button
+            appearance="primary"
+            icon={<ArrowLeft20Regular />}
+            onClick={() => router.push('/projects')}
+          >
+            {t('backToProjects')}
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={styles.container}>
+      <Button
+        appearance="subtle"
+        icon={<ArrowLeft20Regular />}
+        onClick={() => router.push('/projects')}
+        className={styles.backButton}
+      >
+        {t('backToProjects')}
+      </Button>
+
+      <div className={styles.header}>
+        <div className={styles.titleRow}>
+          <div className={styles.titleSection}>
+            <Text className={styles.title}>{project.name}</Text>
+            <div className={styles.badgesRow}>
+              {getStatusBadge(project.is_archived)}
+              <Badge appearance="outline" size="large">
+                {t('memberCount', { count: project.members?.length || 0 })}
+              </Badge>
+            </div>
+          </div>
+          <div className={styles.actionsRow}>
+            <Button
+              appearance="secondary"
+              icon={<Edit20Regular />}
+              onClick={handleEdit}
+            >
+              {t('edit')}
+            </Button>
+            <Button
+              appearance="secondary"
+              icon={<Archive20Regular />}
+              onClick={handleArchiveToggle}
+              disabled={
+                archiveMutation.isPending || unarchiveMutation.isPending
+              }
+            >
+              {project.is_archived ? t('unarchive') : t('archive')}
+            </Button>
+            <Menu>
+              <MenuTrigger disableButtonEnhancement>
+                <Button appearance="subtle" icon={<MoreVertical20Regular />} />
+              </MenuTrigger>
+              <MenuPopover>
+                <MenuList>
+                  <MenuItem
+                    icon={<Delete20Regular />}
+                    onClick={handleDelete}
+                    disabled={isDeleting}
+                  >
+                    {t('delete')}
+                  </MenuItem>
+                </MenuList>
+              </MenuPopover>
+            </Menu>
+          </div>
+        </div>
+
+        <div className={styles.metaRow}>
+          <div className={styles.metaItem}>
+            <CalendarClock20Regular className={styles.metaIcon} />
+            <div className={styles.metaContent}>
+              <Caption1 className={styles.metaLabel}>
+                {t('createdAt')}:
+              </Caption1>
+              <Body1 className={styles.metaValue}>
+                {formatDateTime(project.created_at)}
+              </Body1>
+            </div>
+          </div>
+          <div className={styles.metaItem}>
+            <People20Regular className={styles.metaIcon} />
+            <div className={styles.metaContent}>
+              <Caption1 className={styles.metaLabel}>{t('members')}:</Caption1>
+              <Body1 className={styles.metaValue}>
+                {project.members?.length || 0}
+              </Body1>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className={styles.content}>
+        <div className={styles.mainColumn}>
+          {/* Description Section */}
+          <Card className={styles.section}>
+            <div className={styles.sectionTitle}>
+              <Document20Regular className={styles.sectionIcon} />
+              <Text className={styles.sectionHeading}>{t('description')}</Text>
+            </div>
+            {project.description ? (
+              <Body1 className={styles.description}>
+                {project.description}
+              </Body1>
+            ) : (
+              <Body1 className={styles.noContent}>{t('noDescription')}</Body1>
+            )}
+          </Card>
+
+          {/* Related Meetings Section */}
+          <Card className={styles.section}>
+            <div className={styles.sectionTitle}>
+              <Calendar20Regular className={styles.sectionIcon} />
+              <Text className={styles.sectionHeading}>
+                {t('relatedMeetings')}
+              </Text>
+            </div>
+            <div className={styles.placeholder}>
+              <Text>{t('meetingsPlaceholder')}</Text>
+            </div>
+          </Card>
+
+          {/* Files Section */}
+          <Card className={styles.section}>
+            <div className={styles.sectionTitle}>
+              <Folder20Regular className={styles.sectionIcon} />
+              <Text className={styles.sectionHeading}>{t('files')}</Text>
+            </div>
+            <div className={styles.placeholder}>
+              <Text>{t('filesPlaceholder')}</Text>
+            </div>
+          </Card>
+        </div>
+
+        <div className={styles.sideColumn}>
+          {/* Members Section */}
+          <Card className={styles.section}>
+            <div className={styles.sectionTitle}>
+              <People20Regular className={styles.sectionIcon} />
+              <Text className={styles.sectionHeading}>{t('members')}</Text>
+            </div>
+            {project.members && project.members.length > 0 ? (
+              <div className={styles.membersList}>
+                {project.members.map((member) => (
+                  <div key={member.user_id} className={styles.memberItem}>
+                    <Avatar
+                      icon={<PersonCircle20Regular />}
+                      size={40}
+                      aria-label={member.user?.name || 'Member'}
+                    />
+                    <div className={styles.memberInfo}>
+                      <Text className={styles.memberName}>
+                        {member.user?.name ||
+                          member.user?.email ||
+                          t('unknownUser')}
+                      </Text>
+                      <Caption1 className={styles.memberMeta}>
+                        {t('role')}: {member.role} • {t('joined')}:{' '}
+                        {formatDateTime(member.joined_at)}
+                      </Caption1>
+                    </div>
+                    <Badge appearance="outline" size="small">
+                      {member.role}
+                    </Badge>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <Body1 className={styles.noContent}>{t('noMembers')}</Body1>
+            )}
+          </Card>
+
+          {/* Tasks Section */}
+          <Card className={styles.section}>
+            <div className={styles.sectionTitle}>
+              <TaskListSquareLtr20Regular className={styles.sectionIcon} />
+              <Text className={styles.sectionHeading}>{t('tasks')}</Text>
+            </div>
+            <div className={styles.placeholder}>
+              <Text>{t('tasksPlaceholder')}</Text>
+            </div>
+          </Card>
+        </div>
+      </div>
+    </div>
+  );
+}
