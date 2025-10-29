@@ -34,7 +34,7 @@ export async function generateMetadata(): Promise<Metadata> {
         {} as Record<string, string>,
       ),
     },
-    authors: [{ name: 'SecureScribe Meeting', url: seoConfig.url }],
+    authors: [{ name: 'SecureScribe', url: seoConfig.url }],
     keywords: seoConfig.keywords,
     icons: {
       icon: '/images/logos/logo.png',
