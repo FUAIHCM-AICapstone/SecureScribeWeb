@@ -1,5 +1,6 @@
 "use client";
 import * as React from "react";
+import { useState, useEffect } from "react";
 import { Card, CardHeader, Title3, Title2, Body1, makeStyles, shorthands, Avatar, tokens } from "@fluentui/react-components";
 import { Shield20Filled, Flash20Filled, PeopleTeam20Filled, DataBarVertical20Filled } from "@fluentui/react-icons";
 import { useTranslations } from "next-intl";
@@ -141,6 +142,33 @@ type AuthLayoutProps = {
 const AuthLayout: React.FC<AuthLayoutProps> = ({ title, subtitle, children }) => {
     const styles = useStyles();
     const t = useTranslations("auth");
+
+    // Brand configuration state with defaults
+    const [brandName, setBrandName] = useState('SecureScribe');
+    const [brandLogo, setBrandLogo] = useState('/images/logos/logo2.png');
+
+    // Fetch brand configuration from API
+    useEffect(() => {
+        const fetchBrandConfig = async () => {
+            try {
+                const response = await fetch('/api/config');
+                const data = await response.json();
+
+                if (data.brand_name) {
+                    setBrandName(data.brand_name);
+                }
+                if (data.brand_logo) {
+                    setBrandLogo(data.brand_logo);
+                }
+            } catch (error) {
+                console.warn('Failed to fetch brand config, using defaults:', error);
+                // Keep default values on error
+            }
+        };
+
+        fetchBrandConfig();
+    }, []);
+
     return (
         <div className={styles.root}>
             {/* Brand / Hero panel (visible on desktop) */}
@@ -148,13 +176,13 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ title, subtitle, children }) =>
                 <Avatar
                     className={styles.brandLogo}
                     image={{
-                        src: "/images/logos/logo2.png",
-                        alt: "SecureScribe logo"
+                        src: brandLogo,
+                        alt: `${brandName} logo`
                     }}
                     initials="SS"
                 />
                 <div className={styles.brandText}>
-                    <Title2>{t("hero_title")}</Title2>
+                    <Title2>{t("hero_title", { brand: brandName })}</Title2>
                     <Body1 style={{ fontSize: "20px", lineHeight: "1.6", fontWeight: 500 }}>
                         {t("hero_subtitle")}
                     </Body1>

@@ -540,7 +540,6 @@ export default function Header() {
             alt={brandName}
             width={28}
             height={28}
-            style={{ borderRadius: '50%', objectFit: 'cover' }}
           />
           <strong className={styles.brandText}>{brandName}</strong>
         </div>

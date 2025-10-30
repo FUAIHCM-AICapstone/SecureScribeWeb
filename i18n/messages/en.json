@@ -120,7 +120,7 @@
     "email_not_verified": "Please verify your email before signing in.",
     "login_failed": "Sign in failed. Please try again.",
     "unknown_error": "An error occurred. Please try again.",
-    "hero_title": "SecureScribe",
+    "hero_title": "Welcome to {brand}",
     "hero_subtitle": "Smart project management platform with enterprise-grade security and superior user experience.",
     "hero_description": "Boost productivity with modern collaboration tools and comprehensive data security.",
     "feature_security": "Enterprise-grade data security",
