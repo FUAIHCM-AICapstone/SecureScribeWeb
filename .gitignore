@@ -46,3 +46,5 @@ next-env.d.ts
 # storybook
 storybook.log
 *storybook.log
+
+env-config.js

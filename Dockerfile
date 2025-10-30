@@ -29,8 +29,8 @@ FROM node:20-alpine AS runner
 
 WORKDIR /app
 
-# Install dumb-init for proper signal handling
-RUN apk add --no-cache dumb-init
+# Install dumb-init and gettext for envsubst
+RUN apk add --no-cache dumb-init gettext
 
 # Create non-root user
 RUN addgroup -g 1001 -S nodejs && \
@@ -53,10 +53,16 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
 COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/next.config.js ./next.config.js
 
+# Copy entrypoint script
+COPY --chown=nextjs:nodejs entrypoint.sh /entrypoint.sh
+
+RUN chmod +x /entrypoint.sh
+
 # Create non-root user and set permissions
 USER nextjs
 
 EXPOSE 3030
 
-# Use dumb-init to handle signals properly
+# Use entrypoint to generate config and start app
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["dumb-init", "yarn", "start"]

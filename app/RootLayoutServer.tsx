@@ -10,9 +10,16 @@ type Props = {
   params: Promise<{ locale: string }>;
 };
 
+
+function getRuntimeConfig() {
+  const brandName = process.env.BRAND_NAME || 'SecureScribe';
+  const brandLogo = process.env.BRAND_LOGO || '/images/logos/logo.png';
+
+  return { brandName, brandLogo };
+}
+
 export async function generateMetadata(): Promise<Metadata> {
-  const brandName = process.env.NEXT_PUBLIC_BRAND_NAME || 'SecureScribe';
-  const brandLogo = process.env.NEXT_PUBLIC_BRAND_LOGO || '/images/logos/logo.png';
+  const { brandName, brandLogo } = getRuntimeConfig();
 
   return {
     title: brandName,

@@ -52,6 +52,7 @@ import { getProjects } from '@/services/api/project';
 import { getMeetings } from '@/services/api/meeting';
 import { getFiles } from '@/services/api/file';
 import { getUsers } from '@/services/api/user';
+import { getBrandConfig } from '@/lib/utils/runtimeConfig';
 
 const useStyles = makeStyles({
   header: {
@@ -204,30 +205,20 @@ export default function Header() {
   const [isNotiOpen, setIsNotiOpen] = useState(false);
   const queryClient = useQueryClient();
 
-  // Brand configuration state with defaults
+  // Brand configuration from runtime config
   const [brandName, setBrandName] = useState('SecureScribe');
   const [brandLogo, setBrandLogo] = useState('/images/logos/logo.png');
 
-  // Fetch brand configuration from API
+  // Load brand configuration from runtime config
   useEffect(() => {
-    const fetchBrandConfig = async () => {
-      try {
-        const response = await fetch('/api/config');
-        const data = await response.json();
-
-        if (data.brand_name) {
-          setBrandName(data.brand_name);
-        }
-        if (data.brand_logo) {
-          setBrandLogo(data.brand_logo);
-        }
-      } catch (error) {
-        console.warn('Failed to fetch brand config, using defaults:', error);
-        // Keep default values on error
-      }
-    };
-
-    fetchBrandConfig();
+    try {
+      const brandCfg = getBrandConfig();
+      setBrandName(brandCfg.name);
+      setBrandLogo(brandCfg.logo);
+    } catch (error) {
+      console.warn('Failed to load brand config, using defaults:', error);
+      // Keep default values on error
+    }
   }, []);
 
   // Fetch notifications with React Query

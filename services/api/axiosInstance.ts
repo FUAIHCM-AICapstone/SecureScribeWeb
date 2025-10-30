@@ -1,5 +1,6 @@
 import axios, { InternalAxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
 import authApi from './auth';
+import { loadRuntimeConfig } from '@/lib/utils/runtimeConfig';
 
 const DEFAULT_API_BASE_URL = 'https://securescribe.wc504.io.vn/be/api';
 const API_VERSION = 'v1';
@@ -10,18 +11,17 @@ const axiosInstance = axios.create({
     baseURL: `${API_BASE_URL}/${API_VERSION}`,
 });
 
-// Fetch API configuration dynamically
-export const initializeApiConfig = async (): Promise<void> => {
+// Initialize API configuration synchronously from window.__ENV__
+export const initializeApiConfig = (): void => {
     try {
-        const response = await fetch('/api/config');
-        const data = await response.json();
+        const config = loadRuntimeConfig();
 
-        if (data.api_url) {
-            API_BASE_URL = data.api_url;
+        if (config.API_ENDPOINT) {
+            API_BASE_URL = config.API_ENDPOINT;
             axiosInstance.defaults.baseURL = `${API_BASE_URL}/${API_VERSION}`;
         }
     } catch (error) {
-        console.warn('Failed to fetch API config, using default:', error);
+        console.warn('Failed to load API config, using default:', error);
         API_BASE_URL = DEFAULT_API_BASE_URL;
     }
 };
