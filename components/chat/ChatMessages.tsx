@@ -10,6 +10,7 @@ import Image from 'next/image';
 import { MessageCodeBlock } from './MessageCodeBlock';
 import { useTranslations } from 'next-intl';
 import { makeStyles, tokens } from '@fluentui/react-components';
+import { getBrandConfig } from '@/lib/utils/runtimeConfig';
 import type { ChatMessageResponse } from '../../types/chat.type';
 
 const useStyles = makeStyles({
@@ -97,8 +98,18 @@ export function ChatMessage({
   message,
 }: ChatMessageProps) {
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
+  const [brandLogo, setBrandLogo] = useState('/images/logos/logo.png');
   const tMsg = useTranslations('Chat.Messages');
   const styles = useStyles();
+
+  useEffect(() => {
+    try {
+      const brandCfg = getBrandConfig();
+      setBrandLogo(brandCfg.logo);
+    } catch (error) {
+      console.warn('Failed to load brand config:', error);
+    }
+  }, []);
 
   useEffect(() => {
     console.log("check message in chat messages", message);
@@ -187,7 +198,7 @@ export function ChatMessage({
       <div className={styles.assistantHeader}>
         <div className={styles.assistantAvatar}>
           <Image
-            src="/images/logos/logo.png"
+            src={brandLogo}
             alt="Assistant Logo"
             width={24}
             height={24}

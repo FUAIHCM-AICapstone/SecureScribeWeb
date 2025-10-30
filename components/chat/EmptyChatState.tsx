@@ -3,6 +3,8 @@
 import Image from 'next/image';
 import { Text } from '@fluentui/react-components';
 import { makeStyles, tokens } from '@fluentui/react-components';
+import { useState, useEffect } from 'react';
+import { getBrandConfig } from '@/lib/utils/runtimeConfig';
 
 const useStyles = makeStyles({
   root: {
@@ -44,11 +46,22 @@ interface EmptyChatStateProps {
 
 export function EmptyChatState({ noMessagesText, startConversationText }: EmptyChatStateProps) {
   const styles = useStyles();
+  const [brandLogo, setBrandLogo] = useState('/images/logos/logo.png');
+
+  useEffect(() => {
+    try {
+      const brandCfg = getBrandConfig();
+      setBrandLogo(brandCfg.logo);
+    } catch (error) {
+      console.warn('Failed to load brand config:', error);
+    }
+  }, []);
+
   return (
     <div className={styles.root}>
       <div className={styles.logo}>
         <Image
-          src="/images/logos/logo.png"
+          src={brandLogo}
           alt="Logo"
           width={48}
           height={48}
