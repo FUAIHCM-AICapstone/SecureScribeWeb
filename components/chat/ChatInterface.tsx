@@ -55,7 +55,7 @@ export function ChatInterface({
       display: 'flex',
       flexDirection: 'column',
       height: 'calc(100vh - 185px)',
-      backgroundColor: '#f5f5f5'
+      backgroundColor: undefined
     }}>
       {/* Messages Area */}
       <MessagesContainer

@@ -134,7 +134,7 @@ export function ConversationTabs({
                     className={styles.tabList}
                 >
                     {conversationsLoading ? (
-                        <div style={{ padding: '8px 12px', color: '#666' }}>Loading conversations...</div>
+                        <div style={{ padding: '8px 12px', color: tokens.colorNeutralForeground3 }}>Loading conversations...</div>
                     ) : conversations && conversations.length > 0 ? (
                         conversations.map(conv => (
                             <Tab key={conv.id} value={conv.id}>

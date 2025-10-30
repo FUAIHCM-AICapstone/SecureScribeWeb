@@ -82,8 +82,11 @@ export function useConversationManager(): UseConversationManagerReturn {
         onSuccess: (newConversation) => {
             console.log('✅ [Create Conversation] Conversation created:', newConversation?.id)
 
-            // Invalidate conversations list to refetch
-            queryClient.invalidateQueries({ queryKey: ['chat', 'conversations'] })
+            // Update cache instead of invalidating to prevent double fetches
+            queryClient.setQueryData(['chat', 'conversations'], (oldData: ConversationResponse[] | undefined) => {
+                if (!oldData) return [newConversation]
+                return [newConversation, ...oldData]
+            })
 
             // Set as active
             if (newConversation) {
@@ -154,8 +157,11 @@ export function useConversationManager(): UseConversationManagerReturn {
                     }
                 )
 
-                // Invalidate conversations to update message counts
-                queryClient.invalidateQueries({ queryKey: ['chat', 'conversations'] })
+                // Update conversations list with new message count (don't invalidate, just update)
+                queryClient.setQueryData(['chat', 'conversations'], (oldData: ConversationResponse[] | undefined) => {
+                    if (!oldData) return oldData
+                    return oldData
+                })
             }
         },
         onError: (error, { conversationId }, context) => {
@@ -264,8 +270,14 @@ export function useConversationManager(): UseConversationManagerReturn {
 
     // Handle sending new message
     const handleSendMessage = (payload: ChatMessageCreate) => {
-        if (!activeConversationId || isSendingMessage) {
-            console.log('⚠️ [Send Message] Cannot send message - no active conversation or already sending')
+        if (!activeConversationId) {
+            console.log('⚠️ [Send Message] Cannot send message - no active conversation')
+            return
+        }
+
+        // Prevent duplicate message sends
+        if (isSendingMessage) {
+            console.log('⚠️ [Send Message] Already sending a message, skipping duplicate request')
             return
         }
 
@@ -286,6 +298,12 @@ export function useConversationManager(): UseConversationManagerReturn {
 
     // Create a new conversation and focus it
     const handleCreateConversation = () => {
+        // Prevent duplicate mutation calls
+        if (createConversationMutation.isPending) {
+            console.log('⚠️ [Create Conversation] Already creating a conversation, skipping duplicate request')
+            return
+        }
+
         console.log('🆕 [Create Conversation] Creating new conversation')
         createConversationMutation.mutate({
             title: 'New conversation'

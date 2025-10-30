@@ -4,14 +4,14 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: 2,
-      refetchOnWindowFocus: true, // Refetch data when window regains focus
-      staleTime: 2 * 60 * 1000, // 2 minutes for dashboard data
-      gcTime: 10 * 60 * 1000, // 10 minutes
-      refetchOnMount: 'always', // Always refetch dashboard data on mount
-      refetchOnReconnect: 'always',
+      refetchOnWindowFocus: false, // Don't refetch on window focus (prevent double calls)
+      staleTime: 5 * 60 * 1000, // 5 minutes for general data caching
+      gcTime: 15 * 60 * 1000, // 15 minutes garbage collection
+      refetchOnMount: false, // Don't auto-refetch on mount (rely on staleTime)
+      refetchOnReconnect: false, // Don't auto-refetch on reconnect
     },
     mutations: {
-      retry: 1,
+      retry: 0, // No retry for mutations (prevent accidental duplicates)
       onError: (error) => {
         console.error('Mutation error:', error);
       },

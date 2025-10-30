@@ -2,7 +2,8 @@
 
 import { makeStyles, tokens } from '@fluentui/react-components';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { oneDark, oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { useAppTheme } from '@/app/providers';
 
 const useStyles = makeStyles({
   headerContainer: {
@@ -111,6 +112,9 @@ export function MessageCodeBlock({
   variant = 'header'
 }: MessageCodeBlockProps) {
   const styles = useStyles();
+  const { theme } = useAppTheme();
+  const syntaxTheme = theme === 'dark' ? oneDark : oneLight;
+  const codeBackgroundColor = theme === 'dark' ? 'rgba(255,255,255,0.02)' : tokens.colorNeutralBackground3;
 
 
 
@@ -126,8 +130,8 @@ export function MessageCodeBlock({
           <div className="overflow-y-auto" dir="ltr">
             <SyntaxHighlighter
               language={language}
-              style={oneDark}
-              customStyle={{ margin: 0, padding: '1rem', background: 'rgba(0,0,0,0.05)', fontSize: '14px', lineHeight: '1.5' }}
+              style={syntaxTheme}
+              customStyle={{ margin: 0, padding: '1rem', background: codeBackgroundColor, fontSize: '14px', lineHeight: '1.5' }}
               showLineNumbers={true}
               wrapLines={true}
               codeTagProps={{
@@ -152,7 +156,7 @@ export function MessageCodeBlock({
         <div style={{ position: 'relative' }}>
           <SyntaxHighlighter
             language={language}
-            style={oneDark}
+            style={syntaxTheme}
             customStyle={{ margin: 0, padding: '1rem', background: 'transparent', fontSize: '14px', lineHeight: '1.5' }}
             showLineNumbers={false}
             wrapLines={true}
@@ -176,7 +180,7 @@ export function MessageCodeBlock({
       <div className={`${styles.inlineContainer} group`}>
         <SyntaxHighlighter
           language={language}
-          style={oneDark}
+          style={syntaxTheme}
           customStyle={{ margin: 0, padding: '0.75rem', background: 'transparent', fontSize: '13px', lineHeight: '1.4' }}
           showLineNumbers={false}
           wrapLines={true}

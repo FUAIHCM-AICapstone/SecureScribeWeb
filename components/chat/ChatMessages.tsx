@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Button } from '@fluentui/react-components';
-import { Copy24Regular, Checkmark24Regular, Person24Regular } from '@fluentui/react-icons';
+import { Copy24Regular, Checkmark24Regular } from '@fluentui/react-icons';
 import Image from 'next/image';
 import { MessageCodeBlock } from './MessageCodeBlock';
 import { useTranslations } from 'next-intl';
@@ -21,7 +21,7 @@ const useStyles = makeStyles({
     maxWidth: '80%',
     padding: tokens.spacingHorizontalM,
     backgroundColor: tokens.colorBrandBackground,
-    color: "white",
+    color: "#fff",
     border: `1px solid ${tokens.colorBrandForeground1}`,
     borderRadius: tokens.borderRadiusMedium,
   },
@@ -29,16 +29,6 @@ const useStyles = makeStyles({
     display: 'flex',
     alignItems: 'flex-start',
     columnGap: tokens.spacingHorizontalS,
-  },
-  userAvatar: {
-    width: '32px',
-    height: '32px',
-    borderRadius: '50%',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    overflow: 'hidden',
   },
   userContent: {
     flex: 1,
@@ -53,7 +43,8 @@ const useStyles = makeStyles({
   userTimestamp: {
     fontSize: tokens.fontSizeBase200,
     marginTop: tokens.spacingVerticalS,
-    color: 'rgba(255,255,255,0.7)',
+    color: "#fff",
+    opacity: 0.8,
   },
   assistantMessage: {
     display: 'flex',
@@ -175,9 +166,6 @@ export function ChatMessage({
       <div className={styles.userMessage}>
         <div className={styles.userBubble}>
           <div className={styles.userMessageInner}>
-            <div className={styles.userAvatar}>
-              <Person24Regular className="text-sm text-white" />
-            </div>
             <div className={styles.userContent}>
               <p className={styles.userContentText}>
                 {renderContentWithMentions(message.content, true)}
