@@ -402,11 +402,29 @@
       "in_progress": "Đang thực hiện",
       "done": "Hoàn thành"
     },
-    "statusFilter": {
-      "all": "Tất cả trạng thái",
-      "todo": "Cần làm",
-      "in_progress": "Đang thực hiện",
-      "done": "Hoàn thành"
+    "createTaskSuccess": "Tạo nhiệm vụ thành công.",
+    "createTaskError": "Tạo nhiệm vụ thất bại. Vui lòng thử lại.",
+    "createTaskModal": {
+      "title": "Tạo nhiệm vụ",
+      "titleLabel": "Tiêu đề nhiệm vụ",
+      "titlePlaceholder": "Nhập tiêu đề nhiệm vụ",
+      "titleRequired": "Vui lòng nhập tiêu đề nhiệm vụ.",
+      "titleTooShort": "Tiêu đề cần ít nhất 2 ký tự.",
+      "descriptionLabel": "Mô tả",
+      "descriptionPlaceholder": "Thêm mô tả chi tiết cho nhiệm vụ (không bắt buộc)",
+      "projectsLabel": "Dự án",
+      "projectsPlaceholder": "Chọn dự án",
+      "projectsRequired": "Vui lòng chọn ít nhất một dự án.",
+      "noProjects": "Chưa có dự án nào. Vui lòng tạo dự án trước.",
+      "assigneeLabel": "Người phụ trách",
+      "assigneePlaceholder": "Chọn người phụ trách",
+      "unassigned": "Chưa giao",
+      "dueDateLabel": "Hạn hoàn thành",
+      "dueDatePlaceholder": "Chọn hạn hoàn thành",
+      "statusLabel": "Trạng thái",
+      "cancel": "Hủy",
+      "submit": "Lưu nhiệm vụ",
+      "submitting": "Đang lưu..."
     },
     "actions": {
       "label": "Hành động nhiệm vụ",
@@ -420,6 +438,12 @@
       "assignee": "Người thực hiện",
       "dueDate": "Hạn hoàn thành",
       "actions": "Hành động"
+    },
+    "statusFilter": {
+      "all": "Tất cả trạng thái",
+      "todo": "Cần làm",
+      "in_progress": "Đang thực hiện",
+      "done": "Hoàn thành"
     }
   },
   "Profile": {

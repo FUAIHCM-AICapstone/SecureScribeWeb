@@ -13,6 +13,7 @@ import {
   ToggleButton,
   Dropdown,
   Option,
+  type OptionOnSelectData,
 } from '@fluentui/react-components';
 import {
   Grid20Regular,
@@ -121,6 +122,7 @@ interface TasksHeaderProps {
   statusFilter: TaskStatus | undefined;
   onStatusFilterChange: (status: TaskStatus | undefined) => void;
   totalCount: number;
+  onCreateClick: () => void;
 }
 
 export function TasksHeader({
@@ -133,6 +135,7 @@ export function TasksHeader({
   statusFilter,
   onStatusFilterChange,
   totalCount,
+  onCreateClick,
 }: TasksHeaderProps) {
   const styles = useStyles();
   const t = useTranslations('Tasks');
@@ -147,7 +150,10 @@ export function TasksHeader({
     setLocalSearchQuery(e.target.value);
   };
 
-  const handleStatusChange = (_event: any, data: any) => {
+  const handleStatusChange = (
+    _event: React.SyntheticEvent,
+    data: OptionOnSelectData,
+  ) => {
     const value = data.optionValue;
     if (value === 'all') {
       onStatusFilterChange(undefined);
@@ -167,6 +173,9 @@ export function TasksHeader({
           <Text className={styles.title}>{t('title')}</Text>
         </div>
         <div className={styles.viewToggle}>
+          <Button appearance="primary" onClick={onCreateClick}>
+            {t('createTask')}
+          </Button>
           <ToggleButton
             appearance={viewMode === 'grid' ? 'primary' : 'outline'}
             icon={<Grid20Regular />}

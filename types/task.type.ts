@@ -17,6 +17,7 @@ export interface TaskCreate {
     project_ids: string[];
     due_date?: string; // ISO 8601 UTC
     reminder_at?: string; // ISO 8601 UTC
+    status?: TaskStatus;
 }
 
 export interface TaskUpdate {

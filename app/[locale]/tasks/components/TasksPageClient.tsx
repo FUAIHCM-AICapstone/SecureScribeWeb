@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
@@ -14,12 +14,13 @@ import {
 import { ArrowLeft20Regular, ArrowRight20Regular } from '@fluentui/react-icons';
 import { getTasks } from '@/services/api/task';
 import { queryKeys } from '@/lib/queryClient';
-import { showLoadingToast } from '@/components/loading/LoadingToast';
+import { showLoadingToast, hideLoadingToast } from '@/components/loading/LoadingToast';
 import { TasksHeader } from './TasksHeader';
 import { TasksGrid } from './TasksGrid';
 import { TasksList } from './TasksList';
 import { EmptyTasksState } from './EmptyTasksState';
 import { TaskCardSkeleton } from './TaskCardSkeleton';
+import { CreateTaskModal } from './CreateTaskModal';
 import type { TaskStatus } from 'types/task.type';
 
 const useStyles = makeStyles({
@@ -126,6 +127,7 @@ export function TasksPageClient() {
   const [currentPage, setCurrentPage] = useState(
     parseInt(searchParams.get('page') || '1', 10),
   );
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const limit = viewMode === 'grid' ? 12 : 20;
 
@@ -148,7 +150,7 @@ export function TasksPageClient() {
   );
 
   // Fetch tasks with React Query
-  const { data, isLoading, isError, error, refetch } = useQuery({
+  const { data, isLoading, isFetching, isError, error, refetch } = useQuery({
     queryKey:
       isMyTasks === true
         ? [...queryKeys.myTasks, apiParams]
@@ -161,6 +163,18 @@ export function TasksPageClient() {
     placeholderData: keepPreviousData,
     refetchOnWindowFocus: false,
   });
+
+  useEffect(() => {
+    if (isFetching) {
+      showLoadingToast(t('searching'));
+    } else {
+      hideLoadingToast();
+    }
+
+    return () => {
+      hideLoadingToast();
+    };
+  }, [isFetching, t]);
 
   // Update URL when filters change
   const updateURL = useCallback(
@@ -228,9 +242,16 @@ export function TasksPageClient() {
   );
 
   const handleCreateClick = useCallback(() => {
-    console.log('Create task clicked - TODO: Implement');
-    // TODO: Open create task modal
+    setIsCreateModalOpen(true);
   }, []);
+
+  const handleCloseCreateModal = useCallback(() => {
+    setIsCreateModalOpen(false);
+  }, []);
+
+  const createTaskModal = (
+    <CreateTaskModal open={isCreateModalOpen} onClose={handleCloseCreateModal} />
+  );
 
   // Determine if filters are active
   const hasActiveFilters = Boolean(
@@ -244,6 +265,7 @@ export function TasksPageClient() {
   if (isInitialLoading) {
     return (
       <div className={styles.container}>
+        {createTaskModal}
         <TasksHeader
           viewMode={viewMode}
           onViewModeChange={handleViewModeChange}
@@ -254,6 +276,7 @@ export function TasksPageClient() {
           statusFilter={statusFilter}
           onStatusFilterChange={handleStatusFilterChange}
           totalCount={0}
+          onCreateClick={handleCreateClick}
         />
         <div className={styles.skeletonGrid}>
           {Array.from({ length: viewMode === 'grid' ? 12 : 8 }).map((_, i) => (
@@ -268,6 +291,7 @@ export function TasksPageClient() {
   if (isError) {
     return (
       <div className={styles.container}>
+        {createTaskModal}
         <div className={styles.errorContainer}>
           <Text className={styles.errorTitle}>{t('errorTitle')}</Text>
           <Text className={styles.errorMessage}>
@@ -292,8 +316,7 @@ export function TasksPageClient() {
 
   return (
     <div className={styles.container}>
-      {showLoadingToast(t('searching'))}
-
+      {createTaskModal}
       <TasksHeader
         viewMode={viewMode}
         onViewModeChange={handleViewModeChange}
@@ -304,6 +327,7 @@ export function TasksPageClient() {
         statusFilter={statusFilter}
         onStatusFilterChange={handleStatusFilterChange}
         totalCount={totalCount}
+        onCreateClick={handleCreateClick}
       />
 
       <div className={styles.content}>
