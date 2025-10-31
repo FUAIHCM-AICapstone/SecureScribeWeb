@@ -1,9 +1,9 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   Text,
   Caption1,
@@ -12,6 +12,12 @@ import {
   Button,
   Card,
   Spinner,
+  Avatar,
+  Menu,
+  MenuTrigger,
+  MenuPopover,
+  MenuList,
+  MenuItem,
   makeStyles,
   tokens,
   shorthands,
@@ -21,12 +27,24 @@ import {
   CalendarClock20Regular,
   People20Regular,
   Document20Regular,
-  Link20Regular,
+  Edit20Regular,
+  Archive20Regular,
+  Delete20Regular,
+  MoreVertical20Regular,
+  PersonCircle20Regular,
+  Folder20Regular,
+  TaskListSquareLtr20Regular,
+  Calendar20Regular,
 } from '@fluentui/react-icons';
 import { format } from 'date-fns';
 import { queryKeys } from '@/lib/queryClient';
-import { getMeeting } from '@/services/api/meeting';
-import type { MeetingWithProjects } from 'types/meeting.type';
+import {
+  getProject,
+  archiveProject,
+  unarchiveProject,
+  deleteProject,
+} from '@/services/api/project';
+import { showToast } from '@/hooks/useShowToast';
 
 const useStyles = makeStyles({
   container: {
@@ -73,6 +91,11 @@ const useStyles = makeStyles({
     alignItems: 'center',
     ...shorthands.gap('8px'),
     flexWrap: 'wrap',
+  },
+  actionsRow: {
+    display: 'flex',
+    ...shorthands.gap('8px'),
+    alignItems: 'center',
   },
   metaRow: {
     display: 'flex',
@@ -164,32 +187,38 @@ const useStyles = makeStyles({
     textAlign: 'center',
     ...shorthands.padding('24px'),
   },
-  projectsList: {
+  membersList: {
     display: 'flex',
     flexDirection: 'column',
     ...shorthands.gap('12px'),
   },
-  projectItem: {
-    ...shorthands.padding('16px', '20px'),
+  memberItem: {
+    ...shorthands.padding('16px'),
     backgroundColor: tokens.colorNeutralBackground2,
     ...shorthands.borderRadius(tokens.borderRadiusMedium),
     ...shorthands.border('1px', 'solid', tokens.colorNeutralStroke2),
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    ...shorthands.gap('12px'),
     ...shorthands.transition('all', '0.2s', 'ease'),
     ':hover': {
       backgroundColor: tokens.colorNeutralBackground3,
       boxShadow: tokens.shadow4,
-      transform: 'translateX(4px)',
     },
   },
-  projectName: {
+  memberInfo: {
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
+    ...shorthands.gap('4px'),
+  },
+  memberName: {
     fontWeight: 600,
     fontSize: tokens.fontSizeBase300,
   },
-  urlButton: {
-    width: '100%',
+  memberMeta: {
+    fontSize: tokens.fontSizeBase200,
+    color: tokens.colorNeutralForeground3,
   },
   placeholder: {
     ...shorthands.padding('48px', '32px'),
@@ -198,9 +227,6 @@ const useStyles = makeStyles({
     backgroundColor: tokens.colorNeutralBackground3,
     ...shorthands.borderRadius(tokens.borderRadiusMedium),
     ...shorthands.border('2px', 'dashed', tokens.colorNeutralStroke2),
-  },
-  placeholderText: {
-    fontSize: tokens.fontSizeBase300,
   },
   loadingContainer: {
     display: 'flex',
@@ -224,80 +250,110 @@ const useStyles = makeStyles({
     fontWeight: 600,
     color: tokens.colorPaletteRedForeground1,
   },
-  overviewItem: {
-    display: 'flex',
-    flexDirection: 'column',
-    ...shorthands.gap('8px'),
-    ...shorthands.padding('16px'),
-    backgroundColor: tokens.colorNeutralBackground3,
-    ...shorthands.borderRadius(tokens.borderRadiusMedium),
-  },
-  overviewLabel: {
-    color: tokens.colorNeutralForeground3,
-    fontSize: tokens.fontSizeBase200,
-    fontWeight: 600,
-  },
-  overviewValue: {
-    fontSize: tokens.fontSizeBase300,
-    fontWeight: 500,
-    color: tokens.colorNeutralForeground1,
-  },
 });
 
-interface MeetingDetailClientProps {
-  meetingId: string;
+interface ProjectDetailClientProps {
+  projectId: string;
 }
 
-export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
+export function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
   const styles = useStyles();
-  const t = useTranslations('MeetingDetail');
-  const tMeetings = useTranslations('Meetings');
+  const t = useTranslations('ProjectDetail');
+  const tProjects = useTranslations('Projects');
   const router = useRouter();
+  const queryClient = useQueryClient();
+  const [isDeleting, setIsDeleting] = useState(false);
 
+  // Fetch project data
   const {
-    data: meeting,
+    data: project,
     isLoading,
     isError,
-  } = useQuery<MeetingWithProjects>({
-    queryKey: queryKeys.meeting(meetingId),
-    queryFn: () => getMeeting(meetingId),
+  } = useQuery({
+    queryKey: queryKeys.project(projectId),
+    queryFn: () => getProject(projectId, true),
   });
 
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'active':
-        return (
-          <Badge appearance="filled" color="success" size="large">
-            {tMeetings('status.active')}
-          </Badge>
-        );
-      case 'completed':
-        return (
-          <Badge appearance="filled" color="informative" size="large">
-            {tMeetings('status.completed')}
-          </Badge>
-        );
-      case 'cancelled':
-        return (
-          <Badge appearance="filled" color="danger" size="large">
-            {tMeetings('status.cancelled')}
-          </Badge>
-        );
-      default:
-        return (
-          <Badge appearance="outline" size="large">
-            {status}
-          </Badge>
-        );
+  // Archive mutation
+  const archiveMutation = useMutation({
+    mutationFn: () => archiveProject(projectId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.project(projectId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.projects });
+      showToast('success', t('projectArchived'));
+    },
+    onError: (error: any) => {
+      showToast('error', error?.response?.data?.detail || t('archiveError'));
+    },
+  });
+
+  // Unarchive mutation
+  const unarchiveMutation = useMutation({
+    mutationFn: () => unarchiveProject(projectId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.project(projectId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.projects });
+      showToast('success', t('projectUnarchived'));
+    },
+    onError: (error: any) => {
+      showToast('error', error?.response?.data?.detail || t('unarchiveError'));
+    },
+  });
+
+  // Delete mutation
+  const deleteMutation = useMutation({
+    mutationFn: () => deleteProject(projectId),
+    onSuccess: () => {
+      showToast('success', t('projectDeleted'));
+      router.push('/projects');
+    },
+    onError: (error: any) => {
+      showToast('error', error?.response?.data?.detail || t('deleteError'));
+      setIsDeleting(false);
+    },
+  });
+
+  const handleEdit = () => {
+    // TODO: Open edit modal
+    showToast('info', 'Edit functionality coming soon');
+  };
+
+  const handleArchiveToggle = () => {
+    if (project?.is_archived) {
+      unarchiveMutation.mutate();
+    } else {
+      archiveMutation.mutate();
     }
   };
 
+  const handleDelete = () => {
+    if (window.confirm(t('deleteConfirmation'))) {
+      setIsDeleting(true);
+      deleteMutation.mutate();
+    }
+  };
+
+  const getStatusBadge = (isArchived: boolean) => {
+    if (isArchived) {
+      return (
+        <Badge appearance="filled" color="warning" size="large">
+          {tProjects('status.archived')}
+        </Badge>
+      );
+    }
+    return (
+      <Badge appearance="filled" color="success" size="large">
+        {tProjects('status.active')}
+      </Badge>
+    );
+  };
+
   const formatDateTime = (dateString: string | null) => {
-    if (!dateString) return t('noDescription');
+    if (!dateString) return t('noDate');
     try {
       return format(new Date(dateString), 'PPpp');
     } catch {
-      return tMeetings('invalidDate');
+      return t('invalidDate');
     }
   };
 
@@ -312,18 +368,18 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
     );
   }
 
-  if (isError || !meeting) {
+  if (isError || !project) {
     return (
       <div className={styles.container}>
         <div className={styles.errorContainer}>
-          <Text className={styles.errorTitle}>{t('notFound')}</Text>
-          <Body1>{t('notFoundDescription')}</Body1>
+          <Text className={styles.errorTitle}>{t('errorTitle')}</Text>
+          <Text>{t('errorMessage')}</Text>
           <Button
             appearance="primary"
             icon={<ArrowLeft20Regular />}
-            onClick={() => router.push('/meetings')}
+            onClick={() => router.push('/projects')}
           >
-            {t('backToMeetings')}
+            {t('backToProjects')}
           </Button>
         </div>
       </div>
@@ -335,51 +391,78 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
       <Button
         appearance="subtle"
         icon={<ArrowLeft20Regular />}
-        onClick={() => router.push('/meetings')}
+        onClick={() => router.push('/projects')}
         className={styles.backButton}
       >
-        {t('backToMeetings')}
+        {t('backToProjects')}
       </Button>
 
       <div className={styles.header}>
         <div className={styles.titleRow}>
           <div className={styles.titleSection}>
-            <Text className={styles.title}>
-              {meeting.title || tMeetings('untitledMeeting')}
-            </Text>
+            <Text className={styles.title}>{project.name}</Text>
             <div className={styles.badgesRow}>
-              {getStatusBadge(meeting.status)}
-              {meeting.is_personal && (
-                <Badge appearance="outline" size="large" color="brand">
-                  {tMeetings('badges.personal')}
-                </Badge>
-              )}
+              {getStatusBadge(project.is_archived)}
+              <Badge appearance="outline" size="large">
+                {t('memberCount', { count: project.members?.length || 0 })}
+              </Badge>
             </div>
+          </div>
+          <div className={styles.actionsRow}>
+            <Button
+              appearance="secondary"
+              icon={<Edit20Regular />}
+              onClick={handleEdit}
+            >
+              {t('edit')}
+            </Button>
+            <Button
+              appearance="secondary"
+              icon={<Archive20Regular />}
+              onClick={handleArchiveToggle}
+              disabled={
+                archiveMutation.isPending || unarchiveMutation.isPending
+              }
+            >
+              {project.is_archived ? t('unarchive') : t('archive')}
+            </Button>
+            <Menu>
+              <MenuTrigger disableButtonEnhancement>
+                <Button appearance="subtle" icon={<MoreVertical20Regular />} />
+              </MenuTrigger>
+              <MenuPopover>
+                <MenuList>
+                  <MenuItem
+                    icon={<Delete20Regular />}
+                    onClick={handleDelete}
+                    disabled={isDeleting}
+                  >
+                    {t('delete')}
+                  </MenuItem>
+                </MenuList>
+              </MenuPopover>
+            </Menu>
           </div>
         </div>
 
         <div className={styles.metaRow}>
-          {meeting.start_time && (
-            <div className={styles.metaItem}>
-              <CalendarClock20Regular className={styles.metaIcon} />
-              <div className={styles.metaContent}>
-                <Caption1 className={styles.metaLabel}>
-                  {t('startTime')}:
-                </Caption1>
-                <Body1 className={styles.metaValue}>
-                  {formatDateTime(meeting.start_time)}
-                </Body1>
-              </div>
+          <div className={styles.metaItem}>
+            <CalendarClock20Regular className={styles.metaIcon} />
+            <div className={styles.metaContent}>
+              <Caption1 className={styles.metaLabel}>
+                {t('createdAt')}:
+              </Caption1>
+              <Body1 className={styles.metaValue}>
+                {formatDateTime(project.created_at)}
+              </Body1>
             </div>
-          )}
+          </div>
           <div className={styles.metaItem}>
             <People20Regular className={styles.metaIcon} />
             <div className={styles.metaContent}>
-              <Caption1 className={styles.metaLabel}>{t('projects')}:</Caption1>
+              <Caption1 className={styles.metaLabel}>{t('members')}:</Caption1>
               <Body1 className={styles.metaValue}>
-                {t('projectsCount', {
-                  count: meeting.projects?.length || 0,
-                })}
+                {project.members?.length || 0}
               </Body1>
             </div>
           </div>
@@ -394,128 +477,86 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
               <Document20Regular className={styles.sectionIcon} />
               <Text className={styles.sectionHeading}>{t('description')}</Text>
             </div>
-            {meeting.description ? (
+            {project.description ? (
               <Body1 className={styles.description}>
-                {meeting.description}
+                {project.description}
               </Body1>
             ) : (
               <Body1 className={styles.noContent}>{t('noDescription')}</Body1>
             )}
           </Card>
 
-          {/* Notes Section */}
+          {/* Related Meetings Section */}
           <Card className={styles.section}>
             <div className={styles.sectionTitle}>
-              <Document20Regular className={styles.sectionIcon} />
-              <Text className={styles.sectionHeading}>{t('notes')}</Text>
+              <Calendar20Regular className={styles.sectionIcon} />
+              <Text className={styles.sectionHeading}>
+                {t('relatedMeetings')}
+              </Text>
             </div>
             <div className={styles.placeholder}>
-              <Body1 className={styles.placeholderText}>
-                {t('notes')} - Coming soon
-              </Body1>
-            </div>
-          </Card>
-
-          {/* Transcripts Section */}
-          <Card className={styles.section}>
-            <div className={styles.sectionTitle}>
-              <Document20Regular className={styles.sectionIcon} />
-              <Text className={styles.sectionHeading}>{t('transcripts')}</Text>
-            </div>
-            <div className={styles.placeholder}>
-              <Body1 className={styles.placeholderText}>
-                {t('transcripts')} - Coming soon
-              </Body1>
+              <Text>{t('meetingsPlaceholder')}</Text>
             </div>
           </Card>
 
           {/* Files Section */}
           <Card className={styles.section}>
             <div className={styles.sectionTitle}>
-              <Document20Regular className={styles.sectionIcon} />
+              <Folder20Regular className={styles.sectionIcon} />
               <Text className={styles.sectionHeading}>{t('files')}</Text>
             </div>
             <div className={styles.placeholder}>
-              <Body1 className={styles.placeholderText}>
-                {t('filesCount', { count: 0 })}
-              </Body1>
+              <Text>{t('filesPlaceholder')}</Text>
             </div>
           </Card>
         </div>
 
         <div className={styles.sideColumn}>
-          {/* Related Projects */}
+          {/* Members Section */}
           <Card className={styles.section}>
             <div className={styles.sectionTitle}>
               <People20Regular className={styles.sectionIcon} />
-              <Text className={styles.sectionHeading}>{t('projects')}</Text>
+              <Text className={styles.sectionHeading}>{t('members')}</Text>
             </div>
-            {meeting.projects && meeting.projects.length > 0 ? (
-              <div className={styles.projectsList}>
-                {meeting.projects.map((project) => (
-                  <div key={project.id} className={styles.projectItem}>
-                    <Text className={styles.projectName}>
-                      {project.name || 'Untitled Project'}
-                    </Text>
+            {project.members && project.members.length > 0 ? (
+              <div className={styles.membersList}>
+                {project.members.map((member) => (
+                  <div key={member.user_id} className={styles.memberItem}>
+                    <Avatar
+                      icon={<PersonCircle20Regular />}
+                      size={40}
+                      aria-label={member.user?.name || 'Member'}
+                    />
+                    <div className={styles.memberInfo}>
+                      <Text className={styles.memberName}>
+                        {member.user?.name ||
+                          member.user?.email ||
+                          t('unknownUser')}
+                      </Text>
+                      <Caption1 className={styles.memberMeta}>
+                        {t('role')}: {member.role} • {t('joined')}:{' '}
+                        {formatDateTime(member.joined_at)}
+                      </Caption1>
+                    </div>
+                    <Badge appearance="outline" size="small">
+                      {member.role}
+                    </Badge>
                   </div>
                 ))}
               </div>
             ) : (
-              <Body1 className={styles.noContent}>{t('noProjects')}</Body1>
+              <Body1 className={styles.noContent}>{t('noMembers')}</Body1>
             )}
           </Card>
 
-          {/* Meeting URL */}
-          {meeting.url && (
-            <Card className={styles.section}>
-              <div className={styles.sectionTitle}>
-                <Link20Regular className={styles.sectionIcon} />
-                <Text className={styles.sectionHeading}>{t('meetingUrl')}</Text>
-              </div>
-              <Button
-                appearance="primary"
-                icon={<Link20Regular />}
-                onClick={() => window.open(meeting.url, '_blank')}
-                className={styles.urlButton}
-              >
-                {t('openUrl')}
-              </Button>
-            </Card>
-          )}
-
-          {/* Metadata */}
+          {/* Tasks Section */}
           <Card className={styles.section}>
             <div className={styles.sectionTitle}>
-              <Document20Regular className={styles.sectionIcon} />
-              <Text className={styles.sectionHeading}>{t('overview')}</Text>
+              <TaskListSquareLtr20Regular className={styles.sectionIcon} />
+              <Text className={styles.sectionHeading}>{t('tasks')}</Text>
             </div>
-            <div
-              style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
-            >
-              <div className={styles.overviewItem}>
-                <Caption1 className={styles.overviewLabel}>
-                  {t('createdAt')}:
-                </Caption1>
-                <Body1 className={styles.overviewValue}>
-                  {formatDateTime(meeting.created_at)}
-                </Body1>
-              </div>
-              <div className={styles.overviewItem}>
-                <Caption1 className={styles.overviewLabel}>
-                  {t('updatedAt')}:
-                </Caption1>
-                <Body1 className={styles.overviewValue}>
-                  {formatDateTime(meeting.updated_at || null)}
-                </Body1>
-              </div>
-              <div className={styles.overviewItem}>
-                <Caption1 className={styles.overviewLabel}>
-                  {t('status')}:
-                </Caption1>
-                <div style={{ marginTop: '8px' }}>
-                  {getStatusBadge(meeting.status)}
-                </div>
-              </div>
+            <div className={styles.placeholder}>
+              <Text>{t('tasksPlaceholder')}</Text>
             </div>
           </Card>
         </div>
