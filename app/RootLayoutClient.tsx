@@ -3,7 +3,7 @@
 /* eslint-disable @next/next/no-page-custom-font */
 // app/RootLayoutClient.tsx
 'use client';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { NextIntlClientProvider } from 'next-intl';
 import { ReactQueryProvider } from '@/context/ReactQueryProvider';
 import { Provider } from 'react-redux';
@@ -19,6 +19,7 @@ import { showToast, setToastController } from '@/hooks/useShowToast';
 import { Toaster, useToastController } from '@fluentui/react-toast';
 import { SidebarProvider } from '../context/SidebarContext';
 import ClientOnlyLayout from '@/components/layout/ClientOnly';
+import { AuthOverlay } from '@/components/layout/AuthOverlay';
 
 export default function RootLayoutClient({
   children,
@@ -33,6 +34,8 @@ export default function RootLayoutClient({
   const searchParams = useSearchParams();
   const pathAfterLocale = pathname.split('/').slice(2).join('/');
   const hideHeader = pathAfterLocale.startsWith('auth');
+  const isAuthRoute = pathAfterLocale.startsWith('auth');
+  const [shouldShowAuthOverlay, setShouldShowAuthOverlay] = useState(false);
 
   // Initialize FluentUI toast controller
   const toastController = useToastController();
@@ -41,6 +44,18 @@ export default function RootLayoutClient({
     // Set the toast controller for the hook to use
     setToastController(toastController);
   }, [toastController]);
+
+  useEffect(() => {
+    // Check if access_token exists in localStorage
+    // If no token, show auth overlay
+    const accessToken = window.localStorage.getItem('access_token');
+
+    if (!accessToken && !isAuthRoute) {
+      setShouldShowAuthOverlay(true);
+    } else {
+      setShouldShowAuthOverlay(false);
+    }
+  }, [pathname, isAuthRoute]);
 
   useEffect(() => {
     const toastKey = searchParams.get('toast');
@@ -98,6 +113,7 @@ export default function RootLayoutClient({
               >
                 <AuthProvider>
                   <SidebarProvider>
+                    <AuthOverlay locale={locale} shouldShow={shouldShowAuthOverlay} />
                     <div
                       style={{
                         display: 'flex',

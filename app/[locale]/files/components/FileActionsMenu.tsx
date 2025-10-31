@@ -28,11 +28,13 @@ import {
   ArrowDownload20Regular,
   Rename20Regular,
   Delete20Regular,
+  ArrowMove20Regular,
 } from '@fluentui/react-icons';
 import type { FileResponse } from 'types/file.type';
 import { deleteFile, updateFile } from '@/services/api/file';
 import { queryKeys } from '@/lib/queryClient';
 import { showToast } from '@/hooks/useShowToast';
+import { FileMoveModal } from '@/components/modal/FileMoveModal';
 
 const useStyles = makeStyles({
   dialogContent: {
@@ -52,6 +54,7 @@ export function FileActionsMenu({ file }: FileActionsMenuProps) {
   const queryClient = useQueryClient();
   const [renameOpen, setRenameOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [moveOpen, setMoveOpen] = useState(false);
   const [newFileName, setNewFileName] = useState(file.filename || '');
 
   // Rename mutation
@@ -158,6 +161,15 @@ export function FileActionsMenu({ file }: FileActionsMenuProps) {
             >
               {t('actions.rename')}
             </MenuItem>
+            <MenuItem
+              icon={<ArrowMove20Regular />}
+              onClick={(e) => {
+                e.stopPropagation();
+                setMoveOpen(true);
+              }}
+            >
+              {t('actions.move')}
+            </MenuItem>
             <MenuDivider />
             <MenuItem
               icon={<Delete20Regular />}
@@ -244,6 +256,16 @@ export function FileActionsMenu({ file }: FileActionsMenuProps) {
           </DialogBody>
         </DialogSurface>
       </Dialog>
+
+      {/* Move Modal */}
+      <FileMoveModal
+        open={moveOpen}
+        onClose={() => setMoveOpen(false)}
+        file={file}
+        onMoveSuccess={() => {
+          setMoveOpen(false);
+        }}
+      />
     </>
   );
 }

@@ -1,4 +1,15 @@
 {
+  "Common": {
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "deleting": "Deleting...",
+    "deleteConfirmMessage": "Are you sure you want to delete {name}? This action cannot be undone."
+  },
+  "AuthOverlay": {
+    "title": "Login Required",
+    "description": "Please sign in to view this content",
+    "signIn": "Sign In"
+  },
   "Header": {
     "home": "Home",
     "searchPlaceholder": "Search",
@@ -324,7 +335,13 @@
       "edit": "Edit Meeting",
       "share": "Share",
       "archive": "Archive",
-      "delete": "Delete"
+      "delete": "Delete",
+      "deleteConfirmTitle": "Delete Meeting",
+      "deleteConfirmMessage": "Are you sure you want to delete \"{title}\"? This action cannot be undone.",
+      "deleteSuccess": "\"{title}\" has been deleted successfully.",
+      "deleteError": "Failed to delete \"{title}\". Please try again.",
+      "cancel": "Cancel",
+      "deleting": "Deleting..."
     },
     "table": {
       "title": "Meeting Title",
@@ -569,6 +586,7 @@
       "view": "View Details",
       "download": "Download",
       "rename": "Rename",
+      "move": "Move to Project/Meeting",
       "preview": "Preview",
       "delete": "Delete"
     },
@@ -618,6 +636,17 @@
       "deleteError": "Failed to delete file. Please try again.",
       "confirm": "Delete",
       "cancel": "Cancel"
+    },
+    "move": {
+      "title": "Move File",
+      "currentFile": "Current file",
+      "noProject": "No project",
+      "noMeeting": "No meeting",
+      "move": "Move",
+      "moving": "Moving...",
+      "cancel": "Cancel",
+      "moveSuccess": "File moved successfully!",
+      "moveError": "Failed to move file. Please try again."
     },
     "validation": {
       "invalidType": "File type not supported. Please upload a document or image file.",

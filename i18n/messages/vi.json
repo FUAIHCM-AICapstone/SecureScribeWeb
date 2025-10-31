@@ -1,4 +1,15 @@
 {
+  "Common": {
+    "cancel": "Hủy",
+    "delete": "Xóa",
+    "deleting": "Đang xóa...",
+    "deleteConfirmMessage": "Bạn có chắc chắn muốn xóa {name}? Hành động này không thể hoàn tác."
+  },
+  "AuthOverlay": {
+    "title": "Yêu cầu đăng nhập",
+    "description": "Vui lòng đăng nhập để xem nội dung này",
+    "signIn": "Đăng nhập"
+  },
   "Header": {
     "home": "Trang chủ",
     "searchPlaceholder": "Tìm kiếm",
@@ -324,7 +335,13 @@
       "edit": "Chỉnh sửa",
       "share": "Chia sẻ",
       "archive": "Lưu trữ",
-      "delete": "Xóa"
+      "delete": "Xóa",
+      "deleteConfirmTitle": "Xóa cuộc họp",
+      "deleteConfirmMessage": "Bạn có chắc chắn muốn xóa \"{title}\"? Hành động này không thể hoàn tác.",
+      "deleteSuccess": "\"{title}\" đã được xóa thành công.",
+      "deleteError": "Không thể xóa \"{title}\". Vui lòng thử lại.",
+      "cancel": "Hủy",
+      "deleting": "Đang xóa..."
     },
     "table": {
       "title": "Tiêu đề",
@@ -535,7 +552,7 @@
     "emptyUnfilteredDescription": "Bắt đầu bằng cách tải lên tệp đầu tiên để chia sẻ với nhóm của bạn.",
     "selectFile": "Chọn một tệp",
     "dragDropHere": "hoặc kéo thả vào đây",
-    "supportedFormats": "Định dạng hỗ trợ: PDF, Word, Excel, PowerPoint, Hình ảnh",
+    "supportedFormats": "Định dạng hỗ trợ: PDF, TXT",
     "maxFileSize": "Kích thước tối đa: 50MB",
     "fileName": "Tên tệp",
     "fileSize": "Kích thước",
@@ -569,6 +586,7 @@
       "view": "Xem chi tiết",
       "download": "Tải xuống",
       "rename": "Đổi tên",
+      "move": "Di chuyển đến Dự án/Cuộc họp",
       "preview": "Xem trước",
       "delete": "Xóa"
     },
@@ -618,6 +636,17 @@
       "deleteError": "Xóa tệp thất bại. Vui lòng thử lại.",
       "confirm": "Xóa",
       "cancel": "Hủy"
+    },
+    "move": {
+      "title": "Di chuyển tệp",
+      "currentFile": "Tệp hiện tại",
+      "noProject": "Không có dự án",
+      "noMeeting": "Không có cuộc họp",
+      "move": "Di chuyển",
+      "moving": "Đang di chuyển...",
+      "cancel": "Hủy",
+      "moveSuccess": "Di chuyển tệp thành công!",
+      "moveError": "Di chuyển tệp thất bại. Vui lòng thử lại."
     },
     "validation": {
       "invalidType": "Loại tệp không được hỗ trợ. Vui lòng tải lên tài liệu hoặc hình ảnh.",
