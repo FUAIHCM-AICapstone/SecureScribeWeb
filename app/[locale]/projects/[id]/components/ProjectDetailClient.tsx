@@ -26,7 +26,6 @@ import {
   ArrowLeft20Regular,
   CalendarClock20Regular,
   People20Regular,
-  Document20Regular,
   Edit20Regular,
   Archive20Regular,
   Delete20Regular,
@@ -44,7 +43,13 @@ import {
   unarchiveProject,
   deleteProject,
 } from '@/services/api/project';
+import { getProjectMeetings } from '@/services/api/meeting';
+import { getProjectFiles } from '@/services/api/file';
+import { getTasks } from '@/services/api/task';
 import { showToast } from '@/hooks/useShowToast';
+import { MeetingsTable } from './MeetingsTable';
+import { FilesTable } from './FilesTable';
+import { TasksTable } from './TasksTable';
 
 const useStyles = makeStyles({
   container: {
@@ -71,7 +76,7 @@ const useStyles = makeStyles({
     alignItems: 'flex-start',
     justifyContent: 'space-between',
     ...shorthands.gap('16px'),
-    marginBottom: '24px',
+    marginBottom: '16px',
     flexWrap: 'wrap',
   },
   titleSection: {
@@ -256,6 +261,10 @@ interface ProjectDetailClientProps {
   projectId: string;
 }
 
+interface ProjectDetailClientProps {
+  projectId: string;
+}
+
 export function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
   const styles = useStyles();
   const t = useTranslations('ProjectDetail');
@@ -263,6 +272,11 @@ export function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // Pagination state
+  const [meetingsPage, setMeetingsPage] = useState(1);
+  const [filesPage, setFilesPage] = useState(1);
+  const [tasksPage, setTasksPage] = useState(1);
 
   // Fetch project data
   const {
@@ -274,11 +288,51 @@ export function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
     queryFn: () => getProject(projectId, true),
   });
 
+  // Fetch meetings for this project
+  const {
+    data: meetingsData,
+    isLoading: meetingsLoading,
+  } = useQuery({
+    queryKey: queryKeys.projectMeetings(projectId, meetingsPage),
+    queryFn: () => getProjectMeetings(projectId, { page: meetingsPage, limit: 2 }),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
+  // Fetch files for this project
+  const {
+    data: filesData,
+    isLoading: filesLoading,
+  } = useQuery({
+    queryKey: queryKeys.projectFiles(projectId, filesPage),
+    queryFn: () => getProjectFiles(projectId, { page: filesPage, limit: 2 }),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
+  // Fetch all tasks (backend doesn't filter by project, so we filter client-side)
+  const {
+    data: tasksData,
+    isLoading: tasksLoading,
+  } = useQuery({
+    queryKey: queryKeys.projectTasks(projectId, tasksPage),
+    queryFn: () => getTasks({}, { page: tasksPage, limit: 20 }),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+
+  const projectTasks = tasksData?.data?.filter(
+    (task) => task.projects?.some((p) => p.id === projectId)
+  ) || [];
+
+
+  const hasMoreProjectTasks = tasksData?.pagination?.has_next || false;
+
   // Archive mutation
   const archiveMutation = useMutation({
     mutationFn: () => archiveProject(projectId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.project(projectId) });
+      queryClient.invalidateQueries({ queryKey: ['projects', projectId, 'meetings'] });
+      queryClient.invalidateQueries({ queryKey: ['projects', projectId, 'files'] });
+      queryClient.invalidateQueries({ queryKey: ['projects', projectId, 'tasks'] });
       queryClient.invalidateQueries({ queryKey: queryKeys.projects });
       showToast('success', t('projectArchived'));
     },
@@ -292,6 +346,9 @@ export function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
     mutationFn: () => unarchiveProject(projectId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.project(projectId) });
+      queryClient.invalidateQueries({ queryKey: ['projects', projectId, 'meetings'] });
+      queryClient.invalidateQueries({ queryKey: ['projects', projectId, 'files'] });
+      queryClient.invalidateQueries({ queryKey: ['projects', projectId, 'tasks'] });
       queryClient.invalidateQueries({ queryKey: queryKeys.projects });
       showToast('success', t('projectUnarchived'));
     },
@@ -407,6 +464,11 @@ export function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
                 {t('memberCount', { count: project.members?.length || 0 })}
               </Badge>
             </div>
+            {project.description && (
+              <Body1 className={styles.description}>
+                {project.description}
+              </Body1>
+            )}
           </div>
           <div className={styles.actionsRow}>
             <Button
@@ -471,21 +533,6 @@ export function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
 
       <div className={styles.content}>
         <div className={styles.mainColumn}>
-          {/* Description Section */}
-          <Card className={styles.section}>
-            <div className={styles.sectionTitle}>
-              <Document20Regular className={styles.sectionIcon} />
-              <Text className={styles.sectionHeading}>{t('description')}</Text>
-            </div>
-            {project.description ? (
-              <Body1 className={styles.description}>
-                {project.description}
-              </Body1>
-            ) : (
-              <Body1 className={styles.noContent}>{t('noDescription')}</Body1>
-            )}
-          </Card>
-
           {/* Related Meetings Section */}
           <Card className={styles.section}>
             <div className={styles.sectionTitle}>
@@ -494,9 +541,13 @@ export function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
                 {t('relatedMeetings')}
               </Text>
             </div>
-            <div className={styles.placeholder}>
-              <Text>{t('meetingsPlaceholder')}</Text>
-            </div>
+            <MeetingsTable
+              data={meetingsData?.data || []}
+              isLoading={meetingsLoading}
+              page={meetingsPage}
+              onPageChange={setMeetingsPage}
+              hasMore={meetingsData?.pagination?.has_next || false}
+            />
           </Card>
 
           {/* Files Section */}
@@ -505,9 +556,13 @@ export function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
               <Folder20Regular className={styles.sectionIcon} />
               <Text className={styles.sectionHeading}>{t('files')}</Text>
             </div>
-            <div className={styles.placeholder}>
-              <Text>{t('filesPlaceholder')}</Text>
-            </div>
+            <FilesTable
+              data={filesData?.data || []}
+              isLoading={filesLoading}
+              page={filesPage}
+              onPageChange={setFilesPage}
+              hasMore={filesData?.pagination?.has_next || false}
+            />
           </Card>
         </div>
 
@@ -555,9 +610,13 @@ export function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
               <TaskListSquareLtr20Regular className={styles.sectionIcon} />
               <Text className={styles.sectionHeading}>{t('tasks')}</Text>
             </div>
-            <div className={styles.placeholder}>
-              <Text>{t('tasksPlaceholder')}</Text>
-            </div>
+            <TasksTable
+              data={projectTasks}
+              isLoading={tasksLoading}
+              page={tasksPage}
+              onPageChange={setTasksPage}
+              hasMore={hasMoreProjectTasks}
+            />
           </Card>
         </div>
       </div>

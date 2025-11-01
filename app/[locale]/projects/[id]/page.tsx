@@ -3,10 +3,8 @@ import {
   QueryClient,
   dehydrate,
 } from '@tanstack/react-query';
-import { queryKeys } from '@/lib/queryClient';
-import { getProject } from '@/services/api/project';
-import { ProjectDetailClient } from './components/ProjectDetailClient';
 import { notFound } from 'next/navigation';
+import { ProjectDetailClient } from './components/ProjectDetailClient';
 
 type PageProps = { params: Promise<{ id: string }> };
 
@@ -16,12 +14,6 @@ export default async function ProjectDetailPage({ params }: PageProps) {
   const queryClient = new QueryClient();
 
   try {
-    // Prefetch project data with members
-    await queryClient.prefetchQuery({
-      queryKey: queryKeys.project(id),
-      queryFn: () => getProject(id, true),
-    });
-
     return (
       <HydrationBoundary state={dehydrate(queryClient)}>
         <ProjectDetailClient projectId={id} />

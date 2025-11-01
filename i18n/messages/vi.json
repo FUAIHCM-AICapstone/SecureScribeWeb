@@ -123,7 +123,25 @@
     "joined": "Tham gia",
     "unknownUser": "Người dùng không xác định",
     "noDate": "Không có ngày",
-    "invalidDate": "Ngày không hợp lệ"
+    "invalidDate": "Ngày không hợp lệ",
+    "loadMore": "Tải thêm",
+    "untitledFile": "Tệp tin không tên",
+    "dueDate": "Ngày hạn",
+    "tableHeaders": {
+      "title": "Tiêu đề",
+      "startTime": "Thời gian bắt đầu",
+      "fileName": "Tên tệp",
+      "type": "Loại",
+      "size": "Kích thước",
+      "taskTitle": "Tiêu đề nhiệm vụ",
+      "status": "Trạng thái"
+    },
+    "pagination": {
+      "previous": "Trước",
+      "next": "Tiếp",
+      "page": "Trang"
+    },
+    "untitledMeeting": "Cuộc họp chưa đặt tên"
   },
   "Sidebar": {
     "navigation": "Điều hướng",

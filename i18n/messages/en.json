@@ -123,7 +123,25 @@
     "joined": "Joined",
     "unknownUser": "Unknown User",
     "noDate": "No date",
-    "invalidDate": "Invalid date"
+    "invalidDate": "Invalid date",
+    "loadMore": "Load More",
+    "untitledFile": "Untitled File",
+    "dueDate": "Due Date",
+    "tableHeaders": {
+      "title": "Title",
+      "startTime": "Start Time",
+      "fileName": "File Name",
+      "type": "Type",
+      "size": "Size",
+      "taskTitle": "Task Title",
+      "status": "Status"
+    },
+    "pagination": {
+      "previous": "Previous",
+      "next": "Next",
+      "page": "Page"
+    },
+    "untitledMeeting": "Untitled Meeting"
   },
   "Sidebar": {
     "navigation": "Navigation",

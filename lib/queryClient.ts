@@ -23,8 +23,8 @@ const queryClient = new QueryClient({
 export const queryKeys = {
   projects: ['projects'] as const,
   project: (id: string) => ['projects', id] as const,
-  projectMeetings: (id: string) => ['projects', id, 'meetings'] as const,
-  projectFiles: (id: string) => ['projects', id, 'files'] as const,
+  projectMeetings: (id: string, page: number) => ['projects', id, 'meetings', page] as const,
+  projectFiles: (id: string, page: number) => ['projects', id, 'files', page] as const,
 
   meetings: ['meetings'] as const,
   personalMeetings: ['meetings', 'personal'] as const,
@@ -34,6 +34,7 @@ export const queryKeys = {
   tasks: ['tasks'] as const,
   myTasks: ['tasks', 'my'] as const,
   task: (id: string) => ['tasks', id] as const,
+  projectTasks: (id: string, page: number) => ['projects', id, 'tasks', page] as const,
 
   files: ['files'] as const,
   file: (id: string) => ['files', id] as const,
