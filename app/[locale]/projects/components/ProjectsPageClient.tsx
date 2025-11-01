@@ -252,6 +252,7 @@ export function ProjectsPageClient() {
           createdDateTo={createdDateTo}
           onDateRangeChange={handleDateRangeChange}
           totalCount={0}
+          onCreateClick={handleCreateProject}
         />
         <div className={styles.skeletonGrid}>
           {Array.from({ length: limit }).map((_, i) => (
@@ -277,6 +278,7 @@ export function ProjectsPageClient() {
           createdDateTo={createdDateTo}
           onDateRangeChange={handleDateRangeChange}
           totalCount={0}
+          onCreateClick={handleCreateProject}
         />
         <div className={styles.errorContainer}>
           <Text className={styles.errorTitle}>{t('errorTitle')}</Text>
@@ -306,6 +308,7 @@ export function ProjectsPageClient() {
           createdDateTo={createdDateTo}
           onDateRangeChange={handleDateRangeChange}
           totalCount={0}
+          onCreateClick={handleCreateProject}
         />
         <EmptyProjectsState
           isFiltered={hasActiveFilters}
@@ -331,6 +334,7 @@ export function ProjectsPageClient() {
         createdDateTo={createdDateTo}
         onDateRangeChange={handleDateRangeChange}
         totalCount={totalCount}
+        onCreateClick={handleCreateProject}
       />
 
       <div className={styles.content}>

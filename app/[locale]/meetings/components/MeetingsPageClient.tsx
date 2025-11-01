@@ -250,6 +250,7 @@ export function MeetingsPageClient() {
           startDateTo={startDateTo}
           onDateRangeChange={handleDateRangeChange}
           totalCount={0}
+          onCreateClick={handleCreateClick}
         />
         <div className={styles.skeletonGrid}>
           {Array.from({ length: viewMode === 'grid' ? 12 : 8 }).map((_, i) => (
@@ -301,6 +302,7 @@ export function MeetingsPageClient() {
         startDateTo={startDateTo}
         onDateRangeChange={handleDateRangeChange}
         totalCount={totalCount}
+        onCreateClick={handleCreateClick}
       />
 
       <div className={styles.content}>
