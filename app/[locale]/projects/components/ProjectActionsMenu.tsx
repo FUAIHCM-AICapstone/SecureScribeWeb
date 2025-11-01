@@ -41,22 +41,26 @@ export function ProjectActionsMenu({ project }: ProjectActionsMenuProps) {
     router.push(`/projects/${project.id}`);
   };
 
-  const handleEdit = () => {
+  const handleEdit = (e: React.MouseEvent) => {
+    e.stopPropagation();
     // TODO: Implement edit functionality
     console.log('Edit project:', project.id);
   };
 
-  const handleArchive = () => {
+  const handleArchive = (e: React.MouseEvent) => {
+    e.stopPropagation();
     // TODO: Implement archive functionality
     console.log('Archive project:', project.id);
   };
 
-  const handleUnarchive = () => {
+  const handleUnarchive = (e: React.MouseEvent) => {
+    e.stopPropagation();
     // TODO: Implement unarchive functionality
     console.log('Unarchive project:', project.id);
   };
 
-  const handleDelete = () => {
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation();
     // TODO: Implement delete functionality
     console.log('Delete project:', project.id);
   };

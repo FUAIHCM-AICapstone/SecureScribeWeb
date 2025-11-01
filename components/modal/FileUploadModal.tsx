@@ -207,7 +207,7 @@ export function FileUploadModal({
     queryFn: () =>
       getMeetings(projectId ? { project_id: projectId } : {}, { limit: 100 }),
     staleTime: 5 * 60 * 1000,
-    enabled: open && !!projectId, // Only fetch when project is selected
+    enabled: open,
   });
 
   const projects = projectsData?.data || [];
@@ -428,7 +428,7 @@ export function FileUploadModal({
                 {/* Project Selection */}
                 <div className={styles.filterSection}>
                   <label className={styles.label}>
-                    {t('selectProject')} <span style={{ color: 'red' }}>*</span>
+                    {t('selectProject')}
                   </label>
                   <Dropdown
                     placeholder={t('selectProject')}
@@ -458,22 +458,20 @@ export function FileUploadModal({
                 {/* Meeting Selection */}
                 <div className={styles.filterSection}>
                   <label className={styles.label}>
-                    {t('selectMeeting')} <span style={{ color: 'red' }}>*</span>
+                    {t('selectMeeting')}
                   </label>
                   <Dropdown
-                    placeholder={
-                      !projectId ? t('selectProjectFirst') : t('selectMeeting')
-                    }
+                    placeholder={t('selectMeeting')}
                     value={
                       meetingId
                         ? meetings.find((m) => m.id === meetingId)?.title ||
-                          t('noMeeting')
+                        t('noMeeting')
                         : ''
                     }
                     onOptionSelect={(_, data) =>
                       setMeetingId((data.optionValue as string) || undefined)
                     }
-                    disabled={uploadMutation.isPending || !projectId}
+                    disabled={uploadMutation.isPending}
                   >
                     {meetings.map((meeting) => (
                       <Option key={meeting.id} value={meeting.id}>
@@ -509,8 +507,6 @@ export function FileUploadModal({
                 onClick={handleUpload}
                 disabled={
                   !selectedFile ||
-                  !projectId ||
-                  !meetingId ||
                   uploadMutation.isPending
                 }
                 icon={

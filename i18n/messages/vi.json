@@ -1,4 +1,15 @@
 {
+  "Common": {
+    "cancel": "Hủy",
+    "delete": "Xóa",
+    "deleting": "Đang xóa...",
+    "deleteConfirmMessage": "Bạn có chắc chắn muốn xóa {name}? Hành động này không thể hoàn tác."
+  },
+  "AuthOverlay": {
+    "title": "Yêu cầu đăng nhập",
+    "description": "Vui lòng đăng nhập để xem nội dung này",
+    "signIn": "Đăng nhập"
+  },
   "Header": {
     "home": "Trang chủ",
     "searchPlaceholder": "Tìm kiếm",
@@ -62,7 +73,57 @@
     "titleRequired": "Tiêu đề cuộc họp là bắt buộc",
     "titleMinLength": "Tiêu đề phải có ít nhất 3 ký tự",
     "urlInvalid": "Vui lòng nhập URL hợp lệ (https://...)",
-    "startTimeRequired": "Thời gian bắt đầu là bắt buộc"
+    "startTimeRequired": "Thời gian bắt đầu là bắt buộc",
+    "dateTimeRequired": "Vui lòng chọn ngày và giờ"
+  },
+  "ProjectCreate": {
+    "createProject": "Tạo dự án",
+    "projectName": "Tên dự án",
+    "projectDescription": "Mô tả dự án",
+    "projectNamePlaceholder": "Nhập tên dự án",
+    "projectDescriptionPlaceholder": "Nhập mô tả dự án (tùy chọn)",
+    "projectNameRequired": "Tên dự án là bắt buộc",
+    "projectNameMinLength": "Tên dự án phải có ít nhất 3 ký tự",
+    "projectNameMaxLength": "Tên dự án không được vượt quá 100 ký tự",
+    "projectDescriptionMaxLength": "Mô tả dự án không được vượt quá 500 ký tự",
+    "cancel": "Hủy",
+    "creating": "Đang tạo...",
+    "projectCreated": "Đã tạo dự án thành công!",
+    "projectCreateError": "Không thể tạo dự án. Vui lòng thử lại."
+  },
+  "ProjectDetail": {
+    "backToProjects": "Quay lại Dự án",
+    "loading": "Đang tải dự án...",
+    "errorTitle": "Không thể tải dự án",
+    "errorMessage": "Chúng tôi không thể tải thông tin dự án. Vui lòng thử lại.",
+    "description": "Mô tả",
+    "noDescription": "Chưa có mô tả",
+    "members": "Thành viên",
+    "noMembers": "Chưa có thành viên nào trong dự án này",
+    "relatedMeetings": "Cuộc họp liên quan",
+    "meetingsPlaceholder": "Danh sách cuộc họp sẽ hiển thị ở đây",
+    "files": "Tệp tin",
+    "filesPlaceholder": "Tệp tin của dự án sẽ hiển thị ở đây",
+    "tasks": "Nhiệm vụ",
+    "tasksPlaceholder": "Nhiệm vụ của dự án sẽ hiển thị ở đây",
+    "createdAt": "Ngày tạo",
+    "memberCount": "{count} thành viên",
+    "edit": "Chỉnh sửa",
+    "archive": "Lưu trữ",
+    "unarchive": "Bỏ lưu trữ",
+    "delete": "Xóa",
+    "deleteConfirmation": "Bạn có chắc chắn muốn xóa dự án này? Hành động này không thể hoàn tác.",
+    "projectArchived": "Đã lưu trữ dự án thành công",
+    "projectUnarchived": "Đã bỏ lưu trữ dự án thành công",
+    "projectDeleted": "Đã xóa dự án thành công",
+    "archiveError": "Không thể lưu trữ dự án",
+    "unarchiveError": "Không thể bỏ lưu trữ dự án",
+    "deleteError": "Không thể xóa dự án",
+    "role": "Vai trò",
+    "joined": "Tham gia",
+    "unknownUser": "Người dùng không xác định",
+    "noDate": "Không có ngày",
+    "invalidDate": "Ngày không hợp lệ"
   },
   "Sidebar": {
     "navigation": "Điều hướng",
@@ -274,7 +335,13 @@
       "edit": "Chỉnh sửa",
       "share": "Chia sẻ",
       "archive": "Lưu trữ",
-      "delete": "Xóa"
+      "delete": "Xóa",
+      "deleteConfirmTitle": "Xóa cuộc họp",
+      "deleteConfirmMessage": "Bạn có chắc chắn muốn xóa \"{title}\"? Hành động này không thể hoàn tác.",
+      "deleteSuccess": "\"{title}\" đã được xóa thành công.",
+      "deleteError": "Không thể xóa \"{title}\". Vui lòng thử lại.",
+      "cancel": "Hủy",
+      "deleting": "Đang xóa..."
     },
     "table": {
       "title": "Tiêu đề",
@@ -509,7 +576,7 @@
     "emptyUnfilteredDescription": "Bắt đầu bằng cách tải lên tệp đầu tiên để chia sẻ với nhóm của bạn.",
     "selectFile": "Chọn một tệp",
     "dragDropHere": "hoặc kéo thả vào đây",
-    "supportedFormats": "Định dạng hỗ trợ: PDF, Word, Excel, PowerPoint, Hình ảnh",
+    "supportedFormats": "Định dạng hỗ trợ: PDF, TXT",
     "maxFileSize": "Kích thước tối đa: 50MB",
     "fileName": "Tên tệp",
     "fileSize": "Kích thước",
@@ -543,6 +610,7 @@
       "view": "Xem chi tiết",
       "download": "Tải xuống",
       "rename": "Đổi tên",
+      "move": "Di chuyển đến Dự án/Cuộc họp",
       "preview": "Xem trước",
       "delete": "Xóa"
     },
@@ -592,6 +660,17 @@
       "deleteError": "Xóa tệp thất bại. Vui lòng thử lại.",
       "confirm": "Xóa",
       "cancel": "Hủy"
+    },
+    "move": {
+      "title": "Di chuyển tệp",
+      "currentFile": "Tệp hiện tại",
+      "noProject": "Không có dự án",
+      "noMeeting": "Không có cuộc họp",
+      "move": "Di chuyển",
+      "moving": "Đang di chuyển...",
+      "cancel": "Hủy",
+      "moveSuccess": "Di chuyển tệp thành công!",
+      "moveError": "Di chuyển tệp thất bại. Vui lòng thử lại."
     },
     "validation": {
       "invalidType": "Loại tệp không được hỗ trợ. Vui lòng tải lên tài liệu hoặc hình ảnh.",

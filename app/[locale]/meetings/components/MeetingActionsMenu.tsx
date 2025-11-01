@@ -1,8 +1,9 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   Menu,
   MenuTrigger,
@@ -11,6 +12,8 @@ import {
   MenuItem,
   MenuButton,
   MenuDivider,
+  makeStyles,
+  tokens,
 } from '@fluentui/react-components';
 import {
   MoreHorizontal20Regular,
@@ -20,7 +23,20 @@ import {
   Share20Regular,
   Archive20Regular,
 } from '@fluentui/react-icons';
+import { deleteMeeting } from 'services/api/meeting';
+import { showToast } from 'hooks/useShowToast';
+import { DeleteConfirmationModal } from 'components/modal/DeleteConfirmationModal';
 import type { MeetingResponse } from 'types/meeting.type';
+
+const useStyles = makeStyles({
+  deleteMenuItem: {
+    color: tokens.colorPaletteRedForeground1,
+  },
+  deleteMenuItemHover: {
+    backgroundColor: tokens.colorPaletteRedBackground2,
+    color: tokens.colorPaletteRedForeground2,
+  },
+});
 
 interface MeetingActionsMenuProps {
   meeting: MeetingResponse;
@@ -29,6 +45,32 @@ interface MeetingActionsMenuProps {
 export function MeetingActionsMenu({ meeting }: MeetingActionsMenuProps) {
   const t = useTranslations('Meetings');
   const router = useRouter();
+  const queryClient = useQueryClient();
+  const styles = useStyles();
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [isDeleteHovered, setIsDeleteHovered] = useState(false);
+
+  const handleDelete = async () => {
+    try {
+      setIsDeleting(true);
+      await deleteMeeting(meeting.id);
+
+      // Invalidate meetings queries to refresh data
+      await queryClient.invalidateQueries({ queryKey: ['meetings'] });
+
+      // Show success toast
+      showToast('success', t('actions.deleteSuccess', { title: meeting.title || 'Meeting' }));
+
+      // Close dialog
+      setShowDeleteDialog(false);
+    } catch (error) {
+      console.error('Failed to delete meeting:', error);
+      showToast('error', t('actions.deleteError', { title: meeting.title || 'Meeting' }));
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   const handleAction = (action: string) => {
     switch (action) {
@@ -48,8 +90,7 @@ export function MeetingActionsMenu({ meeting }: MeetingActionsMenuProps) {
         // TODO: Implement archive functionality
         break;
       case 'delete':
-        console.log('Delete meeting:', meeting.title);
-        // TODO: Implement delete functionality
+        setShowDeleteDialog(true);
         break;
       default:
         break;
@@ -57,52 +98,66 @@ export function MeetingActionsMenu({ meeting }: MeetingActionsMenuProps) {
   };
 
   return (
-    <Menu positioning="below-end">
-      <MenuTrigger disableButtonEnhancement>
-        <MenuButton
-          appearance="subtle"
-          icon={<MoreHorizontal20Regular />}
-          size="small"
-          aria-label={t('actions.label')}
-        />
-      </MenuTrigger>
+    <>
+      <Menu positioning="below-end">
+        <MenuTrigger disableButtonEnhancement>
+          <MenuButton
+            appearance="subtle"
+            icon={<MoreHorizontal20Regular />}
+            size="small"
+            aria-label={t('actions.label')}
+          />
+        </MenuTrigger>
 
-      <MenuPopover>
-        <MenuList>
-          <MenuItem
-            icon={<Eye20Regular />}
-            onClick={() => handleAction('view')}
-          >
-            {t('actions.view')}
-          </MenuItem>
-          <MenuItem
-            icon={<Edit20Regular />}
-            onClick={() => handleAction('edit')}
-          >
-            {t('actions.edit')}
-          </MenuItem>
-          <MenuItem
-            icon={<Share20Regular />}
-            onClick={() => handleAction('share')}
-          >
-            {t('actions.share')}
-          </MenuItem>
-          <MenuItem
-            icon={<Archive20Regular />}
-            onClick={() => handleAction('archive')}
-          >
-            {t('actions.archive')}
-          </MenuItem>
-          <MenuDivider />
-          <MenuItem
-            icon={<Delete20Regular />}
-            onClick={() => handleAction('delete')}
-            style={{ color: 'var(--colorPaletteRedForeground1)' }}
-          >
-            {t('actions.delete')}
-          </MenuItem>
-        </MenuList>
-      </MenuPopover>
-    </Menu>
+        <MenuPopover>
+          <MenuList>
+            <MenuItem
+              icon={<Eye20Regular />}
+              onClick={() => handleAction('view')}
+            >
+              {t('actions.view')}
+            </MenuItem>
+            <MenuItem
+              icon={<Edit20Regular />}
+              onClick={() => handleAction('edit')}
+            >
+              {t('actions.edit')}
+            </MenuItem>
+            <MenuItem
+              icon={<Share20Regular />}
+              onClick={() => handleAction('share')}
+            >
+              {t('actions.share')}
+            </MenuItem>
+            <MenuItem
+              icon={<Archive20Regular />}
+              onClick={() => handleAction('archive')}
+            >
+              {t('actions.archive')}
+            </MenuItem>
+            <MenuDivider />
+            <MenuItem
+              icon={<Delete20Regular />}
+              onClick={() => handleAction('delete')}
+              disabled={isDeleting}
+              className={isDeleteHovered ? styles.deleteMenuItemHover : styles.deleteMenuItem}
+              onMouseEnter={() => setIsDeleteHovered(true)}
+              onMouseLeave={() => setIsDeleteHovered(false)}
+            >
+              {t('actions.delete')}
+            </MenuItem>
+          </MenuList>
+        </MenuPopover>
+      </Menu>
+
+      <DeleteConfirmationModal
+        isOpen={showDeleteDialog}
+        onOpenChange={setShowDeleteDialog}
+        onConfirm={handleDelete}
+        isDeleting={isDeleting}
+        title={t('actions.deleteConfirmTitle')}
+        itemName={meeting.title || 'Meeting'}
+      />
+    </>
   );
 }

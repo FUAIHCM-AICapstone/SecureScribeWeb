@@ -12,50 +12,16 @@ const intlMiddleware = createMiddleware({
 });
 
 export function middleware(request: NextRequest) {
-  const { pathname, origin, searchParams } = request.nextUrl;
-  const accessToken = request.cookies.get('access_token');
+  const { pathname } = request.nextUrl;
 
-  // Block root page access if not logged in
-  if (/^\/(vi|en)$/.test(pathname) || pathname === '/') {
-    if (!accessToken) {
-      const url = request.nextUrl.clone();
-      // Determine locale from pathname or default to 'vi'
-      const locale = pathname.startsWith('/vi') ? 'vi' : pathname.startsWith('/en') ? 'en' : 'vi';
-      url.pathname = `/${locale}/auth`;
-      url.searchParams.set('toast', 'require_login');
-      return NextResponse.redirect(url);
-    }
-  }
-
-  // Redirect /auth if already logged in (redirect to home)
-  if (/^\/(vi|en)\/auth(\/|$)/.test(pathname)) {
-    if (accessToken) {
-      const url = request.nextUrl.clone();
-      // Determine locale from pathname
-      const locale = pathname.startsWith('/vi') ? 'vi' : 'en';
-      url.pathname = `/${locale}`;
-      url.searchParams.set('toast', 'already_logged_in');
-      return NextResponse.redirect(url);
-    }
-  }
-
-  // Redirect /dashboard or /vi/dashboard or /en/dashboard to /dashboard/personal (with locale if present)
-  // if (/^\/(dashboard|vi\/dashboard|en\/dashboard)$/.test(pathname)) {
-  //   const base = pathname.startsWith('/vi')
-  //     ? '/vi'
-  //     : pathname.startsWith('/en')
-  //       ? '/en'
-  //       : '';
-  //   const url = request.nextUrl.clone();
-  //   url.pathname = `${base}/dashboard/personal`;
-  //   return NextResponse.redirect(url);
-  // }
-
+  // Simply apply intl middleware without token checks
   const response = intlMiddleware(request);
+
   // If the response is a NextResponse and the status is 404, rewrite to /not-found
   if (response?.status === 404) {
     return NextResponse.rewrite('/not-found');
   }
+
   return response;
 }
 

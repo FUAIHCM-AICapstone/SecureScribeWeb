@@ -20,6 +20,7 @@ import { MeetingsGrid } from './MeetingsGrid';
 import { MeetingsList } from './MeetingsList';
 import { EmptyMeetingsState } from './EmptyMeetingsState';
 import { MeetingCardSkeleton } from './MeetingCardSkeleton';
+import MeetingSchedulerModal from '@/components/modal/MeetingSchedulerModal';
 
 const useStyles = makeStyles({
   container: {
@@ -118,6 +119,7 @@ export function MeetingsPageClient() {
   const [currentPage, setCurrentPage] = useState(
     parseInt(searchParams.get('page') || '1', 10),
   );
+  const [showMeetingModal, setShowMeetingModal] = useState(false);
 
   const limit = viewMode === 'grid' ? 12 : 20;
 
@@ -222,8 +224,7 @@ export function MeetingsPageClient() {
   );
 
   const handleCreateClick = useCallback(() => {
-    console.log('Create meeting clicked - TODO: Implement');
-    // TODO: Open create meeting modal
+    setShowMeetingModal(true);
   }, []);
 
   // Determine if filters are active
@@ -249,6 +250,7 @@ export function MeetingsPageClient() {
           startDateTo={startDateTo}
           onDateRangeChange={handleDateRangeChange}
           totalCount={0}
+          onCreateClick={handleCreateClick}
         />
         <div className={styles.skeletonGrid}>
           {Array.from({ length: viewMode === 'grid' ? 12 : 8 }).map((_, i) => (
@@ -300,6 +302,7 @@ export function MeetingsPageClient() {
         startDateTo={startDateTo}
         onDateRangeChange={handleDateRangeChange}
         totalCount={totalCount}
+        onCreateClick={handleCreateClick}
       />
 
       <div className={styles.content}>
@@ -339,6 +342,12 @@ export function MeetingsPageClient() {
           </Button>
         </div>
       )}
+
+      {/* Meeting Scheduler Modal */}
+      <MeetingSchedulerModal
+        open={showMeetingModal}
+        onOpenChange={setShowMeetingModal}
+      />
     </div>
   );
 }

@@ -5,6 +5,7 @@ import { Card, CardHeader, Title3, Title2, Body1, makeStyles, shorthands, Avatar
 import { Shield20Filled, Flash20Filled, PeopleTeam20Filled, DataBarVertical20Filled } from "@fluentui/react-icons";
 import { useTranslations } from "next-intl";
 import ThemeToggle from "@/components/layout/ThemeToggle";
+import { getBrandConfig } from "@/lib/utils/runtimeConfig";
 
 const useStyles = makeStyles({
     root: {
@@ -147,26 +148,16 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ title, subtitle, children }) =>
     const [brandName, setBrandName] = useState('SecureScribe');
     const [brandLogo, setBrandLogo] = useState('/images/logos/logo2.png');
 
-    // Fetch brand configuration from API
+    // Load brand configuration from runtime config
     useEffect(() => {
-        const fetchBrandConfig = async () => {
-            try {
-                const response = await fetch('/api/config');
-                const data = await response.json();
-
-                if (data.brand_name) {
-                    setBrandName(data.brand_name);
-                }
-                if (data.brand_logo) {
-                    setBrandLogo(data.brand_logo);
-                }
-            } catch (error) {
-                console.warn('Failed to fetch brand config, using defaults:', error);
-                // Keep default values on error
-            }
-        };
-
-        fetchBrandConfig();
+        try {
+            const brandCfg = getBrandConfig();
+            setBrandName(brandCfg.name);
+            setBrandLogo(brandCfg.logo);
+        } catch (error) {
+            console.warn('Failed to load brand config, using defaults:', error);
+            // Keep default values on error
+        }
     }, []);
 
     return (
