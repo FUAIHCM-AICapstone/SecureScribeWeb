@@ -294,7 +294,7 @@ export function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
     isLoading: meetingsLoading,
   } = useQuery({
     queryKey: queryKeys.projectMeetings(projectId, meetingsPage),
-    queryFn: () => getProjectMeetings(projectId, { page: meetingsPage, limit: 2 }),
+    queryFn: () => getProjectMeetings(projectId, { page: meetingsPage, limit: 10 }),
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
@@ -304,7 +304,7 @@ export function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
     isLoading: filesLoading,
   } = useQuery({
     queryKey: queryKeys.projectFiles(projectId, filesPage),
-    queryFn: () => getProjectFiles(projectId, { page: filesPage, limit: 2 }),
+    queryFn: () => getProjectFiles(projectId, { page: filesPage, limit: 10 }),
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
@@ -314,7 +314,7 @@ export function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
     isLoading: tasksLoading,
   } = useQuery({
     queryKey: queryKeys.projectTasks(projectId, tasksPage),
-    queryFn: () => getTasks({}, { page: tasksPage, limit: 20 }),
+    queryFn: () => getTasks({}, { page: tasksPage, limit: 10 }),
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
