@@ -19,6 +19,7 @@ import {
   Search20Regular,
   CalendarLtr20Regular,
   CalendarMonth24Regular,
+  Add20Regular,
 } from '@fluentui/react-icons';
 
 const useStyles = makeStyles({
@@ -68,6 +69,13 @@ const useStyles = makeStyles({
   viewToggle: {
     display: 'flex',
     ...shorthands.gap('8px'),
+  },
+  createButton: {
+    marginLeft: 'auto',
+    '@media (max-width: 768px)': {
+      width: '100%',
+      marginLeft: '0',
+    },
   },
   filtersRow: {
     display: 'flex',
@@ -120,6 +128,7 @@ interface MeetingsHeaderProps {
   startDateTo: Date | null;
   onDateRangeChange: (from: Date | null, to: Date | null) => void;
   totalCount: number;
+  onCreateClick: () => void;
 }
 
 export function MeetingsHeader({
@@ -133,6 +142,7 @@ export function MeetingsHeader({
   startDateTo,
   onDateRangeChange,
   totalCount,
+  onCreateClick,
 }: MeetingsHeaderProps) {
   const styles = useStyles();
   const t = useTranslations('Meetings');
@@ -168,6 +178,14 @@ export function MeetingsHeader({
           </div>
           <Text className={styles.title}>{t('title')}</Text>
         </div>
+        <Button
+          className={styles.createButton}
+          appearance="primary"
+          icon={<Add20Regular />}
+          onClick={onCreateClick}
+        >
+          {t('createMeeting')}
+        </Button>
         <div className={styles.viewToggle}>
           <Button
             appearance={viewMode === 'grid' ? 'primary' : 'secondary'}
