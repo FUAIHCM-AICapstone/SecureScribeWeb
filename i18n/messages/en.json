@@ -497,7 +497,15 @@
       "statusLabel": "Status",
       "cancel": "Cancel",
       "submit": "Save task",
-      "submitting": "Saving..."
+      "submitting": "Saving...",
+      "reminderLabel": "Reminder",
+      "reminderPlaceholder": "Select reminder time",
+      "dueTimePlaceholder": "Select time",
+      "reminderTimePlaceholder": "Select time"
+    },
+    "detailsModal": {
+      "peopleSection": "People involved",
+      "reminderLabel": "Reminder"
     },
     "actions": {
       "label": "Task actions",

@@ -491,7 +491,15 @@
       "statusLabel": "Trạng thái",
       "cancel": "Hủy",
       "submit": "Lưu nhiệm vụ",
-      "submitting": "Đang lưu..."
+      "submitting": "Đang lưu...",
+      "reminderLabel": "Nhắc nhở",
+      "reminderPlaceholder": "Chọn thời điểm nhắc nhở",
+      "dueTimePlaceholder": "Chọn thời gian",
+      "reminderTimePlaceholder": "Chọn thời gian"
+    },
+    "detailsModal": {
+      "peopleSection": "Người liên quan",
+      "reminderLabel": "Nhắc nhở"
     },
     "actions": {
       "label": "Hành động nhiệm vụ",

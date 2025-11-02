@@ -52,10 +52,10 @@ const useStyles = makeStyles({
     ...shorthands.gap('8px'),
   },
   title: {
-    fontSize: tokens.fontSizeBase300,
-    fontWeight: 600,
+    fontSize: tokens.fontSizeBase500,
+    fontWeight: 700,
     color: tokens.colorNeutralForeground1,
-    lineHeight: '1.4',
+    lineHeight: '2.0',
     display: '-webkit-box',
     WebkitLineClamp: 2,
     WebkitBoxOrient: 'vertical',
