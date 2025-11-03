@@ -21,8 +21,8 @@ export default async function FilesPage() {
     }),
     // Prefetch first page of files
     queryClient.prefetchQuery({
-      queryKey: [...queryKeys.files, {}, { page: 1, limit: 12 }],
-      queryFn: () => getFiles({}, { page: 1, limit: 12 }),
+      queryKey: [...queryKeys.files, {}, { page: 1, limit: 10 }],
+      queryFn: () => getFiles({}, { page: 1, limit: 10 }),
       staleTime: 5 * 60 * 1000,
     }),
   ]);

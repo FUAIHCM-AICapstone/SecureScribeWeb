@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useCallback, useRef } from 'react';
-import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
+import { useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
 import {
@@ -33,6 +33,7 @@ import { getMeetings } from '@/services/api/meeting';
 import { queryKeys } from '@/lib/queryClient';
 import { showToast } from '@/hooks/useShowToast';
 import { validateFile, formatFileSize, getFileIcon } from '@/lib/fileUtils';
+import { useScrollPaging } from '@/hooks/useScrollPaging';
 
 const useStyles = makeStyles({
   content: {
@@ -191,27 +192,83 @@ export function FileUploadModal({
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadSuccess, setUploadSuccess] = useState(false);
 
-  // Fetch projects
-  const { data: projectsData } = useQuery({
+  // Fetch projects with infinite scroll
+  const {
+    data: projectsData,
+    fetchNextPage: fetchNextProjectsPage,
+    hasNextPage: hasNextProjectsPage,
+    isFetchingNextPage: isFetchingNextProjectsPage,
+  } = useInfiniteQuery({
     queryKey: [...queryKeys.projects],
-    queryFn: () => getProjects({}, { limit: 100 }),
+    queryFn: ({ pageParam = 1 }: { pageParam?: number }) =>
+      getProjects({}, { limit: 50, page: pageParam }),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage: any, pages) => {
+      if (lastPage.data && lastPage.data.length === 50) {
+        return pages.length + 1;
+      }
+      return undefined;
+    },
     staleTime: 5 * 60 * 1000,
     enabled: open,
   });
 
-  // Fetch meetings - filter by project if selected
-  const { data: meetingsData } = useQuery({
+  // Fetch meetings with infinite scroll - filter by project if selected
+  const {
+    data: meetingsData,
+    fetchNextPage: fetchNextMeetingsPage,
+    hasNextPage: hasNextMeetingsPage,
+    isFetchingNextPage: isFetchingNextMeetingsPage,
+  } = useInfiniteQuery({
     queryKey: projectId
-      ? [...queryKeys.projectMeetings(projectId)]
+      ? ['projects', projectId, 'meetings']
       : [...queryKeys.meetings],
-    queryFn: () =>
-      getMeetings(projectId ? { project_id: projectId } : {}, { limit: 100 }),
+    queryFn: ({ pageParam = 1 }: { pageParam?: number }) =>
+      getMeetings(
+        projectId ? { project_id: projectId } : {},
+        { limit: 50, page: pageParam }
+      ),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage: any, pages) => {
+      if (lastPage.data && lastPage.data.length === 50) {
+        return pages.length + 1;
+      }
+      return undefined;
+    },
     staleTime: 5 * 60 * 1000,
     enabled: open,
   });
 
-  const projects = projectsData?.data || [];
-  const meetings = meetingsData?.data || [];
+  const projects = projectsData?.pages.flatMap((page: any) => page.data) || [];
+  const meetings = meetingsData?.pages.flatMap((page: any) => page.data) || [];
+
+  // Use scroll paging hooks
+  const projectsScrollPaging = useScrollPaging({
+    hasNextPage: hasNextProjectsPage,
+    isFetchingNextPage: isFetchingNextProjectsPage,
+    fetchNextPage: fetchNextProjectsPage,
+    enabled: open,
+  });
+
+  const meetingsScrollPaging = useScrollPaging({
+    hasNextPage: hasNextMeetingsPage,
+    isFetchingNextPage: isFetchingNextMeetingsPage,
+    fetchNextPage: fetchNextMeetingsPage,
+    enabled: open,
+  });
+
+  // Add scroll listeners to dropdown popups
+  useEffect(() => {
+    if (!open) return;
+
+    const cleanup1 = projectsScrollPaging.addScrollListener('.fui-Dropdown__listbox');
+    const cleanup2 = meetingsScrollPaging.addScrollListener('.fui-Dropdown__listbox:last-of-type');
+
+    return () => {
+      cleanup1?.();
+      cleanup2?.();
+    };
+  }, [open, projectsScrollPaging, meetingsScrollPaging]);
 
   // Upload mutation
   const uploadMutation = useMutation({
@@ -232,12 +289,12 @@ export function FileUploadModal({
       queryClient.invalidateQueries({ queryKey: queryKeys.files });
       if (projectId) {
         queryClient.invalidateQueries({
-          queryKey: queryKeys.projectFiles(projectId),
+          queryKey: ['projects', projectId, 'files'],
         });
       }
       if (meetingId) {
         queryClient.invalidateQueries({
-          queryKey: queryKeys.meetingFiles(meetingId),
+          queryKey: ['meetings', meetingId, 'files'],
         });
       }
     },
@@ -434,7 +491,7 @@ export function FileUploadModal({
                     placeholder={t('selectProject')}
                     value={
                       projectId
-                        ? projects.find((p) => p.id === projectId)?.name || ''
+                        ? projects.find((p: any) => p.id === projectId)?.name || ''
                         : ''
                     }
                     onOptionSelect={(_, data) => {
@@ -447,11 +504,16 @@ export function FileUploadModal({
                     }}
                     disabled={uploadMutation.isPending}
                   >
-                    {projects.map((project) => (
+                    {projects.map((project: any) => (
                       <Option key={project.id} value={project.id}>
                         {project.name}
                       </Option>
                     ))}
+                    {isFetchingNextProjectsPage && (
+                      <Option text={t('loading')} disabled>
+                        <Caption1>{t('loading')}</Caption1>
+                      </Option>
+                    )}
                   </Dropdown>
                 </div>
 
@@ -464,7 +526,7 @@ export function FileUploadModal({
                     placeholder={t('selectMeeting')}
                     value={
                       meetingId
-                        ? meetings.find((m) => m.id === meetingId)?.title ||
+                        ? meetings.find((m: any) => m.id === meetingId)?.title ||
                         t('noMeeting')
                         : ''
                     }
@@ -473,11 +535,16 @@ export function FileUploadModal({
                     }
                     disabled={uploadMutation.isPending}
                   >
-                    {meetings.map((meeting) => (
+                    {meetings.map((meeting: any) => (
                       <Option key={meeting.id} value={meeting.id}>
                         {meeting.title || t('noMeeting')}
                       </Option>
                     ))}
+                    {isFetchingNextMeetingsPage && (
+                      <Option text={t('loading')} disabled>
+                        <Caption1>{t('loading')}</Caption1>
+                      </Option>
+                    )}
                   </Dropdown>
                 </div>
 

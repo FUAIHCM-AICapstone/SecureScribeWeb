@@ -16,7 +16,6 @@ export const setLoadingToastController = (controller: ReturnType<typeof useToast
 
 const showLoadingToast = (message: string) => {
   if (!loadingToastController) {
-    console.warn('[showLoadingToast] Loading toast controller not initialized. Call setLoadingToastController first.');
     return null;
   }
 

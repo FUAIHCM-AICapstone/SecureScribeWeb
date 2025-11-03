@@ -65,7 +65,7 @@ export function FileActionsMenu({ file }: FileActionsMenuProps) {
       queryClient.invalidateQueries({ queryKey: queryKeys.files });
       if (file.project_id) {
         queryClient.invalidateQueries({
-          queryKey: queryKeys.projectFiles(file.project_id),
+          queryKey: ['projects', file.project_id, 'files'],
         });
       }
       if (file.meeting_id) {
@@ -88,7 +88,7 @@ export function FileActionsMenu({ file }: FileActionsMenuProps) {
       queryClient.invalidateQueries({ queryKey: queryKeys.files });
       if (file.project_id) {
         queryClient.invalidateQueries({
-          queryKey: queryKeys.projectFiles(file.project_id),
+          queryKey: ['projects', file.project_id, 'files'],
         });
       }
       if (file.meeting_id) {

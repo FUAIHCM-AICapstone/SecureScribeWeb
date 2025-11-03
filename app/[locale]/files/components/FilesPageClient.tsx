@@ -139,7 +139,7 @@ export function FilesPageClient() {
   // Fetch meetings for filter (filtered by project if selected)
   const { data: meetingsData } = useQuery({
     queryKey: projectId
-      ? [...queryKeys.projectMeetings(projectId)]
+      ? ['projects', projectId, 'meetings']
       : [...queryKeys.meetings],
     queryFn: () =>
       getMeetings(projectId ? { project_id: projectId } : {}, { limit: 100 }),
@@ -168,19 +168,19 @@ export function FilesPageClient() {
           mime.includes('word') ||
           mime === 'application/msword' ||
           mime ===
-            'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
           mime === 'text/plain' || // .txt files
           mime.startsWith('image/') || // images as documents
           mime.includes('sheet') || // spreadsheets as documents
           mime.includes('excel') ||
           mime === 'application/vnd.ms-excel' ||
           mime ===
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
           mime.includes('presentation') || // presentations as documents
           mime.includes('powerpoint') ||
           mime === 'application/vnd.ms-powerpoint' ||
           mime ===
-            'application/vnd.openxmlformats-officedocument.presentationml.presentation' ||
+          'application/vnd.openxmlformats-officedocument.presentationml.presentation' ||
           mime === 'text/csv'
         );
       default:

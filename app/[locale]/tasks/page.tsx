@@ -12,8 +12,8 @@ export default async function TasksPage() {
 
   // Prefetch initial data for faster page load
   await queryClient.prefetchQuery({
-    queryKey: [...queryKeys.tasks, {}, { page: 1, limit: 12 }],
-    queryFn: () => getTasks({}, { page: 1, limit: 12 }),
+    queryKey: [...queryKeys.tasks, {}, { page: 1, limit: 10 }],
+    queryFn: () => getTasks({}, { page: 1, limit: 10 }),
     staleTime: 5 * 60 * 1000,
   });
 

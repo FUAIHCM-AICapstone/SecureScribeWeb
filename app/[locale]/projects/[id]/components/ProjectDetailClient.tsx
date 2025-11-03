@@ -1,54 +1,56 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useTranslations } from 'next-intl';
-import { useRouter } from 'next/navigation';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import MeetingSchedulerModal from '@/components/modal/MeetingSchedulerModal';
+import { showToast } from '@/hooks/useShowToast';
+import { queryKeys } from '@/lib/queryClient';
+import { getProjectFiles } from '@/services/api/file';
+import { getProjectMeetings } from '@/services/api/meeting';
 import {
-  Text,
-  Caption1,
-  Body1,
-  Badge,
-  Button,
-  Card,
-  Spinner,
+  archiveProject,
+  deleteProject,
+  getProject,
+  unarchiveProject,
+} from '@/services/api/project';
+import { getTasks } from '@/services/api/task';
+import {
   Avatar,
+  Badge,
+  Body1,
+  Button,
+  Caption1,
+  Card,
   Menu,
-  MenuTrigger,
-  MenuPopover,
-  MenuList,
   MenuItem,
+  MenuList,
+  MenuPopover,
+  MenuTrigger,
+  Spinner,
+  Text,
   makeStyles,
-  tokens,
   shorthands,
+  tokens,
 } from '@fluentui/react-components';
 import {
-  ArrowLeft20Regular,
-  CalendarClock20Regular,
-  People20Regular,
-  Edit20Regular,
+  Add20Regular,
   Archive20Regular,
-  Delete20Regular,
-  MoreVertical20Regular,
-  PersonCircle20Regular,
-  Folder20Regular,
-  TaskListSquareLtr20Regular,
+  ArrowLeft20Regular,
   Calendar20Regular,
+  CalendarClock20Regular,
+  Delete20Regular,
+  Edit20Regular,
+  Folder20Regular,
+  MoreVertical20Regular,
+  People20Regular,
+  PersonCircle20Regular,
+  TaskListSquareLtr20Regular,
 } from '@fluentui/react-icons';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { queryKeys } from '@/lib/queryClient';
-import {
-  getProject,
-  archiveProject,
-  unarchiveProject,
-  deleteProject,
-} from '@/services/api/project';
-import { getProjectMeetings } from '@/services/api/meeting';
-import { getProjectFiles } from '@/services/api/file';
-import { getTasks } from '@/services/api/task';
-import { showToast } from '@/hooks/useShowToast';
-import { MeetingsTable } from './MeetingsTable';
+import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { FilesTable } from './FilesTable';
+import { MeetingsTable } from './MeetingsTable';
 import { TasksTable } from './TasksTable';
 
 const useStyles = makeStyles({
@@ -170,6 +172,7 @@ const useStyles = makeStyles({
     ...shorthands.borderBottom('2px', 'solid', tokens.colorNeutralStroke2),
     display: 'flex',
     alignItems: 'center',
+    justifyContent: 'space-between',
     ...shorthands.gap('12px'),
   },
   sectionIcon: {
@@ -278,6 +281,9 @@ export function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
   const [filesPage, setFilesPage] = useState(1);
   const [tasksPage, setTasksPage] = useState(1);
 
+  // Meeting modal state
+  const [showMeetingModal, setShowMeetingModal] = useState(false);
+
   // Fetch project data
   const {
     data: project,
@@ -373,6 +379,22 @@ export function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
   const handleEdit = () => {
     // TODO: Open edit modal
     showToast('info', 'Edit functionality coming soon');
+  };
+
+  const handleMeetingCreated = () => {
+    // Invalidate meetings query to refresh the list
+    queryClient.invalidateQueries({ queryKey: ['projects', projectId, 'meetings'] });
+  };
+
+  const handleMeetingModalOpen = () => {
+    setShowMeetingModal(true);
+  };
+
+  const handleMeetingModalClose = (open: boolean) => {
+    setShowMeetingModal(open);
+    if (!open) {
+      handleMeetingCreated();
+    }
   };
 
   const handleArchiveToggle = () => {
@@ -536,11 +558,21 @@ export function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
           {/* Related Meetings Section */}
           <Card className={styles.section}>
             <div className={styles.sectionTitle}>
-              <Calendar20Regular className={styles.sectionIcon} />
-              <Text className={styles.sectionHeading}>
-                {t('relatedMeetings')}
-              </Text>
+              <div>
+                <Calendar20Regular className={styles.sectionIcon} />
+                <Text className={styles.sectionHeading}>
+                  {t('relatedMeetings')}
+                </Text>
+              </div>
+              <Button
+                appearance="primary"
+                icon={<Add20Regular />}
+                onClick={handleMeetingModalOpen}
+              >
+                {t('createMeeting')}
+              </Button>
             </div>
+
             <MeetingsTable
               data={meetingsData?.data || []}
               isLoading={meetingsLoading}
@@ -620,6 +652,12 @@ export function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
           </Card>
         </div>
       </div>
+
+      {/* Meeting Scheduler Modal */}
+      <MeetingSchedulerModal
+        open={showMeetingModal}
+        onOpenChange={handleMeetingModalClose}
+      />
     </div>
   );
 }

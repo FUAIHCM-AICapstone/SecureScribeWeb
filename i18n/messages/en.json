@@ -92,6 +92,7 @@
     "projectCreateError": "Failed to create project. Please try again."
   },
   "ProjectDetail": {
+    "createMeeting":"Create Meeting",
     "backToProjects": "Back to Projects",
     "loading": "Loading project...",
     "errorTitle": "Failed to load project",

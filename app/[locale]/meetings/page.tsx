@@ -21,8 +21,8 @@ export default async function MeetingsPage() {
     }),
     // Prefetch first page of meetings
     queryClient.prefetchQuery({
-      queryKey: [...queryKeys.meetings, {}, { page: 1, limit: 12 }],
-      queryFn: () => getMeetings({}, { page: 1, limit: 12 }),
+      queryKey: [...queryKeys.meetings, {}, { page: 1, limit: 10 }],
+      queryFn: () => getMeetings({}, { page: 1, limit: 10 }),
       staleTime: 5 * 60 * 1000,
     }),
   ]);

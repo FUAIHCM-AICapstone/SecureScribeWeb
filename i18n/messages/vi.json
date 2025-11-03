@@ -92,6 +92,7 @@
     "projectCreateError": "Không thể tạo dự án. Vui lòng thử lại."
   },
   "ProjectDetail": {
+    "createMeeting":"Tạo cuộc họp",
     "backToProjects": "Quay lại Dự án",
     "loading": "Đang tải dự án...",
     "errorTitle": "Không thể tải dự án",

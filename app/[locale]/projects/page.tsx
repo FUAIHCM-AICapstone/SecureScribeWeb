@@ -12,8 +12,8 @@ export default async function ProjectsPage() {
 
   // Prefetch initial data for faster page load
   await queryClient.prefetchQuery({
-    queryKey: [...queryKeys.projects, {}, { page: 1, limit: 12 }],
-    queryFn: () => getProjects({}, { page: 1, limit: 12 }),
+    queryKey: [...queryKeys.projects, {}, { page: 1, limit: 10 }],
+    queryFn: () => getProjects({}, { page: 1, limit: 10 }),
     staleTime: 5 * 60 * 1000,
   });
 
