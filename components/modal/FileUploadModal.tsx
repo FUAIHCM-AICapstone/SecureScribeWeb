@@ -198,6 +198,7 @@ export function FileUploadModal({
     fetchNextPage: fetchNextProjectsPage,
     hasNextPage: hasNextProjectsPage,
     isFetchingNextPage: isFetchingNextProjectsPage,
+    isLoading: isLoadingProjects,
   } = useInfiniteQuery({
     queryKey: [...queryKeys.projects],
     queryFn: ({ pageParam = 1 }: { pageParam?: number }) =>
@@ -488,9 +489,11 @@ export function FileUploadModal({
                     {t('selectProject')}
                   </label>
                   <Dropdown
-                    placeholder={t('selectProject')}
+                    placeholder={
+                      isLoadingProjects ? t('loading') : t('selectProject')
+                    }
                     value={
-                      projectId
+                      projectId && projects.length > 0
                         ? projects.find((p: any) => p.id === projectId)?.name || ''
                         : ''
                     }
@@ -502,7 +505,11 @@ export function FileUploadModal({
                         setMeetingId(undefined);
                       }
                     }}
-                    disabled={uploadMutation.isPending}
+                    disabled={
+                      isLoadingProjects ||
+                      !!defaultProjectId ||
+                      uploadMutation.isPending
+                    }
                   >
                     {projects.map((project: any) => (
                       <Option key={project.id} value={project.id}>

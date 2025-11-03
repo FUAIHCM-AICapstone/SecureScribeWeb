@@ -1,6 +1,7 @@
 'use client';
 
 import MeetingSchedulerModal from '@/components/modal/MeetingSchedulerModal';
+import { FileUploadModal } from '@/components/modal/FileUploadModal';
 import { showToast } from '@/hooks/useShowToast';
 import { queryKeys } from '@/lib/queryClient';
 import { getProjectFiles } from '@/services/api/file';
@@ -284,6 +285,9 @@ export function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
   // Meeting modal state
   const [showMeetingModal, setShowMeetingModal] = useState(false);
 
+  // File modal state
+  const [showFileModal, setShowFileModal] = useState(false);
+
   // Fetch project data
   const {
     data: project,
@@ -395,6 +399,17 @@ export function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
     if (!open) {
       handleMeetingCreated();
     }
+  };
+
+  const handleFileModalOpen = () => {
+    setShowFileModal(true);
+  };
+
+  const handleFileModalClose = () => {
+    setShowFileModal(false);
+    // Invalidate files queries to refresh the list
+    queryClient.invalidateQueries({ queryKey: queryKeys.files });
+    queryClient.invalidateQueries({ queryKey: ['projects', projectId, 'files'] });
   };
 
   const handleArchiveToggle = () => {
@@ -585,8 +600,17 @@ export function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
           {/* Files Section */}
           <Card className={styles.section}>
             <div className={styles.sectionTitle}>
-              <Folder20Regular className={styles.sectionIcon} />
-              <Text className={styles.sectionHeading}>{t('files')}</Text>
+              <div>
+                <Folder20Regular className={styles.sectionIcon} />
+                <Text className={styles.sectionHeading}>{t('files')}</Text>
+              </div>
+              <Button
+                appearance="primary"
+                icon={<Add20Regular />}
+                onClick={handleFileModalOpen}
+              >
+                {t('uploadFile')}
+              </Button>
             </div>
             <FilesTable
               data={filesData?.data || []}
@@ -657,6 +681,14 @@ export function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
       <MeetingSchedulerModal
         open={showMeetingModal}
         onOpenChange={handleMeetingModalClose}
+        defaultProjectId={projectId}
+      />
+
+      {/* File Upload Modal */}
+      <FileUploadModal
+        open={showFileModal}
+        onClose={handleFileModalClose}
+        defaultProjectId={projectId}
       />
     </div>
   );

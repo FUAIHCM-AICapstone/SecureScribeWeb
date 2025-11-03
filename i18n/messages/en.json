@@ -54,7 +54,9 @@
     "personalMeeting": "Personal Meeting",
     "projectMeeting": "Project Meeting",
     "selectProjects": "Select Projects",
+    "selectProjectPlaceholder": "Select a project...",
     "noProjectsAvailable": "No projects available",
+    "loading": "Loading...",
     "titlePlaceholder": "Enter meeting title",
     "descriptionPlaceholder": "Enter meeting description (optional)",
     "urlPlaceholder": "https://meet.google.com/...",
@@ -116,7 +118,8 @@
     "deleteConfirmMessage": "Are you sure you want to delete \"{name}\"? This action cannot be undone."
   },
   "ProjectDetail": {
-    "createMeeting":"Create Meeting",
+    "createMeeting": "Create Meeting",
+    "uploadFile": "Upload File",
     "backToProjects": "Back to Projects",
     "loading": "Loading project...",
     "errorTitle": "Failed to load project",
@@ -200,6 +203,9 @@
   },
   "ThemeToggle": {
     "toggleTheme": "Toggle theme"
+  },
+  "LanguageSwitcher": {
+    "selectLanguage": "Select language ({current})"
   },
   "auth": {
     "or": "or",

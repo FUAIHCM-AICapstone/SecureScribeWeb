@@ -82,11 +82,13 @@ interface MeetingFormData {
 interface MeetingSchedulerModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  defaultProjectId?: string;
 }
 
 export default function MeetingSchedulerModal({
   open,
   onOpenChange,
+  defaultProjectId,
 }: MeetingSchedulerModalProps) {
   const styles = useStyles();
   const t = useTranslations('MeetingScheduler');
@@ -94,7 +96,7 @@ export default function MeetingSchedulerModal({
   const router = useRouter();
 
   // Fetch projects from API
-  const { data: projectsData } = useQuery({
+  const { data: projectsData, isLoading: isLoadingProjects } = useQuery({
     queryKey: queryKeys.projects,
     queryFn: () => getProjects({ limit: 50 }),
     enabled: open,
@@ -157,8 +159,8 @@ export default function MeetingSchedulerModal({
       description: '',
       url: '',
       startTime: null,
-      isPersonal: true,
-      selectedProject: '',
+      isPersonal: !defaultProjectId,
+      selectedProject: defaultProjectId || '',
     },
   });
 
@@ -362,6 +364,7 @@ export default function MeetingSchedulerModal({
                         field.onChange(data.value === 'personal')
                       }
                       className={styles.radioGroup}
+                      disabled={!!defaultProjectId}
                     >
                       <Radio value="personal" label={t('personalMeeting')} />
                       <Radio value="project" label={t('projectMeeting')} />
@@ -377,34 +380,46 @@ export default function MeetingSchedulerModal({
                     name="selectedProject"
                     control={control}
                     render={({ field }) => (
-                      <Dropdown
-                        placeholder={
-                          t('selectProjectPlaceholder') || 'Select a project'
-                        }
-                        value={field.value}
-                        selectedOptions={field.value ? [field.value] : []}
-                        onOptionSelect={(_, data) => {
-                          field.onChange(data.optionValue || '');
-                        }}
-                      >
-                        {projects.map((project) => (
-                          <Option key={project.id} value={project.id}>
-                            {project.name}
-                          </Option>
-                        ))}
-                      </Dropdown>
+                      <>
+                        <Dropdown
+                          placeholder={
+                            isLoadingProjects
+                              ? t('loading')
+                              : t('selectProjectPlaceholder') || 'Select a project'
+                          }
+                          value={
+                            field.value && projects.length > 0
+                              ? projects.find((p) => p.id === field.value)?.name || ''
+                              : ''
+                          }
+                          selectedOptions={field.value ? [field.value] : []}
+                          onOptionSelect={(_, data) => {
+                            field.onChange(data.optionValue || '');
+                          }}
+                          disabled={isLoadingProjects || !!defaultProjectId}
+                        >
+                          {projects.map((project) => (
+                            <Option key={project.id} value={project.id}>
+                              {project.name}
+                            </Option>
+                          ))}
+                        </Dropdown>
+                        {!isLoadingProjects &&
+                          !defaultProjectId &&
+                          projects.length === 0 && (
+                            <div
+                              style={{
+                                fontSize: '14px',
+                                color: 'var(--colorNeutralForeground2)',
+                                marginTop: '8px',
+                              }}
+                            >
+                              {t('noProjectsAvailable')}
+                            </div>
+                          )}
+                      </>
                     )}
                   />
-                  {projects.length === 0 && (
-                    <div
-                      style={{
-                        fontSize: '14px',
-                        color: 'var(--colorNeutralForeground2)',
-                      }}
-                    >
-                      {t('noProjectsAvailable')}
-                    </div>
-                  )}
                 </Field>
               )}
             </DialogContent>

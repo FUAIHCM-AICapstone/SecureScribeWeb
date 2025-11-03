@@ -54,7 +54,9 @@
     "personalMeeting": "Cuộc họp cá nhân",
     "projectMeeting": "Cuộc họp dự án",
     "selectProjects": "Chọn dự án",
+    "selectProjectPlaceholder": "Chọn một dự án...",
     "noProjectsAvailable": "Không có dự án nào",
+    "loading": "Đang tải...",
     "titlePlaceholder": "Nhập tiêu đề cuộc họp",
     "descriptionPlaceholder": "Nhập mô tả cuộc họp (tùy chọn)",
     "urlPlaceholder": "https://meet.google.com/...",
@@ -116,7 +118,8 @@
     "deleteConfirmMessage": "Bạn có chắc chắn muốn xóa \"{name}\"? Hành động này không thể hoàn tác."
   },
   "ProjectDetail": {
-    "createMeeting":"Tạo cuộc họp",
+    "createMeeting": "Tạo cuộc họp",
+    "uploadFile": "Tải lên Tệp",
     "backToProjects": "Quay lại Dự án",
     "loading": "Đang tải dự án...",
     "errorTitle": "Không thể tải dự án",
@@ -200,6 +203,9 @@
   },
   "ThemeToggle": {
     "toggleTheme": "Chuyển giao diện"
+  },
+  "LanguageSwitcher": {
+    "selectLanguage": "Chọn ngôn ngữ ({current})"
   },
   "auth": {
     "or": "hoặc",

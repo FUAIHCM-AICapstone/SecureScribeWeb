@@ -23,6 +23,7 @@ import {
   MenuTrigger,
   Tooltip,
   makeStyles,
+  mergeClasses,
   tokens,
 } from '@fluentui/react-components';
 import {
@@ -588,7 +589,7 @@ export default function Header() {
               size="medium"
               icon={<CalendarAdd24Regular />}
               onClick={onSchedule}
-              className={`${styles.scheduleButton} ${styles.actionButton}`}
+              className={mergeClasses(styles.scheduleButton, styles.actionButton)}
             >
               <span className={styles.buttonText}>{t('schedule')}</span>
             </Button>
