@@ -240,63 +240,108 @@ export function ProjectsPageClient() {
   // Loading state
   if (isLoading) {
     return (
-      <div className={styles.container}>
-        <ProjectsHeader
-          viewMode={viewMode}
-          onViewModeChange={handleViewModeChange}
-          isArchived={isArchived}
-          onArchivedChange={handleArchivedChange}
-          searchQuery={searchQuery}
-          onSearchChange={handleSearchChange}
-          createdDateFrom={createdDateFrom}
-          createdDateTo={createdDateTo}
-          onDateRangeChange={handleDateRangeChange}
-          totalCount={0}
-          onCreateClick={handleCreateProject}
-        />
-        <div className={styles.skeletonGrid}>
-          {Array.from({ length: limit }).map((_, i) => (
-            <ProjectCardSkeleton key={i} />
-          ))}
+      <>
+        <div className={styles.container}>
+          <ProjectsHeader
+            viewMode={viewMode}
+            onViewModeChange={handleViewModeChange}
+            isArchived={isArchived}
+            onArchivedChange={handleArchivedChange}
+            searchQuery={searchQuery}
+            onSearchChange={handleSearchChange}
+            createdDateFrom={createdDateFrom}
+            createdDateTo={createdDateTo}
+            onDateRangeChange={handleDateRangeChange}
+            totalCount={0}
+            onCreateClick={handleCreateProject}
+          />
+          <div className={styles.skeletonGrid}>
+            {Array.from({ length: limit }).map((_, i) => (
+              <ProjectCardSkeleton key={i} />
+            ))}
+          </div>
         </div>
-      </div>
+        <ProjectCreateModal
+          open={showProjectModal}
+          onOpenChange={setShowProjectModal}
+        />
+      </>
     );
   }
 
   // Error state
   if (isError) {
     return (
-      <div className={styles.container}>
-        <ProjectsHeader
-          viewMode={viewMode}
-          onViewModeChange={handleViewModeChange}
-          isArchived={isArchived}
-          onArchivedChange={handleArchivedChange}
-          searchQuery={searchQuery}
-          onSearchChange={handleSearchChange}
-          createdDateFrom={createdDateFrom}
-          createdDateTo={createdDateTo}
-          onDateRangeChange={handleDateRangeChange}
-          totalCount={0}
-          onCreateClick={handleCreateProject}
-        />
-        <div className={styles.errorContainer}>
-          <Text className={styles.errorTitle}>{t('errorTitle')}</Text>
-          <Text className={styles.errorMessage}>
-            {error instanceof Error ? error.message : t('errorTitle')}
-          </Text>
-          <Button appearance="primary" onClick={() => refetch()}>
-            {t('retry')}
-          </Button>
+      <>
+        <div className={styles.container}>
+          <ProjectsHeader
+            viewMode={viewMode}
+            onViewModeChange={handleViewModeChange}
+            isArchived={isArchived}
+            onArchivedChange={handleArchivedChange}
+            searchQuery={searchQuery}
+            onSearchChange={handleSearchChange}
+            createdDateFrom={createdDateFrom}
+            createdDateTo={createdDateTo}
+            onDateRangeChange={handleDateRangeChange}
+            totalCount={0}
+            onCreateClick={handleCreateProject}
+          />
+          <div className={styles.errorContainer}>
+            <Text className={styles.errorTitle}>{t('errorTitle')}</Text>
+            <Text className={styles.errorMessage}>
+              {error instanceof Error ? error.message : t('errorTitle')}
+            </Text>
+            <Button appearance="primary" onClick={() => refetch()}>
+              {t('retry')}
+            </Button>
+          </div>
         </div>
-      </div>
+        <ProjectCreateModal
+          open={showProjectModal}
+          onOpenChange={setShowProjectModal}
+        />
+      </>
     );
   }
 
   // Empty state
   if (projects.length === 0) {
     return (
+      <>
+        <div className={styles.container}>
+          <ProjectsHeader
+            viewMode={viewMode}
+            onViewModeChange={handleViewModeChange}
+            isArchived={isArchived}
+            onArchivedChange={handleArchivedChange}
+            searchQuery={searchQuery}
+            onSearchChange={handleSearchChange}
+            createdDateFrom={createdDateFrom}
+            createdDateTo={createdDateTo}
+            onDateRangeChange={handleDateRangeChange}
+            totalCount={0}
+            onCreateClick={handleCreateProject}
+          />
+          <EmptyProjectsState
+            isFiltered={hasActiveFilters}
+            onCreateClick={handleCreateProject}
+          />
+        </div>
+        <ProjectCreateModal
+          open={showProjectModal}
+          onOpenChange={setShowProjectModal}
+        />
+      </>
+    );
+  }
+
+  // Main content
+  return (
+    <>
       <div className={styles.container}>
+        {showLoadingToast(t('searching'))}
+
         <ProjectsHeader
           viewMode={viewMode}
           onViewModeChange={handleViewModeChange}
@@ -307,77 +352,52 @@ export function ProjectsPageClient() {
           createdDateFrom={createdDateFrom}
           createdDateTo={createdDateTo}
           onDateRangeChange={handleDateRangeChange}
-          totalCount={0}
+          totalCount={totalCount}
           onCreateClick={handleCreateProject}
         />
-        <EmptyProjectsState
-          isFiltered={hasActiveFilters}
-          onCreateClick={handleCreateProject}
-        />
-      </div>
-    );
-  }
 
-  // Main content
-  return (
-    <div className={styles.container}>
-      {showLoadingToast(t('searching'))}
+        <div className={styles.content}>
+          {viewMode === 'grid' ? (
+            <ProjectsGrid projects={projects} />
+          ) : (
+            <ProjectsList projects={projects} />
+          )}
+        </div>
 
-      <ProjectsHeader
-        viewMode={viewMode}
-        onViewModeChange={handleViewModeChange}
-        isArchived={isArchived}
-        onArchivedChange={handleArchivedChange}
-        searchQuery={searchQuery}
-        onSearchChange={handleSearchChange}
-        createdDateFrom={createdDateFrom}
-        createdDateTo={createdDateTo}
-        onDateRangeChange={handleDateRangeChange}
-        totalCount={totalCount}
-        onCreateClick={handleCreateProject}
-      />
-
-      <div className={styles.content}>
-        {viewMode === 'grid' ? (
-          <ProjectsGrid projects={projects} />
-        ) : (
-          <ProjectsList projects={projects} />
+        {pagination && pagination.total_pages > 1 && (
+          <div className={styles.pagination}>
+            <Button
+              appearance="secondary"
+              icon={<ArrowLeft20Regular />}
+              disabled={!pagination.has_prev}
+              onClick={() => handlePageChange(currentPage - 1)}
+            >
+              {t('previous')}
+            </Button>
+            <Text className={styles.pageInfo}>
+              {t('pageInfo', {
+                current: currentPage,
+                total: pagination.total_pages,
+              })}
+            </Text>
+            <Button
+              appearance="secondary"
+              icon={<ArrowRight20Regular />}
+              iconPosition="after"
+              disabled={!pagination.has_next}
+              onClick={() => handlePageChange(currentPage + 1)}
+            >
+              {t('next')}
+            </Button>
+          </div>
         )}
       </div>
-
-      {pagination && pagination.total_pages > 1 && (
-        <div className={styles.pagination}>
-          <Button
-            appearance="secondary"
-            icon={<ArrowLeft20Regular />}
-            disabled={!pagination.has_prev}
-            onClick={() => handlePageChange(currentPage - 1)}
-          >
-            {t('previous')}
-          </Button>
-          <Text className={styles.pageInfo}>
-            {t('pageInfo', {
-              current: currentPage,
-              total: pagination.total_pages,
-            })}
-          </Text>
-          <Button
-            appearance="secondary"
-            icon={<ArrowRight20Regular />}
-            iconPosition="after"
-            disabled={!pagination.has_next}
-            onClick={() => handlePageChange(currentPage + 1)}
-          >
-            {t('next')}
-          </Button>
-        </div>
-      )}
 
       {/* Project Create Modal */}
       <ProjectCreateModal
         open={showProjectModal}
         onOpenChange={setShowProjectModal}
       />
-    </div>
+    </>
   );
 }

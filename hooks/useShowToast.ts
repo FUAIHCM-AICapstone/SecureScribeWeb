@@ -33,7 +33,6 @@ const showToast = (
   options: ToastOptions = {}
 ) => {
   if (!toastController) {
-    console.warn('[showToast] Toast controller not initialized. Call setToastController first.');
     return null;
   }
 
