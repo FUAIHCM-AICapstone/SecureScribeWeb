@@ -101,16 +101,12 @@ const useStyles = makeStyles({
 interface MembersTableProps {
     members: UserProjectResponse[];
     isLoading?: boolean;
-    onAddMember?: () => void;
-    showAddButton?: boolean;
     formatDateTime?: (dateString: string | null) => string;
 }
 
 export function MembersTable({
     members,
     isLoading = false,
-    onAddMember,
-    showAddButton = true,
     formatDateTime,
 }: MembersTableProps) {
     const styles = useStyles();
