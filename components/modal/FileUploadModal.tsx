@@ -1,42 +1,40 @@
 'use client';
 
-import React, { useState, useCallback, useRef, useEffect } from 'react';
-import { useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
-import { useTranslations } from 'next-intl';
+import { useDebounce } from '@/hooks/useDebounce';
+import { showToast } from '@/hooks/useShowToast';
 import { useRouter } from '@/i18n/navigation';
+import { formatFileSize, getFileIcon, validateFile } from '@/lib/fileUtils';
+import { queryKeys } from '@/lib/queryClient';
+import { uploadFile } from '@/services/api/file';
+import { getMeetings } from '@/services/api/meeting';
+import { getProjects } from '@/services/api/project';
 import {
+  Button,
+  Caption1,
+  Combobox,
   Dialog,
+  DialogActions,
+  DialogBody,
+  DialogContent,
   DialogSurface,
   DialogTitle,
-  DialogBody,
-  DialogActions,
-  DialogContent,
-  Button,
-  Combobox,
   Option,
-  Text,
-  Caption1,
   ProgressBar,
   Spinner,
+  Text,
   makeStyles,
   shorthands,
-  tokens,
-  useId,
+  tokens
 } from '@fluentui/react-components';
 import {
   ArrowUpload24Regular,
+  CheckmarkCircle24Filled,
   Dismiss24Regular,
   Document24Regular,
-  CheckmarkCircle24Filled,
 } from '@fluentui/react-icons';
-import { uploadFile } from '@/services/api/file';
-import { getProjects } from '@/services/api/project';
-import { getMeetings } from '@/services/api/meeting';
-import { queryKeys } from '@/lib/queryClient';
-import { showToast } from '@/hooks/useShowToast';
-import { useDebounce } from '@/hooks/useDebounce';
-import { validateFile, formatFileSize, getFileIcon } from '@/lib/fileUtils';
-import { useScrollPaging } from '@/hooks/useScrollPaging';
+import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
+import React, { useCallback, useRef, useState } from 'react';
 
 const useStyles = makeStyles({
   content: {
@@ -183,8 +181,6 @@ export function FileUploadModal({
   const queryClient = useQueryClient();
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const projectsListRef = useRef<HTMLDivElement>(null);
-  const meetingsListRef = useRef<HTMLDivElement>(null);
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [projectId, setProjectId] = useState<string | undefined>(
@@ -200,8 +196,6 @@ export function FileUploadModal({
   // Search states for Combobox
   const [projectSearchQuery, setProjectSearchQuery] = useState('');
   const [meetingSearchQuery, setMeetingSearchQuery] = useState('');
-  const [projectsPage, setProjectsPage] = useState(1);
-  const [meetingsPage, setMeetingsPage] = useState(1);
 
   // Debounce search queries
   const debouncedProjectQuery = useDebounce(projectSearchQuery, 400);
@@ -291,14 +285,6 @@ export function FileUploadModal({
     }
   };
 
-  // Reset page when search query changes
-  useEffect(() => {
-    setProjectsPage(1);
-  }, [debouncedProjectQuery]);
-
-  useEffect(() => {
-    setMeetingsPage(1);
-  }, [debouncedMeetingQuery]);
 
   // Upload mutation
   const uploadMutation = useMutation({

@@ -118,6 +118,7 @@
     "deleteConfirmMessage": "Bạn có chắc chắn muốn xóa \"{name}\"? Hành động này không thể hoàn tác."
   },
   "ProjectDetail": {
+    "addMember": "Thêm thành viên",
     "createMeeting": "Tạo cuộc họp",
     "uploadFile": "Tải lên Tệp",
     "backToProjects": "Quay lại Dự án",
@@ -431,6 +432,17 @@
   },
   "Projects": {
     "title": "Dự án",
+    "addMember": "Thêm thành viên",
+    "selectUser": "Chọn người dùng",
+    "searchUserPlaceholder": "Tìm kiếm theo tên hoặc email...",
+    "selectRole": "Chọn vai trò",
+    "roleMember": "Thành viên",
+    "roleAdmin": "Quản trị viên",
+    "noResults": "Không có kết quả",
+    "memberAdded": "Thêm thành viên thành công",
+    "memberAddError": "Không thể thêm thành viên. Vui lòng thử lại.",
+    "adding": "Đang thêm...",
+    "cancel": "Hủy",
     "searchPlaceholder": "Tìm kiếm dự án...",
     "searchButton": "Tìm kiếm",
     "allProjects": "Tất cả dự án",

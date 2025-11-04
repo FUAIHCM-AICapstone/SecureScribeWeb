@@ -2,6 +2,7 @@
 
 import MeetingSchedulerModal from '@/components/modal/MeetingSchedulerModal';
 import { FileUploadModal } from '@/components/modal/FileUploadModal';
+import { AddMemberModal } from '@/components/modal/AddMemberModal';
 import { showToast } from '@/hooks/useShowToast';
 import { queryKeys } from '@/lib/queryClient';
 import { getProjectFiles } from '@/services/api/file';
@@ -14,7 +15,6 @@ import {
 } from '@/services/api/project';
 import { getTasks } from '@/services/api/task';
 import {
-  Avatar,
   Badge,
   Body1,
   Button,
@@ -42,7 +42,6 @@ import {
   Folder20Regular,
   MoreVertical20Regular,
   People20Regular,
-  PersonCircle20Regular,
   TaskListSquareLtr20Regular,
 } from '@fluentui/react-icons';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -53,6 +52,7 @@ import { useState } from 'react';
 import { FilesTable } from './FilesTable';
 import { MeetingsTable } from './MeetingsTable';
 import { TasksTable } from './TasksTable';
+import { MembersTable } from './MembersTable';
 
 const useStyles = makeStyles({
   container: {
@@ -196,39 +196,6 @@ const useStyles = makeStyles({
     textAlign: 'center',
     ...shorthands.padding('24px'),
   },
-  membersList: {
-    display: 'flex',
-    flexDirection: 'column',
-    ...shorthands.gap('12px'),
-  },
-  memberItem: {
-    ...shorthands.padding('16px'),
-    backgroundColor: tokens.colorNeutralBackground2,
-    ...shorthands.borderRadius(tokens.borderRadiusMedium),
-    ...shorthands.border('1px', 'solid', tokens.colorNeutralStroke2),
-    display: 'flex',
-    alignItems: 'center',
-    ...shorthands.gap('12px'),
-    ...shorthands.transition('all', '0.2s', 'ease'),
-    ':hover': {
-      backgroundColor: tokens.colorNeutralBackground3,
-      boxShadow: tokens.shadow4,
-    },
-  },
-  memberInfo: {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    ...shorthands.gap('4px'),
-  },
-  memberName: {
-    fontWeight: 600,
-    fontSize: tokens.fontSizeBase300,
-  },
-  memberMeta: {
-    fontSize: tokens.fontSizeBase200,
-    color: tokens.colorNeutralForeground3,
-  },
   placeholder: {
     ...shorthands.padding('48px', '32px'),
     textAlign: 'center',
@@ -287,6 +254,9 @@ export function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
 
   // File modal state
   const [showFileModal, setShowFileModal] = useState(false);
+
+  // Add member modal state
+  const [showAddMemberModal, setShowAddMemberModal] = useState(false);
 
   // Fetch project data
   const {
@@ -626,35 +596,23 @@ export function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
           {/* Members Section */}
           <Card className={styles.section}>
             <div className={styles.sectionTitle}>
-              <People20Regular className={styles.sectionIcon} />
-              <Text className={styles.sectionHeading}>{t('members')}</Text>
+              <div>
+                <People20Regular className={styles.sectionIcon} />
+                <Text className={styles.sectionHeading}>{t('members')}</Text>
+              </div>
+              <Button
+                appearance="primary"
+                icon={<Add20Regular />}
+                onClick={() => setShowAddMemberModal(true)}
+              >
+                {t('addMember')}
+              </Button>
             </div>
             {project.members && project.members.length > 0 ? (
-              <div className={styles.membersList}>
-                {project.members.map((member) => (
-                  <div key={member.user_id} className={styles.memberItem}>
-                    <Avatar
-                      icon={<PersonCircle20Regular />}
-                      size={40}
-                      aria-label={member.user?.name || 'Member'}
-                    />
-                    <div className={styles.memberInfo}>
-                      <Text className={styles.memberName}>
-                        {member.user?.name ||
-                          member.user?.email ||
-                          t('unknownUser')}
-                      </Text>
-                      <Caption1 className={styles.memberMeta}>
-                        {t('role')}: {member.role} • {t('joined')}:{' '}
-                        {formatDateTime(member.joined_at)}
-                      </Caption1>
-                    </div>
-                    <Badge appearance="outline" size="small">
-                      {member.role}
-                    </Badge>
-                  </div>
-                ))}
-              </div>
+              <MembersTable
+                members={project.members}
+                formatDateTime={formatDateTime}
+              />
             ) : (
               <Body1 className={styles.noContent}>{t('noMembers')}</Body1>
             )}
@@ -689,6 +647,14 @@ export function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
         open={showFileModal}
         onClose={handleFileModalClose}
         defaultProjectId={projectId}
+      />
+
+      {/* Add Member Modal */}
+      <AddMemberModal
+        open={showAddMemberModal}
+        onOpenChange={setShowAddMemberModal}
+        projectId={projectId}
+        existingMembers={project?.members || []}
       />
     </div>
   );

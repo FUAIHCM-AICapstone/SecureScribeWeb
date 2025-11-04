@@ -118,6 +118,7 @@
     "deleteConfirmMessage": "Are you sure you want to delete \"{name}\"? This action cannot be undone."
   },
   "ProjectDetail": {
+    "addMember": "Add Member",
     "createMeeting": "Create Meeting",
     "uploadFile": "Upload File",
     "backToProjects": "Back to Projects",
@@ -431,6 +432,17 @@
   },
   "Projects": {
     "title": "Projects",
+    "addMember": "Add Member",
+    "selectUser": "Select User",
+    "searchUserPlaceholder": "Search by name or email...",
+    "selectRole": "Select Role",
+    "roleMember": "Member",
+    "roleAdmin": "Admin",
+    "noResults": "No results found",
+    "memberAdded": "Member added successfully",
+    "memberAddError": "Failed to add member. Please try again.",
+    "adding": "Adding...",
+    "cancel": "Cancel",
     "searchPlaceholder": "Search projects...",
     "searchButton": "Search",
     "allProjects": "All Projects",
