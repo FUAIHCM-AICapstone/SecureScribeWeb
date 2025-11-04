@@ -1,36 +1,35 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
-import { useTranslations } from 'next-intl';
+import { useDebounce } from '@/hooks/useDebounce';
+import { showToast } from '@/hooks/useShowToast';
+import { queryKeys } from '@/lib/queryClient';
+import { addUserToProject } from '@/services/api/project';
+import { getUsers } from '@/services/api/user';
 import {
+    Button,
+    Caption1,
+    Combobox,
     Dialog,
+    DialogActions,
+    DialogBody,
+    DialogContent,
     DialogSurface,
     DialogTitle,
-    DialogBody,
-    DialogActions,
-    DialogContent,
-    Button,
-    Combobox,
-    Option,
-    Text,
-    Caption1,
     Dropdown,
-    Field,
+    Option,
     Spinner,
+    Text,
     makeStyles,
     shorthands,
-    tokens,
+    tokens
 } from '@fluentui/react-components';
 import {
-    PersonAdd24Regular,
     Dismiss24Regular,
+    PersonAdd24Regular,
 } from '@fluentui/react-icons';
-import { getUsers } from '@/services/api/user';
-import { addUserToProject } from '@/services/api/project';
-import { queryKeys } from '@/lib/queryClient';
-import { showToast } from '@/hooks/useShowToast';
-import { useDebounce } from '@/hooks/useDebounce';
+import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
+import React, { useState } from 'react';
 import type { UserProjectResponse } from 'types/project.type';
 import type { User } from 'types/user.type';
 
