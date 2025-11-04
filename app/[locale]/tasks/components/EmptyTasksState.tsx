@@ -43,7 +43,7 @@ const useStyles = makeStyles({
 
 interface EmptyTasksStateProps {
   isFiltered: boolean;
-  onCreateClick?: () => void;
+  onCreateClick: () => void;
 }
 
 export function EmptyTasksState({
@@ -66,7 +66,7 @@ export function EmptyTasksState({
           ? t('emptyFilteredDescription')
           : t('emptyUnfilteredDescription')}
       </Caption1>
-      {!isFiltered && onCreateClick && (
+      {!isFiltered && (
         <Button appearance="primary" size="large" onClick={onCreateClick}>
           {t('createTask')}
         </Button>

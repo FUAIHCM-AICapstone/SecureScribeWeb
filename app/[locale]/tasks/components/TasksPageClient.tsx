@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
@@ -14,12 +14,14 @@ import {
 import { ArrowLeft20Regular, ArrowRight20Regular } from '@fluentui/react-icons';
 import { getTasks } from '@/services/api/task';
 import { queryKeys } from '@/lib/queryClient';
-import { showLoadingToast } from '@/components/loading/LoadingToast';
+import { showLoadingToast, hideLoadingToast } from '@/components/loading/LoadingToast';
+import { useAuth } from '@/context/AuthContext';
 import { TasksHeader } from './TasksHeader';
 import { TasksGrid } from './TasksGrid';
 import { TasksList } from './TasksList';
 import { EmptyTasksState } from './EmptyTasksState';
 import { TaskCardSkeleton } from './TaskCardSkeleton';
+import { CreateTaskModal } from './CreateTaskModal';
 import type { TaskStatus } from 'types/task.type';
 
 const useStyles = makeStyles({
@@ -100,6 +102,7 @@ export function TasksPageClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const t = useTranslations('Tasks');
+  const { user } = useAuth();
 
   // Initialize state from URL params
   const [viewMode, setViewMode] = useState<'grid' | 'list'>(
@@ -126,17 +129,23 @@ export function TasksPageClient() {
   const [currentPage, setCurrentPage] = useState(
     parseInt(searchParams.get('page') || '1', 10),
   );
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const limit = viewMode === 'grid' ? 12 : 20;
+
+  const assigneeFilter = useMemo(
+    () => (isMyTasks ? user?.id : undefined),
+    [isMyTasks, user?.id],
+  );
 
   // Build API filters
   const apiFilters = useMemo(
     () => ({
       title: searchQuery || undefined,
       status: statusFilter,
-      assignee_id: isMyTasks ? 'current' : undefined, // Backend should handle 'current' as current user
+      assignee_id: assigneeFilter,
     }),
-    [searchQuery, statusFilter, isMyTasks],
+    [searchQuery, statusFilter, assigneeFilter],
   );
 
   const apiParams = useMemo(
@@ -147,11 +156,13 @@ export function TasksPageClient() {
     [currentPage, limit],
   );
 
+  const isQueryEnabled = !isMyTasks || Boolean(assigneeFilter);
+
   // Fetch tasks with React Query
-  const { data, isLoading, isError, error, refetch } = useQuery({
+  const { data, isLoading, isFetching, isError, error, refetch } = useQuery({
     queryKey:
       isMyTasks === true
-        ? [...queryKeys.myTasks, apiParams]
+        ? [...queryKeys.myTasks, assigneeFilter ?? 'pending', apiParams]
         : [...queryKeys.tasks, apiFilters, apiParams],
     queryFn: async () => {
       return getTasks(apiFilters, apiParams);
@@ -160,7 +171,20 @@ export function TasksPageClient() {
     gcTime: 10 * 60 * 1000, // 10 minutes
     placeholderData: keepPreviousData,
     refetchOnWindowFocus: false,
+    enabled: isQueryEnabled,
   });
+
+  useEffect(() => {
+    if (isFetching) {
+      showLoadingToast(t('searching'));
+    } else {
+      hideLoadingToast();
+    }
+
+    return () => {
+      hideLoadingToast();
+    };
+  }, [isFetching, t]);
 
   // Update URL when filters change
   const updateURL = useCallback(
@@ -228,9 +252,16 @@ export function TasksPageClient() {
   );
 
   const handleCreateClick = useCallback(() => {
-    console.log('Create task clicked - TODO: Implement');
-    // TODO: Open create task modal
+    setIsCreateModalOpen(true);
   }, []);
+
+  const handleCloseCreateModal = useCallback(() => {
+    setIsCreateModalOpen(false);
+  }, []);
+
+  const createTaskModal = (
+    <CreateTaskModal open={isCreateModalOpen} onClose={handleCloseCreateModal} />
+  );
 
   // Determine if filters are active
   const hasActiveFilters = Boolean(
@@ -238,12 +269,13 @@ export function TasksPageClient() {
   );
 
   // Loading states
-  const isInitialLoading = isLoading && !data;
+  const isInitialLoading = (isLoading && !data) || (isMyTasks === true && !assigneeFilter);
 
   // Initial loading state - show header + skeleton
   if (isInitialLoading) {
     return (
       <div className={styles.container}>
+        {createTaskModal}
         <TasksHeader
           viewMode={viewMode}
           onViewModeChange={handleViewModeChange}
@@ -254,6 +286,7 @@ export function TasksPageClient() {
           statusFilter={statusFilter}
           onStatusFilterChange={handleStatusFilterChange}
           totalCount={0}
+          onCreateClick={handleCreateClick}
         />
         <div className={styles.skeletonGrid}>
           {Array.from({ length: viewMode === 'grid' ? 12 : 8 }).map((_, i) => (
@@ -268,6 +301,7 @@ export function TasksPageClient() {
   if (isError) {
     return (
       <div className={styles.container}>
+        {createTaskModal}
         <div className={styles.errorContainer}>
           <Text className={styles.errorTitle}>{t('errorTitle')}</Text>
           <Text className={styles.errorMessage}>
@@ -292,8 +326,7 @@ export function TasksPageClient() {
 
   return (
     <div className={styles.container}>
-      {showLoadingToast(t('searching'))}
-
+      {createTaskModal}
       <TasksHeader
         viewMode={viewMode}
         onViewModeChange={handleViewModeChange}
@@ -304,6 +337,7 @@ export function TasksPageClient() {
         statusFilter={statusFilter}
         onStatusFilterChange={handleStatusFilterChange}
         totalCount={totalCount}
+        onCreateClick={handleCreateClick}
       />
 
       <div className={styles.content}>

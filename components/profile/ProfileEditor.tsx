@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import {
   Avatar,
@@ -68,31 +68,6 @@ const useStyles = makeStyles({
     background: 'linear-gradient(135deg, #115ea3 0%, #5b9bd5 100%)',
     boxShadow: '0 4px 12px rgba(17, 94, 163, 0.25)',
     color: '#ffffff',
-  },
-  title: {
-    fontSize: tokens.fontSizeHero900,
-    fontWeight: 700,
-    color: '#115ea3',
-  },
-  subtitle: {
-    color: tokens.colorNeutralForeground2,
-    marginTop: '6px',
-  },
-  wrap: {
-    display: 'grid',
-    gridTemplateColumns: '1fr',
-    gap: '16px',
-    '@media (min-width: 1024px)': {
-      gridTemplateColumns: '360px 1fr',
-      alignItems: 'start',
-    },
-  },
-  card: {
-    backgroundColor: 'var(--colorNeutralBackground1)',
-    border: `1px solid ${tokens.colorNeutralStroke1}`,
-    boxShadow: tokens.shadow8,
-    transitionProperty: 'box-shadow, transform',
-    transitionDuration: '150ms',
   },
   avatarWrap: {
     position: 'relative',
@@ -201,15 +176,20 @@ export default function ProfileEditor() {
     };
   }, [previewUrl]);
 
-  const isDirty = useMemo(() => {
-    if (!me) return false;
-    return (
-      (form.name || '') !== (me.name || '') ||
-      (form.position || '') !== (me.position || '') ||
-      (form.bio || '') !== (me.bio || '') ||
-      (form.avatar_url || '') !== (me.avatar_url || '')
-    );
-  }, [form, me]);
+  const computeIsDirty = useCallback(
+    (draft: UserUpdate) => {
+      if (!me) return false;
+      return (
+        (draft.name || '') !== (me.name || '') ||
+        (draft.position || '') !== (me.position || '') ||
+        (draft.bio || '') !== (me.bio || '') ||
+        (draft.avatar_url || '') !== (me.avatar_url || '')
+      );
+    },
+    [me],
+  );
+
+  const isDirty = useMemo(() => computeIsDirty(form), [computeIsDirty, form]);
 
   const validate = (f: UserUpdate) => {
     const next: { name?: string; position?: string; bio?: string } = {};
@@ -238,6 +218,16 @@ export default function ProfileEditor() {
     },
     onError: () => showToast('error', t('updateFailed')),
   });
+
+  const submitForm = (draft: UserUpdate) => {
+    if (updateMutation.isPending) return;
+
+    const invalids = validate(draft);
+    const hasError = Object.keys(invalids).length > 0;
+    if (hasError || !computeIsDirty(draft)) return;
+    updateMutation.mutate(draft);
+    setIsEditMode(false);
+  };
 
   const onPickAvatar = () => fileRef.current?.click();
 
@@ -271,8 +261,12 @@ export default function ProfileEditor() {
         throw new Error('no_storage_url');
       }
 
-      // Update form state (will be saved when user clicks "Save changes")
-      setForm((f) => ({ ...f, avatar_url: newUrl }));
+      // Update form state and trigger auto save
+      setForm((prev) => {
+        const nextForm = { ...prev, avatar_url: newUrl };
+        submitForm(nextForm);
+        return nextForm;
+      });
       showToast('success', t('avatarUploaded'));
     } catch (error) {
       console.error('Avatar upload failed:', error);
@@ -285,13 +279,7 @@ export default function ProfileEditor() {
     }
   };
 
-  const onSave = () => {
-    const invalids = validate(form);
-    const hasError = Object.keys(invalids).length > 0;
-    if (hasError || !isDirty) return;
-    updateMutation.mutate(form);
-    setIsEditMode(false);
-  };
+  const onSave = () => submitForm(form);
 
   const onCancel = () => {
     setForm({
@@ -325,31 +313,24 @@ export default function ProfileEditor() {
               <ContactCard24Regular />
             </div>
             <div>
-              <h1 className={styles.title}>{t('profile')}</h1>
-              <p className={styles.subtitle}>{t('profileSubtitle')}</p>
+              <h1 className="text-2xl font-bold text-gray-900">
+                {t('profile')}
+              </h1>
+              <p className="mt-0.5 text-gray-600">{t('profileSubtitle')}</p>
             </div>
           </div>
         </div>
       </div>
 
-      <div className={styles.wrap}>
-        <Card className={styles.card}>
+      <div className="flex flex-col lg:flex-row items-start gap-6">
+        <Card className="w-full rounded-xl bg-white p-6 shadow-md lg:max-w-sm">
           <CardHeader
             header={<b>{t('avatar')}</b>}
             description={t('avatarSubtitle')}
           />
           <CardPreview>
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 12,
-                alignItems: 'center',
-                padding: 24,
-                paddingTop: 32,
-              }}
-            >
-              <div className={styles.avatarWrap}>
+            <div className="flex flex-col items-center gap-3 px-6 pb-6 pt-8 text-center">
+              <div className={`${styles.avatarWrap} mx-auto`}>
                 <div className={styles.avatarCircle}>
                   <Avatar
                     name={me.name || me.email}
@@ -376,16 +357,11 @@ export default function ProfileEditor() {
                   onChange={onChangeFile}
                 />
               </div>
-              <div style={{ textAlign: 'center' }}>
-                <div style={{ fontWeight: 600, fontSize: 18 }}>
+              <div>
+                <div className="text-lg font-semibold text-gray-900">
                   {me.name || t('noName')}
                 </div>
-                <div
-                  style={{
-                    color: 'var(--colorNeutralForeground3)',
-                    fontSize: 14,
-                  }}
-                >
+                <div className="text-sm text-gray-500">
                   {me.position || t('noPosition')}
                 </div>
               </div>
@@ -393,7 +369,7 @@ export default function ProfileEditor() {
           </CardPreview>
         </Card>
 
-        <Card className={styles.card}>
+        <Card className="w-full flex-1 rounded-xl bg-white p-6 shadow-md">
           <CardHeader
             header={<b>{t('accountInfo')}</b>}
             description={t('accountInfoSubtitle')}
@@ -408,7 +384,7 @@ export default function ProfileEditor() {
               ) : null
             }
           />
-          <div className={styles.form} style={{ padding: 16 }}>
+          <div className={`${styles.form} mt-6`}>
             {isEditMode ? (
               <>
                 <div className={styles.row}>

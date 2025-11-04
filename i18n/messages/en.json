@@ -524,6 +524,38 @@
       "in_progress": "In Progress",
       "done": "Done"
     },
+    "createTaskSuccess": "Task created successfully.",
+    "createTaskError": "Failed to create task. Please try again.",
+    "createTaskModal": {
+      "title": "Create Task",
+      "titleLabel": "Task title",
+      "titlePlaceholder": "Enter task title",
+      "titleRequired": "Please enter a task title.",
+      "titleTooShort": "Task title must have at least 2 characters.",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Add more details about this task (optional)",
+      "projectsLabel": "Projects",
+      "projectsPlaceholder": "Select projects",
+      "projectsRequired": "Please select at least one project.",
+      "noProjects": "No projects available. Please create a project first.",
+      "assigneeLabel": "Assignee",
+      "assigneePlaceholder": "Select assignee",
+      "unassigned": "Unassigned",
+      "dueDateLabel": "Due date",
+      "dueDatePlaceholder": "Select due date",
+      "statusLabel": "Status",
+      "cancel": "Cancel",
+      "submit": "Save task",
+      "submitting": "Saving...",
+      "reminderLabel": "Reminder",
+      "reminderPlaceholder": "Select reminder time",
+      "dueTimePlaceholder": "Select time",
+      "reminderTimePlaceholder": "Select time"
+    },
+    "detailsModal": {
+      "peopleSection": "People involved",
+      "reminderLabel": "Reminder"
+    },
     "actions": {
       "label": "Task actions",
       "view": "View Details",

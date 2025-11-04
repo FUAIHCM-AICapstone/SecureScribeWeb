@@ -1,7 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   Menu,
   MenuTrigger,
@@ -10,6 +11,13 @@ import {
   MenuItem,
   Button,
   makeStyles,
+  Dialog,
+  DialogSurface,
+  DialogBody,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Text,
 } from '@fluentui/react-components';
 import {
   MoreVertical20Regular,
@@ -18,6 +26,11 @@ import {
   Delete20Regular,
 } from '@fluentui/react-icons';
 import type { TaskResponse } from 'types/task.type';
+import { showToast } from '@/hooks/useShowToast';
+import { deleteTask } from '@/services/api/task';
+import { queryKeys } from '@/lib/queryClient';
+import { CreateTaskModal } from './CreateTaskModal';
+import { TaskDetailsModal } from './TaskDetailsModal';
 
 const useStyles = makeStyles({
   menuButton: {
@@ -32,47 +45,151 @@ interface TaskActionsMenuProps {
 export function TaskActionsMenu({ task }: TaskActionsMenuProps) {
   const styles = useStyles();
   const t = useTranslations('Tasks');
+  const queryClient = useQueryClient();
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [editTaskData, setEditTaskData] = useState<TaskResponse>(task);
 
-  const handleView = () => {
-    console.log('View task:', task.id);
-    // TODO: Implement view action
+  useEffect(() => {
+    setEditTaskData(task);
+  }, [task]);
+
+  type MenuInteractionEvent =
+    | React.MouseEvent<HTMLElement>
+    | React.KeyboardEvent<HTMLElement>;
+
+  const deleteTaskMutation = useMutation({
+    mutationFn: () => deleteTask(task.id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.tasks });
+      queryClient.invalidateQueries({ queryKey: queryKeys.myTasks });
+      queryClient.invalidateQueries({ queryKey: queryKeys.task(task.id) });
+      showToast('success', 'Task deleted successfully');
+      setIsDeleteOpen(false);
+      setIsDetailsOpen(false);
+    },
+    onError: (error: unknown) => {
+      const apiMessage =
+        typeof (error as { message?: string })?.message === 'string'
+          ? (error as { message?: string }).message
+          : undefined;
+      showToast('error', apiMessage || 'Failed to delete task. Please try again.');
+    },
+  });
+
+  const handleView = (event: MenuInteractionEvent) => {
+    event.stopPropagation();
+    setIsDetailsOpen(true);
   };
 
-  const handleEdit = () => {
-    console.log('Edit task:', task.id);
-    // TODO: Implement edit action
+  const handleEdit = (event: MenuInteractionEvent) => {
+    event.stopPropagation();
+    setEditTaskData(task);
+    setIsEditOpen(true);
   };
 
-  const handleDelete = () => {
-    console.log('Delete task:', task.id);
-    // TODO: Implement delete action
+  const handleDelete = (event: MenuInteractionEvent) => {
+    event.stopPropagation();
+    setIsDeleteOpen(true);
+  };
+
+  const handleCloseEdit = () => {
+    setIsEditOpen(false);
+  };
+
+  const handleCloseDelete = () => {
+    if (!deleteTaskMutation.isPending) {
+      setIsDeleteOpen(false);
+    }
+  };
+
+  const handleConfirmDelete = () => {
+    deleteTaskMutation.mutate();
   };
 
   return (
-    <Menu>
-      <MenuTrigger disableButtonEnhancement>
-        <Button
-          appearance="subtle"
-          icon={<MoreVertical20Regular />}
-          aria-label={t('actions.label')}
-          className={styles.menuButton}
-          onClick={(e) => e.stopPropagation()}
-        />
-      </MenuTrigger>
+    <>
+      <Menu>
+        <MenuTrigger disableButtonEnhancement>
+          <Button
+            appearance="subtle"
+            icon={<MoreVertical20Regular />}
+            aria-label={t('actions.label')}
+            className={styles.menuButton}
+            onClick={(event) => event.stopPropagation()}
+          />
+        </MenuTrigger>
 
-      <MenuPopover>
-        <MenuList>
-          <MenuItem icon={<Eye20Regular />} onClick={handleView}>
-            {t('actions.view')}
-          </MenuItem>
-          <MenuItem icon={<Edit20Regular />} onClick={handleEdit}>
-            {t('actions.edit')}
-          </MenuItem>
-          <MenuItem icon={<Delete20Regular />} onClick={handleDelete}>
-            {t('actions.delete')}
-          </MenuItem>
-        </MenuList>
-      </MenuPopover>
-    </Menu>
+        <MenuPopover>
+          <MenuList>
+            <MenuItem icon={<Eye20Regular />} onClick={handleView}>
+              {t('actions.view')}
+            </MenuItem>
+            <MenuItem icon={<Edit20Regular />} onClick={handleEdit}>
+              {t('actions.edit')}
+            </MenuItem>
+            <MenuItem icon={<Delete20Regular />} onClick={handleDelete}>
+              {t('actions.delete')}
+            </MenuItem>
+          </MenuList>
+        </MenuPopover>
+      </Menu>
+
+      <TaskDetailsModal
+        open={isDetailsOpen}
+        onClose={() => setIsDetailsOpen(false)}
+        taskId={task.id}
+        initialTask={task}
+        onEdit={(latestTask) => {
+          setEditTaskData(latestTask);
+          setIsDetailsOpen(false);
+          setIsEditOpen(true);
+        }}
+      />
+
+      <CreateTaskModal
+        open={isEditOpen}
+        onClose={handleCloseEdit}
+        mode="edit"
+        taskId={task.id}
+        initialTask={editTaskData}
+      />
+
+      <Dialog
+        open={isDeleteOpen}
+        onOpenChange={(_, data) => {
+          if (data.open) {
+            setIsDeleteOpen(true);
+            return;
+          }
+
+          handleCloseDelete();
+        }}
+      >
+        <DialogSurface>
+          <DialogBody>
+            <DialogTitle>{t('actions.delete')}</DialogTitle>
+            <DialogContent>
+              <Text>
+                Are you sure you want to delete this task?
+              </Text>
+            </DialogContent>
+            <DialogActions>
+              <Button appearance="secondary" onClick={handleCloseDelete}>
+                {t('createTaskModal.cancel')}
+              </Button>
+              <Button
+                appearance="primary"
+                onClick={handleConfirmDelete}
+                disabled={deleteTaskMutation.isPending}
+              >
+                {deleteTaskMutation.isPending ? "Deleting..." : t('actions.delete')}
+              </Button>
+            </DialogActions>
+          </DialogBody>
+        </DialogSurface>
+      </Dialog>
+    </>
   );
 }
