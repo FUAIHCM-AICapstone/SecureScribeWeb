@@ -10,12 +10,16 @@ const useStyles = makeStyles({
     display: 'grid',
     ...shorthands.gap(tokens.spacingHorizontalL),
     gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+    width: '100%',
     '@media (min-width: 1200px)': {
       gridTemplateColumns: 'repeat(3, 1fr)',
       ...shorthands.gap(tokens.spacingHorizontalXL),
     },
     '@media (min-width: 768px) and (max-width: 1199px)': {
       gridTemplateColumns: 'repeat(2, 1fr)',
+    },
+    '@media (max-width: 767px)': {
+      gridTemplateColumns: 'repeat(1, 1fr)',
     },
   },
 });

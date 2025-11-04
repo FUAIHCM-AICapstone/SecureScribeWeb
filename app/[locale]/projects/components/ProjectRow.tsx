@@ -3,13 +3,12 @@
 import React from 'react';
 import { useTranslations } from 'next-intl';
 import {
-  TableRow,
-  TableCell,
   Text,
   Badge,
   Caption1,
   makeStyles,
   tokens,
+  shorthands,
 } from '@fluentui/react-components';
 import { format } from 'date-fns';
 import type { ProjectResponse } from 'types/project.type';
@@ -17,19 +16,59 @@ import { ProjectActionsMenu } from './ProjectActionsMenu';
 
 const useStyles = makeStyles({
   row: {
+    display: 'grid',
+    gridTemplateColumns: '2fr 2fr 1fr 1fr 1.5fr auto',
+    alignItems: 'center',
+    ...shorthands.gap('16px'),
+    ...shorthands.padding('16px'),
+    backgroundColor: tokens.colorNeutralBackground1,
+    ...shorthands.border('1px', 'solid', tokens.colorNeutralStroke2),
+    ...shorthands.borderRadius(tokens.borderRadiusMedium),
+    ...shorthands.transition('all', '0.2s', 'ease'),
+    cursor: 'pointer',
     ':hover': {
       backgroundColor: tokens.colorNeutralBackground1Hover,
+      boxShadow: `0 2px 8px ${tokens.colorNeutralShadowAmbient}`,
+    },
+    '@media (max-width: 1024px)': {
+      gridTemplateColumns: '2fr 1fr 1fr auto',
+      ...shorthands.gap('12px'),
+    },
+    '@media (max-width: 768px)': {
+      gridTemplateColumns: '1fr auto',
+      ...shorthands.gap('8px'),
     },
   },
+  titleCell: {
+    display: 'flex',
+    flexDirection: 'column',
+    ...shorthands.gap('4px'),
+    minWidth: 0,
+  },
   nameCell: {
+    fontSize: tokens.fontSizeBase300,
     fontWeight: 600,
+    color: tokens.colorNeutralForeground1,
+    ...shorthands.overflow('hidden'),
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
   },
   descriptionText: {
+    fontSize: tokens.fontSizeBase200,
     color: tokens.colorNeutralForeground2,
-    display: '-webkit-box',
-    WebkitLineClamp: 2,
-    WebkitBoxOrient: 'vertical',
-    overflow: 'hidden',
+    ...shorthands.overflow('hidden'),
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+  },
+  hiddenOnMobile: {
+    '@media (max-width: 768px)': {
+      display: 'none',
+    },
+  },
+  hiddenOnTablet: {
+    '@media (max-width: 1024px)': {
+      display: 'none',
+    },
   },
 });
 
@@ -66,31 +105,31 @@ export function ProjectRow({ project }: ProjectRowProps) {
   };
 
   return (
-    <TableRow className={styles.row}>
-      <TableCell>
+    <div className={styles.row}>
+      <div className={styles.titleCell}>
         <Text className={styles.nameCell}>
           {project.name || t('untitledProject')}
         </Text>
-      </TableCell>
-      <TableCell>
+      </div>
+      <div className={styles.hiddenOnTablet}>
         {project.description && (
           <Caption1 className={styles.descriptionText}>
             {project.description}
           </Caption1>
         )}
-      </TableCell>
-      <TableCell>
+      </div>
+      <div className={styles.hiddenOnMobile}>
         <Caption1>
           {t('memberCount', { count: project.member_count || 0 })}
         </Caption1>
-      </TableCell>
-      <TableCell>{getStatusBadge()}</TableCell>
-      <TableCell>
+      </div>
+      <div className={styles.hiddenOnMobile}>{getStatusBadge()}</div>
+      <div className={styles.hiddenOnTablet}>
         <Caption1>{formatCreatedDate()}</Caption1>
-      </TableCell>
-      <TableCell>
+      </div>
+      <div>
         <ProjectActionsMenu project={project} />
-      </TableCell>
-    </TableRow>
+      </div>
+    </div>
   );
 }

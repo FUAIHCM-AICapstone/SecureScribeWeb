@@ -20,7 +20,11 @@ import {
   shorthands,
   tokens,
 } from '@fluentui/react-components';
-import { CalendarClock20Regular, Edit20Regular, Link20Regular } from '@fluentui/react-icons';
+import {
+  CalendarClock20Regular,
+  Edit20Regular,
+  Link20Regular,
+} from '@fluentui/react-icons';
 import { format } from 'date-fns';
 import { queryKeys } from '@/lib/queryClient';
 import { getTask } from '@/services/api/task';
@@ -203,9 +207,7 @@ export function TaskDetailsModal({
           </Badge>
         );
       default:
-        return (
-          <Badge appearance="outline">{data.status}</Badge>
-        );
+        return <Badge appearance="outline">{data.status}</Badge>;
     }
   }, [data, t]);
 
@@ -238,7 +240,7 @@ export function TaskDetailsModal({
     >
       <DialogSurface>
         <DialogBody>
-          <DialogTitle>{t('actions.view')}</DialogTitle>
+          <DialogTitle> </DialogTitle>
           <DialogContent className={styles.content}>
             {isLoading && !data ? (
               <div className={styles.spinnerContainer}>
@@ -248,7 +250,11 @@ export function TaskDetailsModal({
               <div className={styles.section}>
                 <Text className={styles.sectionLabel}>{t('errorTitle')}</Text>
                 <Text className={styles.emptyValue}>{t('retry')}</Text>
-                <Button appearance="primary" onClick={() => refetch()} disabled={isFetching}>
+                <Button
+                  appearance="primary"
+                  onClick={() => refetch()}
+                  disabled={isFetching}
+                >
                   {isFetching ? t('loading') : t('retry')}
                 </Button>
               </div>
@@ -264,14 +270,18 @@ export function TaskDetailsModal({
                 </div>
 
                 <div className={styles.section}>
-                  <Text className={styles.sectionLabel}>{t('createTaskModal.descriptionLabel')}</Text>
+                  <Text className={styles.sectionLabel}>
+                    {t('createTaskModal.descriptionLabel')}
+                  </Text>
                   <Text className={styles.description}>
                     {data.description || t('noDescription')}
                   </Text>
                 </div>
 
                 <div className={styles.section}>
-                  <Text className={styles.sectionLabel}>{t('createTaskModal.projectsLabel')}</Text>
+                  <Text className={styles.sectionLabel}>
+                    {t('createTaskModal.projectsLabel')}
+                  </Text>
                   <div className={styles.projects}>
                     {data.projects && data.projects.length > 0 ? (
                       data.projects.map((project) => (
@@ -289,7 +299,9 @@ export function TaskDetailsModal({
                 </div>
 
                 <div className={styles.section}>
-                  <Text className={styles.sectionLabel}>{t('createTaskModal.dueDateLabel')}</Text>
+                  <Text className={styles.sectionLabel}>
+                    {t('createTaskModal.dueDateLabel')}
+                  </Text>
                   <div className={styles.metaCard}>
                     <div className={styles.metaRow}>
                       <span className={styles.metaRowLabel}>
@@ -313,7 +325,9 @@ export function TaskDetailsModal({
                 </div>
 
                 <div className={styles.section}>
-                  <Text className={styles.sectionLabel}>{t('detailsModal.peopleSection')}</Text>
+                  <Text className={styles.sectionLabel}>
+                    {t('detailsModal.peopleSection')}
+                  </Text>
                   <div className={styles.peopleList}>
                     <div className={styles.personCard}>
                       <div className={styles.personInfo}>
@@ -327,8 +341,12 @@ export function TaskDetailsModal({
                           }
                         />
                         <div className={styles.personMeta}>
-                          <Text>{data.creator?.name || data.creator?.email}</Text>
-                          <Caption1 className={styles.personLabel}>{t('createdBy')}</Caption1>
+                          <Text>
+                            {data.creator?.name || data.creator?.email}
+                          </Text>
+                          <Caption1 className={styles.personLabel}>
+                            {t('createdBy')}
+                          </Caption1>
                         </div>
                       </div>
                       <Caption1 className={styles.emptyValue}>
@@ -338,7 +356,11 @@ export function TaskDetailsModal({
                     <div className={styles.personCard}>
                       <div className={styles.personInfo}>
                         <Avatar
-                          name={data.assignee?.name || data.assignee?.email || t('unassigned')}
+                          name={
+                            data.assignee?.name ||
+                            data.assignee?.email ||
+                            t('unassigned')
+                          }
                           size={36}
                           image={
                             data.assignee?.avatar_url
@@ -352,7 +374,9 @@ export function TaskDetailsModal({
                               data.assignee?.email ||
                               t('unassigned')}
                           </Text>
-                          <Caption1 className={styles.personLabel}>{t('assignedTo')}</Caption1>
+                          <Caption1 className={styles.personLabel}>
+                            {t('assignedTo')}
+                          </Caption1>
                         </div>
                       </div>
                     </div>
@@ -363,7 +387,7 @@ export function TaskDetailsModal({
           </DialogContent>
           <DialogActions>
             <Button appearance="secondary" onClick={onClose}>
-              Hủy
+              {t('createTaskModal.cancel')}
             </Button>
             <Button
               appearance="primary"
@@ -371,7 +395,7 @@ export function TaskDetailsModal({
               disabled={!data}
               icon={<Edit20Regular />}
             >
-              Sửa nhiệm vụ
+              {t('actions.edit')}
             </Button>
           </DialogActions>
         </DialogBody>
