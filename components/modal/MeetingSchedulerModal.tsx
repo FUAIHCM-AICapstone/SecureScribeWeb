@@ -1,6 +1,7 @@
 'use client';
 
 import { showToast } from '@/hooks/useShowToast';
+import { useDebounce } from '@/hooks/useDebounce';
 import {
   Button,
   Dialog,
@@ -14,10 +15,13 @@ import {
   Radio,
   RadioGroup,
   Textarea,
-  Dropdown,
+  Combobox,
   Option,
+  Caption1,
+  Spinner,
   makeStyles,
   tokens,
+  useId,
 } from '@fluentui/react-components';
 import { DatePicker, DatePickerProps } from '@fluentui/react-datepicker-compat';
 import { CalendarAdd24Regular } from '@fluentui/react-icons';
@@ -27,9 +31,9 @@ import {
   formatDateToTimeString,
 } from '@fluentui/react-timepicker-compat';
 import { useTranslations } from 'next-intl';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import { useRouter } from '@/i18n/navigation';
 import { createMeeting } from '@/services/api/meeting';
 import { getProjects } from '@/services/api/project';
@@ -95,14 +99,54 @@ export default function MeetingSchedulerModal({
   const queryClient = useQueryClient();
   const router = useRouter();
 
-  // Fetch projects from API
-  const { data: projectsData, isLoading: isLoadingProjects } = useQuery({
-    queryKey: queryKeys.projects,
-    queryFn: () => getProjects({ limit: 50 }),
+  // Fetch projects with search and pagination
+  const [projectSearchQuery, setProjectSearchQuery] = useState('');
+  const debouncedProjectQuery = useDebounce(projectSearchQuery, 400);
+
+  const {
+    data: projectsData,
+    fetchNextPage: fetchNextProjectsPage,
+    hasNextPage: hasNextProjectsPage,
+    isFetchingNextPage: isFetchingNextProjectsPage,
+    isLoading: isLoadingProjects,
+  } = useInfiniteQuery({
+    queryKey: ['projects', debouncedProjectQuery],
+    queryFn: ({ pageParam = 1 }: { pageParam?: number }) =>
+      getProjects(
+        debouncedProjectQuery ? { name: debouncedProjectQuery } : {},
+        { limit: 50, page: pageParam }
+      ),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage: any, pages) => {
+      if (lastPage.data && lastPage.data.length === 50) {
+        return pages.length + 1;
+      }
+      return undefined;
+    },
+    staleTime: 5 * 60 * 1000,
     enabled: open,
   });
 
-  const projects: ProjectResponse[] = projectsData?.data || [];
+  const projects: ProjectResponse[] = projectsData?.pages.flatMap((page: any) => page.data) || [];
+
+  // Handle scroll pagination for projects
+  const handleProjectsListScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const el = e.currentTarget;
+    if (
+      hasNextProjectsPage &&
+      !isFetchingNextProjectsPage &&
+      el.scrollTop + el.clientHeight >= el.scrollHeight - 20
+    ) {
+      fetchNextProjectsPage();
+    }
+  };
+
+  // Reset search when closing modal
+  useEffect(() => {
+    if (!open) {
+      setProjectSearchQuery('');
+    }
+  }, [open]);
 
   // Create meeting mutation
   const createMeetingMutation = useMutation({
@@ -381,7 +425,7 @@ export default function MeetingSchedulerModal({
                     control={control}
                     render={({ field }) => (
                       <>
-                        <Dropdown
+                        <Combobox
                           placeholder={
                             isLoadingProjects
                               ? t('loading')
@@ -389,24 +433,42 @@ export default function MeetingSchedulerModal({
                           }
                           value={
                             field.value && projects.length > 0
-                              ? projects.find((p) => p.id === field.value)?.name || ''
-                              : ''
+                              ? projects.find((p) => p.id === field.value)?.name || projectSearchQuery
+                              : projectSearchQuery
                           }
-                          selectedOptions={field.value ? [field.value] : []}
-                          onOptionSelect={(_, data) => {
-                            field.onChange(data.optionValue || '');
+                          onInput={(e: React.ChangeEvent<HTMLInputElement>) => {
+                            setProjectSearchQuery(e.target.value);
                           }}
-                          disabled={isLoadingProjects || !!defaultProjectId}
+                          onOptionSelect={(_: any, data: any) => {
+                            field.onChange(data.optionValue || '');
+                            setProjectSearchQuery('');
+                          }}
+                          disabled={!!defaultProjectId}
+                          listbox={{
+                            onScroll: handleProjectsListScroll,
+                          }}
                         >
                           {projects.map((project) => (
                             <Option key={project.id} value={project.id}>
                               {project.name}
                             </Option>
                           ))}
-                        </Dropdown>
+                          {isFetchingNextProjectsPage && (
+                            <div style={{ padding: '8px 12px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}>
+                              <Spinner size="small" />
+                              <Caption1>{t('loading')}</Caption1>
+                            </div>
+                          )}
+                          {!isLoadingProjects && projects.length === 0 && debouncedProjectQuery && (
+                            <div style={{ padding: '12px', textAlign: 'center' }}>
+                              <Caption1>{t('noResults')}</Caption1>
+                            </div>
+                          )}
+                        </Combobox>
                         {!isLoadingProjects &&
                           !defaultProjectId &&
-                          projects.length === 0 && (
+                          projects.length === 0 &&
+                          !debouncedProjectQuery && (
                             <div
                               style={{
                                 fontSize: '14px',

@@ -12,14 +12,16 @@ import {
   DialogActions,
   DialogContent,
   Button,
-  Dropdown,
+  Combobox,
   Option,
   Text,
   Caption1,
   ProgressBar,
+  Spinner,
   makeStyles,
   shorthands,
   tokens,
+  useId,
 } from '@fluentui/react-components';
 import {
   ArrowUpload24Regular,
@@ -32,6 +34,7 @@ import { getProjects } from '@/services/api/project';
 import { getMeetings } from '@/services/api/meeting';
 import { queryKeys } from '@/lib/queryClient';
 import { showToast } from '@/hooks/useShowToast';
+import { useDebounce } from '@/hooks/useDebounce';
 import { validateFile, formatFileSize, getFileIcon } from '@/lib/fileUtils';
 import { useScrollPaging } from '@/hooks/useScrollPaging';
 
@@ -180,6 +183,8 @@ export function FileUploadModal({
   const queryClient = useQueryClient();
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const projectsListRef = useRef<HTMLDivElement>(null);
+  const meetingsListRef = useRef<HTMLDivElement>(null);
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [projectId, setProjectId] = useState<string | undefined>(
@@ -192,7 +197,17 @@ export function FileUploadModal({
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadSuccess, setUploadSuccess] = useState(false);
 
-  // Fetch projects with infinite scroll
+  // Search states for Combobox
+  const [projectSearchQuery, setProjectSearchQuery] = useState('');
+  const [meetingSearchQuery, setMeetingSearchQuery] = useState('');
+  const [projectsPage, setProjectsPage] = useState(1);
+  const [meetingsPage, setMeetingsPage] = useState(1);
+
+  // Debounce search queries
+  const debouncedProjectQuery = useDebounce(projectSearchQuery, 400);
+  const debouncedMeetingQuery = useDebounce(meetingSearchQuery, 400);
+
+  // Fetch projects with search and pagination
   const {
     data: projectsData,
     fetchNextPage: fetchNextProjectsPage,
@@ -200,9 +215,12 @@ export function FileUploadModal({
     isFetchingNextPage: isFetchingNextProjectsPage,
     isLoading: isLoadingProjects,
   } = useInfiniteQuery({
-    queryKey: [...queryKeys.projects],
+    queryKey: ['projects', debouncedProjectQuery],
     queryFn: ({ pageParam = 1 }: { pageParam?: number }) =>
-      getProjects({}, { limit: 50, page: pageParam }),
+      getProjects(
+        debouncedProjectQuery ? { name: debouncedProjectQuery } : {},
+        { limit: 50, page: pageParam }
+      ),
     initialPageParam: 1,
     getNextPageParam: (lastPage: any, pages) => {
       if (lastPage.data && lastPage.data.length === 50) {
@@ -214,19 +232,25 @@ export function FileUploadModal({
     enabled: open,
   });
 
-  // Fetch meetings with infinite scroll - filter by project if selected
+  // Fetch meetings with search and pagination - filter by project if selected
   const {
     data: meetingsData,
     fetchNextPage: fetchNextMeetingsPage,
     hasNextPage: hasNextMeetingsPage,
     isFetchingNextPage: isFetchingNextMeetingsPage,
+    isLoading: isLoadingMeetings,
   } = useInfiniteQuery({
-    queryKey: projectId
-      ? ['projects', projectId, 'meetings']
-      : [...queryKeys.meetings],
+    queryKey: [
+      'meetings',
+      debouncedMeetingQuery,
+      projectId,
+    ],
     queryFn: ({ pageParam = 1 }: { pageParam?: number }) =>
       getMeetings(
-        projectId ? { project_id: projectId } : {},
+        {
+          ...(projectId ? { project_id: projectId } : {}),
+          ...(debouncedMeetingQuery ? { title: debouncedMeetingQuery } : {}),
+        },
         { limit: 50, page: pageParam }
       ),
     initialPageParam: 1,
@@ -243,33 +267,38 @@ export function FileUploadModal({
   const projects = projectsData?.pages.flatMap((page: any) => page.data) || [];
   const meetings = meetingsData?.pages.flatMap((page: any) => page.data) || [];
 
-  // Use scroll paging hooks
-  const projectsScrollPaging = useScrollPaging({
-    hasNextPage: hasNextProjectsPage,
-    isFetchingNextPage: isFetchingNextProjectsPage,
-    fetchNextPage: fetchNextProjectsPage,
-    enabled: open,
-  });
+  // Handle scroll pagination for projects
+  const handleProjectsListScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const el = e.currentTarget;
+    if (
+      hasNextProjectsPage &&
+      !isFetchingNextProjectsPage &&
+      el.scrollTop + el.clientHeight >= el.scrollHeight - 20
+    ) {
+      fetchNextProjectsPage();
+    }
+  };
 
-  const meetingsScrollPaging = useScrollPaging({
-    hasNextPage: hasNextMeetingsPage,
-    isFetchingNextPage: isFetchingNextMeetingsPage,
-    fetchNextPage: fetchNextMeetingsPage,
-    enabled: open,
-  });
+  // Handle scroll pagination for meetings
+  const handleMeetingsListScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const el = e.currentTarget;
+    if (
+      hasNextMeetingsPage &&
+      !isFetchingNextMeetingsPage &&
+      el.scrollTop + el.clientHeight >= el.scrollHeight - 20
+    ) {
+      fetchNextMeetingsPage();
+    }
+  };
 
-  // Add scroll listeners to dropdown popups
+  // Reset page when search query changes
   useEffect(() => {
-    if (!open) return;
+    setProjectsPage(1);
+  }, [debouncedProjectQuery]);
 
-    const cleanup1 = projectsScrollPaging.addScrollListener('.fui-Dropdown__listbox');
-    const cleanup2 = meetingsScrollPaging.addScrollListener('.fui-Dropdown__listbox:last-of-type');
-
-    return () => {
-      cleanup1?.();
-      cleanup2?.();
-    };
-  }, [open, projectsScrollPaging, meetingsScrollPaging]);
+  useEffect(() => {
+    setMeetingsPage(1);
+  }, [debouncedMeetingQuery]);
 
   // Upload mutation
   const uploadMutation = useMutation({
@@ -483,33 +512,39 @@ export function FileUploadModal({
                   </div>
                 )}
 
-                {/* Project Selection */}
+                {/* Project Selection with Search */}
                 <div className={styles.filterSection}>
                   <label className={styles.label}>
                     {t('selectProject')}
                   </label>
-                  <Dropdown
+                  <Combobox
                     placeholder={
                       isLoadingProjects ? t('loading') : t('selectProject')
                     }
                     value={
                       projectId && projects.length > 0
                         ? projects.find((p: any) => p.id === projectId)?.name || ''
-                        : ''
+                        : projectSearchQuery
                     }
-                    onOptionSelect={(_, data) => {
+                    onInput={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      setProjectSearchQuery(e.target.value);
+                    }}
+                    onOptionSelect={(_: any, data: any) => {
                       const newProjectId = data.optionValue as string;
                       setProjectId(newProjectId || undefined);
+                      setProjectSearchQuery('');
                       // Reset meeting if project changes
                       if (newProjectId !== projectId) {
                         setMeetingId(undefined);
                       }
                     }}
                     disabled={
-                      isLoadingProjects ||
                       !!defaultProjectId ||
                       uploadMutation.isPending
                     }
+                    listbox={{
+                      onScroll: handleProjectsListScroll,
+                    }}
                   >
                     {projects.map((project: any) => (
                       <Option key={project.id} value={project.id}>
@@ -517,30 +552,43 @@ export function FileUploadModal({
                       </Option>
                     ))}
                     {isFetchingNextProjectsPage && (
-                      <Option text={t('loading')} disabled>
+                      <div style={{ padding: '8px 12px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}>
+                        <Spinner size="small" />
                         <Caption1>{t('loading')}</Caption1>
-                      </Option>
+                      </div>
                     )}
-                  </Dropdown>
+                    {!isLoadingProjects && projects.length === 0 && debouncedProjectQuery && (
+                      <div style={{ padding: '12px', textAlign: 'center' }}>
+                        <Caption1>{t('noResults')}</Caption1>
+                      </div>
+                    )}
+                  </Combobox>
                 </div>
 
-                {/* Meeting Selection */}
+                {/* Meeting Selection with Search */}
                 <div className={styles.filterSection}>
                   <label className={styles.label}>
                     {t('selectMeeting')}
                   </label>
-                  <Dropdown
+                  <Combobox
                     placeholder={t('selectMeeting')}
                     value={
                       meetingId
                         ? meetings.find((m: any) => m.id === meetingId)?.title ||
                         t('noMeeting')
-                        : ''
+                        : meetingSearchQuery
                     }
-                    onOptionSelect={(_, data) =>
-                      setMeetingId((data.optionValue as string) || undefined)
-                    }
+                    onInput={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      setMeetingSearchQuery(e.target.value);
+                    }}
+                    onOptionSelect={(_: any, data: any) => {
+                      setMeetingId((data.optionValue as string) || undefined);
+                      setMeetingSearchQuery('');
+                    }}
                     disabled={uploadMutation.isPending}
+                    listbox={{
+                      onScroll: handleMeetingsListScroll,
+                    }}
                   >
                     {meetings.map((meeting: any) => (
                       <Option key={meeting.id} value={meeting.id}>
@@ -548,11 +596,17 @@ export function FileUploadModal({
                       </Option>
                     ))}
                     {isFetchingNextMeetingsPage && (
-                      <Option text={t('loading')} disabled>
+                      <div style={{ padding: '8px 12px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}>
+                        <Spinner size="small" />
                         <Caption1>{t('loading')}</Caption1>
-                      </Option>
+                      </div>
                     )}
-                  </Dropdown>
+                    {!isLoadingMeetings && meetings.length === 0 && debouncedMeetingQuery && (
+                      <div style={{ padding: '12px', textAlign: 'center' }}>
+                        <Caption1>{t('noResults')}</Caption1>
+                      </div>
+                    )}
+                  </Combobox>
                 </div>
 
                 {/* Hidden file input */}
