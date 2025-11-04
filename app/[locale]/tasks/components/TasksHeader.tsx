@@ -20,6 +20,7 @@ import {
   List20Regular,
   Search20Regular,
   TaskListSquareLtr24Regular,
+  Add20Regular,
 } from '@fluentui/react-icons';
 import type { TaskStatus } from 'types/task.type';
 
@@ -173,7 +174,11 @@ export function TasksHeader({
           <Text className={styles.title}>{t('title')}</Text>
         </div>
         <div className={styles.viewToggle}>
-          <Button appearance="primary" onClick={onCreateClick}>
+          <Button
+            appearance="primary"
+            icon={<Add20Regular />}
+            onClick={onCreateClick}
+          >
             {t('createTask')}
           </Button>
           <ToggleButton

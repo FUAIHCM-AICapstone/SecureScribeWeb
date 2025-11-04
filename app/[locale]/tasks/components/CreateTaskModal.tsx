@@ -1,11 +1,18 @@
 ﻿'use client';
 
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Controller, useForm } from 'react-hook-form';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  useInfiniteQuery,
+} from '@tanstack/react-query';
 import {
   Button,
+  Caption1,
+  Combobox,
   Dialog,
   DialogActions,
   DialogBody,
@@ -16,6 +23,7 @@ import {
   Field,
   Input,
   Option,
+  Spinner,
   Textarea,
   makeStyles,
   tokens,
@@ -23,13 +31,22 @@ import {
   type OptionOnSelectData,
 } from '@fluentui/react-components';
 import { DatePicker } from '@fluentui/react-datepicker-compat';
-import { TimePicker, formatDateToTimeString } from '@fluentui/react-timepicker-compat';
+import {
+  TimePicker,
+  formatDateToTimeString,
+} from '@fluentui/react-timepicker-compat';
+import { useDebounce } from '@/hooks/useDebounce';
 import { showToast } from '@/hooks/useShowToast';
 import { createTask, toIsoUtc, updateTask } from '@/services/api/task';
 import { getProjects } from '@/services/api/project';
 import { getUsers } from '@/services/api/user';
 import { queryKeys } from '@/lib/queryClient';
-import type { TaskCreate, TaskStatus, TaskUpdate, TaskResponse } from 'types/task.type';
+import type {
+  TaskCreate,
+  TaskStatus,
+  TaskUpdate,
+  TaskResponse,
+} from 'types/task.type';
 import type { ProjectResponse } from 'types/project.type';
 import type { User } from 'types/user.type';
 
@@ -71,7 +88,7 @@ const useStyles = makeStyles({
 interface CreateTaskFormValues {
   title: string;
   description?: string;
-  project_ids: string[];
+  selectedProject: string;
   assignee_id?: string;
   due_date?: Date | null;
   due_time?: string;
@@ -83,7 +100,7 @@ interface CreateTaskFormValues {
 const defaultFormValues: CreateTaskFormValues = {
   title: '',
   description: '',
-  project_ids: [],
+  selectedProject: '',
   assignee_id: undefined,
   due_date: null,
   due_time: '',
@@ -126,42 +143,90 @@ export function CreateTaskModal({
   });
 
   useEffect(() => {
-  if (!open) {
+    if (!open) {
+      reset(defaultFormValues);
+      return;
+    }
+
+    if (isEditMode && initialTask) {
+      const dueDateValue = initialTask.due_date
+        ? new Date(initialTask.due_date)
+        : null;
+      const safeDueDate =
+        dueDateValue && !Number.isNaN(dueDateValue.getTime())
+          ? dueDateValue
+          : null;
+      const reminderValue = initialTask.reminder_at
+        ? new Date(initialTask.reminder_at)
+        : null;
+      const safeReminder =
+        reminderValue && !Number.isNaN(reminderValue.getTime())
+          ? reminderValue
+          : null;
+
+      reset({
+        title: initialTask.title ?? '',
+        description: initialTask.description ?? '',
+        selectedProject: initialTask.projects?.[0]?.id ?? '',
+        assignee_id: initialTask.assignee_id ?? undefined,
+        due_date: safeDueDate,
+        due_time: safeDueDate ? formatDateToTimeString(safeDueDate) : '',
+        reminder_at: safeReminder,
+        reminder_time: safeReminder ? formatDateToTimeString(safeReminder) : '',
+        status: (initialTask.status as TaskStatus) ?? 'todo',
+      });
+      return;
+    }
+
     reset(defaultFormValues);
-    return;
-  }
-
-  if (isEditMode && initialTask) {
-    const dueDateValue = initialTask.due_date ? new Date(initialTask.due_date) : null;
-    const safeDueDate =
-      dueDateValue && !Number.isNaN(dueDateValue.getTime()) ? dueDateValue : null;
-    const reminderValue = initialTask.reminder_at ? new Date(initialTask.reminder_at) : null;
-    const safeReminder =
-      reminderValue && !Number.isNaN(reminderValue.getTime()) ? reminderValue : null;
-
-    reset({
-      title: initialTask.title ?? '',
-      description: initialTask.description ?? '',
-      project_ids:
-        initialTask.projects?.map((project) => project.id).filter(Boolean) ?? [],
-      assignee_id: initialTask.assignee_id ?? undefined,
-      due_date: safeDueDate,
-      due_time: safeDueDate ? formatDateToTimeString(safeDueDate) : '',
-      reminder_at: safeReminder,
-      reminder_time: safeReminder ? formatDateToTimeString(safeReminder) : '',
-      status: (initialTask.status as TaskStatus) ?? 'todo',
-    });
-    return;
-  }
-
-  reset(defaultFormValues);
   }, [open, reset, initialTask, isEditMode]);
 
-  const { data: projectsData } = useQuery({
-    queryKey: [...queryKeys.projects, 'task-create', 'my-projects'],
-    queryFn: () => getProjects({}, { limit: 50, my_projects_only: true }),
+  // Project search state
+  const [projectSearchQuery, setProjectSearchQuery] = useState('');
+  const debouncedProjectQuery = useDebounce(projectSearchQuery, 300);
+
+  // Infinite query for projects with search
+  const {
+    data: projectsData,
+    isLoading: isLoadingProjects,
+    fetchNextPage: fetchNextProjectsPage,
+    hasNextPage: hasNextProjectsPage,
+    isFetchingNextPage: isFetchingNextProjectsPage,
+  } = useInfiniteQuery({
+    queryKey: [
+      ...queryKeys.projects,
+      'task-create',
+      'infinite',
+      debouncedProjectQuery,
+    ],
+    queryFn: ({ pageParam = 1 }) =>
+      getProjects(
+        debouncedProjectQuery ? { name: debouncedProjectQuery } : {},
+        { limit: 20, page: pageParam },
+      ),
+    getNextPageParam: (lastPage) => {
+      if (lastPage.pagination && lastPage.pagination.has_next) {
+        return lastPage.pagination.page + 1;
+      }
+      return undefined;
+    },
+    initialPageParam: 1,
     enabled: open,
   });
+
+  const projects: ProjectResponse[] = useMemo(() => {
+    if (!projectsData?.pages) return [];
+    return projectsData.pages.flatMap((page) => page.data || []);
+  }, [projectsData]);
+
+  const handleProjectsListScroll = (event: React.UIEvent<HTMLDivElement>) => {
+    const target = event.target as HTMLDivElement;
+    const isNearBottom =
+      target.scrollHeight - target.scrollTop <= target.clientHeight * 1.5;
+    if (isNearBottom && hasNextProjectsPage && !isFetchingNextProjectsPage) {
+      fetchNextProjectsPage();
+    }
+  };
 
   const { data: usersData } = useQuery({
     queryKey: ['users', 'task-create'],
@@ -169,7 +234,6 @@ export function CreateTaskModal({
     enabled: open,
   });
 
-  const projects: ProjectResponse[] = projectsData?.data || [];
   const users: User[] = usersData?.data || [];
 
   const dueDateValue = watch('due_date');
@@ -232,7 +296,8 @@ export function CreateTaskModal({
   };
 
   const successToastMessage = useMemo(
-    () => (isEditMode ? 'Task updated successfully' : tTasks('createTaskSuccess')),
+    () =>
+      isEditMode ? 'Task updated successfully' : tTasks('createTaskSuccess'),
     [isEditMode, tTasks],
   );
 
@@ -273,12 +338,10 @@ export function CreateTaskModal({
   });
 
   const onSubmit = (values: CreateTaskFormValues) => {
-    const projectIds = (values.project_ids ?? []).filter(
-      (id): id is string => Boolean(id),
-    );
+    const projectId = values.selectedProject?.trim();
 
-    if (projectIds.length === 0) {
-      setError('project_ids', {
+    if (!projectId) {
+      setError('selectedProject', {
         type: 'manual',
         message: tModal('projectsRequired'),
       });
@@ -310,7 +373,7 @@ export function CreateTaskModal({
       title: trimmedTitle,
       description: values.description?.trim() || undefined,
       assignee_id: values.assignee_id || undefined,
-      project_ids: projectIds,
+      project_ids: [projectId],
       due_date: toIsoWithTime(values.due_date, values.due_time),
       reminder_at: toIsoWithTime(values.reminder_at, values.reminder_time),
       status: values.status === 'todo' ? undefined : values.status,
@@ -391,38 +454,80 @@ export function CreateTaskModal({
 
               <Field
                 label={tModal('projectsLabel')}
-                validationMessage={errors.project_ids?.message}
+                validationMessage={errors.selectedProject?.message}
                 required
               >
                 <Controller
-                  name="project_ids"
+                  name="selectedProject"
                   control={control}
-                  defaultValue={defaultFormValues.project_ids}
+                  defaultValue={defaultFormValues.selectedProject}
                   rules={{
                     validate: (value) =>
-                      value.length > 0 || tModal('projectsRequired'),
+                      (typeof value === 'string' && value.trim() !== '') ||
+                      tModal('projectsRequired'),
                   }}
-                  render={({ field }) => (
-                    <Dropdown
-                      multiselect
-                      placeholder={tModal('projectsPlaceholder')}
-                      selectedOptions={field.value ?? []}
-                      onOptionSelect={(_, data: OptionOnSelectData) => {
-                        const next = data.selectedOptions ?? field.value ?? [];
-                        field.onChange(next);
-                      }}
-                    >
-                      {projects.map((project) => (
-                        <Option key={project.id} value={project.id}>
-                          {project.name}
-                        </Option>
-                      ))}
-                    </Dropdown>
-                  )}
+                  render={({ field }) => {
+                    const selectedProjectName = field.value
+                      ? projects.find((p) => p.id === field.value)?.name
+                      : '';
+                    return (
+                      <Combobox
+                        placeholder={
+                          isLoadingProjects
+                            ? 'Loading...'
+                            : tModal('projectsPlaceholder')
+                        }
+                        value={selectedProjectName || projectSearchQuery}
+                        onInput={(e: React.ChangeEvent<HTMLInputElement>) => {
+                          setProjectSearchQuery(e.target.value);
+                        }}
+                        onOptionSelect={(_: any, data: any) => {
+                          field.onChange(data.optionValue || '');
+                          setProjectSearchQuery('');
+                        }}
+                        listbox={{
+                          onScroll: handleProjectsListScroll,
+                        }}
+                      >
+                        {projects.map((project) => (
+                          <Option key={project.id} value={project.id}>
+                            {project.name}
+                          </Option>
+                        ))}
+                        {isFetchingNextProjectsPage && (
+                          <div
+                            style={{
+                              padding: '8px 12px',
+                              display: 'flex',
+                              justifyContent: 'center',
+                              alignItems: 'center',
+                              gap: '8px',
+                            }}
+                          >
+                            <Spinner size="small" />
+                            <Caption1>Loading...</Caption1>
+                          </div>
+                        )}
+                        {!isLoadingProjects &&
+                          projects.length === 0 &&
+                          debouncedProjectQuery && (
+                            <div
+                              style={{ padding: '12px', textAlign: 'center' }}
+                            >
+                              <Caption1>{tModal('noProjects')}</Caption1>
+                            </div>
+                          )}
+                      </Combobox>
+                    );
+                  }}
                 />
-                {projects.length === 0 && (
-                  <span className={styles.helper}>{tModal('noProjects')}</span>
-                )}
+                {!isLoadingProjects &&
+                  projects.length === 0 &&
+                  !debouncedProjectQuery && (
+                    <span className={styles.helper}>
+                      {tModal('noProjects')}
+                    </span>
+                  )}
               </Field>
 
               <Field label={tModal('assigneeLabel')}>
@@ -471,12 +576,17 @@ export function CreateTaskModal({
                       <TimePicker
                         placeholder={tModal('dueTimePlaceholder')}
                         dateAnchor={dueDateValue ?? undefined}
-                        selectedTime={buildSelectedTime(field.value, dueDateValue)}
+                        selectedTime={buildSelectedTime(
+                          field.value,
+                          dueDateValue,
+                        )}
                         value={field.value ?? ''}
                         onTimeChange={(_event, data) =>
                           field.onChange(data.selectedTimeText ?? '')
                         }
-                        onInput={(event) => field.onChange(event.currentTarget.value)}
+                        onInput={(event) =>
+                          field.onChange(event.currentTarget.value)
+                        }
                         freeform
                       />
                     )}
@@ -506,12 +616,17 @@ export function CreateTaskModal({
                       <TimePicker
                         placeholder={tModal('reminderTimePlaceholder')}
                         dateAnchor={reminderDateValue ?? undefined}
-                        selectedTime={buildSelectedTime(field.value, reminderDateValue)}
+                        selectedTime={buildSelectedTime(
+                          field.value,
+                          reminderDateValue,
+                        )}
                         value={field.value ?? ''}
                         onTimeChange={(_event, data) =>
                           field.onChange(data.selectedTimeText ?? '')
                         }
-                        onInput={(event) => field.onChange(event.currentTarget.value)}
+                        onInput={(event) =>
+                          field.onChange(event.currentTarget.value)
+                        }
                         freeform
                       />
                     )}
@@ -524,18 +639,37 @@ export function CreateTaskModal({
                   name="status"
                   control={control}
                   defaultValue={defaultFormValues.status}
-                  render={({ field }) => (
-                    <Dropdown
-                      selectedOptions={[field.value ?? 'todo']}
-                      onOptionSelect={(_, data: OptionOnSelectData) =>
-                        field.onChange((data.optionValue as TaskStatus) || 'todo')
+                  render={({ field }) => {
+                    const getStatusLabel = (status: string) => {
+                      switch (status) {
+                        case 'todo':
+                          return tStatus('todo');
+                        case 'in_progress':
+                          return tStatus('in_progress');
+                        case 'done':
+                          return tStatus('done');
+                        default:
+                          return tStatus('todo');
                       }
-                    >
-                      <Option value="todo">{tStatus('todo')}</Option>
-                      <Option value="in_progress">{tStatus('in_progress')}</Option>
-                      <Option value="done">{tStatus('done')}</Option>
-                    </Dropdown>
-                  )}
+                    };
+                    return (
+                      <Dropdown
+                        value={getStatusLabel(field.value ?? 'todo')}
+                        selectedOptions={[field.value ?? 'todo']}
+                        onOptionSelect={(_, data: OptionOnSelectData) =>
+                          field.onChange(
+                            (data.optionValue as TaskStatus) || 'todo',
+                          )
+                        }
+                      >
+                        <Option value="todo">{tStatus('todo')}</Option>
+                        <Option value="in_progress">
+                          {tStatus('in_progress')}
+                        </Option>
+                        <Option value="done">{tStatus('done')}</Option>
+                      </Dropdown>
+                    );
+                  }}
                 />
               </Field>
             </DialogContent>
@@ -561,4 +695,3 @@ export function CreateTaskModal({
     </Dialog>
   );
 }
-
