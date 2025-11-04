@@ -1,7 +1,7 @@
 'use client';
 
 import { makeStyles, tokens } from '@fluentui/react-components';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import SyntaxHighlighter from 'react-syntax-highlighter';
 import { oneDark, oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { useAppTheme } from '@/app/providers';
 
@@ -128,6 +128,7 @@ export function MessageCodeBlock({
           </div>
           {/* Code content with syntax highlighting */}
           <div className="overflow-y-auto" dir="ltr">
+            {/* @ts-expect-error SyntaxHighlighter type issue with react-syntax-highlighter */}
             <SyntaxHighlighter
               language={language}
               style={syntaxTheme}
@@ -154,6 +155,7 @@ export function MessageCodeBlock({
     return (
       <div className={`${styles.floatingContainer} group`}>
         <div style={{ position: 'relative' }}>
+          {/* @ts-expect-error SyntaxHighlighter type issue with react-syntax-highlighter */}
           <SyntaxHighlighter
             language={language}
             style={syntaxTheme}
@@ -178,6 +180,7 @@ export function MessageCodeBlock({
   return (
     <>
       <div className={`${styles.inlineContainer} group`}>
+        {/* @ts-expect-error SyntaxHighlighter type issue with react-syntax-highlighter */}
         <SyntaxHighlighter
           language={language}
           style={syntaxTheme}

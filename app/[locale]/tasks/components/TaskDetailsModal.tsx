@@ -1,8 +1,7 @@
 'use client';
 
-import React, { useMemo } from 'react';
-import { useTranslations } from 'next-intl';
-import { useQuery } from '@tanstack/react-query';
+import { queryKeys } from '@/lib/queryClient';
+import { getTask } from '@/services/api/task';
 import {
   Avatar,
   Badge,
@@ -25,9 +24,10 @@ import {
   Edit20Regular,
   Link20Regular,
 } from '@fluentui/react-icons';
+import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { queryKeys } from '@/lib/queryClient';
-import { getTask } from '@/services/api/task';
+import { useTranslations } from 'next-intl';
+import { useMemo } from 'react';
 import type { TaskResponse } from 'types/task.type';
 
 const useStyles = makeStyles({
