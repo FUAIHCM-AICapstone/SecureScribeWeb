@@ -580,6 +580,11 @@
       "todo": "Cần làm",
       "in_progress": "Đang thực hiện",
       "done": "Hoàn thành"
+    },
+    "deleteTask": {
+      "confirmMessage": "Bạn có chắc chắn muốn xóa nhiệm vụ này?",
+      "deleteSuccess": "Đã xóa nhiệm vụ thành công",
+      "deleteError": "Không thể xóa nhiệm vụ. Vui lòng thử lại."
     }
   },
   "Profile": {

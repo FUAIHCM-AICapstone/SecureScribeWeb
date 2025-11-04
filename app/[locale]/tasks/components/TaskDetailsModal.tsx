@@ -1,8 +1,7 @@
 'use client';
 
-import React, { useMemo } from 'react';
-import { useTranslations } from 'next-intl';
-import { useQuery } from '@tanstack/react-query';
+import { queryKeys } from '@/lib/queryClient';
+import { getTask } from '@/services/api/task';
 import {
   Avatar,
   Badge,
@@ -21,9 +20,10 @@ import {
   tokens,
 } from '@fluentui/react-components';
 import { CalendarClock20Regular, Edit20Regular, Link20Regular } from '@fluentui/react-icons';
+import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { queryKeys } from '@/lib/queryClient';
-import { getTask } from '@/services/api/task';
+import { useTranslations } from 'next-intl';
+import { useMemo } from 'react';
 import type { TaskResponse } from 'types/task.type';
 
 const useStyles = makeStyles({
@@ -363,7 +363,7 @@ export function TaskDetailsModal({
           </DialogContent>
           <DialogActions>
             <Button appearance="secondary" onClick={onClose}>
-              Hủy
+              {t('createTaskModal.cancel')}
             </Button>
             <Button
               appearance="primary"
@@ -371,7 +371,7 @@ export function TaskDetailsModal({
               disabled={!data}
               icon={<Edit20Regular />}
             >
-              Sửa nhiệm vụ
+              {t('actions.edit')}
             </Button>
           </DialogActions>
         </DialogBody>

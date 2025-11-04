@@ -45,6 +45,7 @@ interface TaskActionsMenuProps {
 export function TaskActionsMenu({ task }: TaskActionsMenuProps) {
   const styles = useStyles();
   const t = useTranslations('Tasks');
+  const tCommon = useTranslations('Common');
   const queryClient = useQueryClient();
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
@@ -65,7 +66,7 @@ export function TaskActionsMenu({ task }: TaskActionsMenuProps) {
       queryClient.invalidateQueries({ queryKey: queryKeys.tasks });
       queryClient.invalidateQueries({ queryKey: queryKeys.myTasks });
       queryClient.invalidateQueries({ queryKey: queryKeys.task(task.id) });
-      showToast('success', 'Task deleted successfully');
+      showToast('success', t('deleteTask.deleteSuccess'));
       setIsDeleteOpen(false);
       setIsDetailsOpen(false);
     },
@@ -74,7 +75,7 @@ export function TaskActionsMenu({ task }: TaskActionsMenuProps) {
         typeof (error as { message?: string })?.message === 'string'
           ? (error as { message?: string }).message
           : undefined;
-      showToast('error', apiMessage || 'Failed to delete task. Please try again.');
+      showToast('error', apiMessage || t('deleteTask.deleteError'));
     },
   });
 
@@ -172,7 +173,7 @@ export function TaskActionsMenu({ task }: TaskActionsMenuProps) {
             <DialogTitle>{t('actions.delete')}</DialogTitle>
             <DialogContent>
               <Text>
-                Are you sure you want to delete this task?
+                {t('deleteTask.confirmMessage')}
               </Text>
             </DialogContent>
             <DialogActions>
@@ -184,7 +185,7 @@ export function TaskActionsMenu({ task }: TaskActionsMenuProps) {
                 onClick={handleConfirmDelete}
                 disabled={deleteTaskMutation.isPending}
               >
-                {deleteTaskMutation.isPending ? "Deleting..." : t('actions.delete')}
+                {deleteTaskMutation.isPending ? tCommon('deleting') : t('actions.delete')}
               </Button>
             </DialogActions>
           </DialogBody>
