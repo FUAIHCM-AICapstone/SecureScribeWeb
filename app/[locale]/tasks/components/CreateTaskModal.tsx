@@ -238,6 +238,13 @@ export function CreateTaskModal({
   const [userSearchQuery, setUserSearchQuery] = useState('');
   const debouncedUserQuery = useDebounce(userSearchQuery, 400);
 
+  // Determine project ID for user filtering
+  // In create mode: use defaultProjectId (selected project)
+  // In edit mode: use task's project ID
+  const projectIdForUsers = isEditMode
+    ? initialTask?.projects?.[0]?.id
+    : defaultProjectId;
+
   // Infinite query for users with search
   const {
     data: usersData,
@@ -251,12 +258,12 @@ export function CreateTaskModal({
       'task-create',
       'infinite',
       debouncedUserQuery,
-      defaultProjectId,
+      projectIdForUsers,
     ],
     queryFn: ({ pageParam = 1 }) =>
       getUsers({
         ...(debouncedUserQuery ? { name: debouncedUserQuery } : {}),
-        ...(defaultProjectId && { project_id: defaultProjectId }),
+        ...(projectIdForUsers && { project_id: projectIdForUsers }),
         limit: 50,
         page: pageParam,
       }),
@@ -352,6 +359,7 @@ export function CreateTaskModal({
 
   const taskMutation = useMutation({
     mutationFn: (payload: TaskCreate | TaskUpdate) => {
+      console.log('Mutate payload:', payload);
       if (isEditMode) {
         if (!taskId) {
           return Promise.reject(new Error('Missing task identifier.'));
@@ -501,7 +509,7 @@ export function CreateTaskModal({
                 />
               </Field>
 
-              {!defaultProjectId ? (
+              {!defaultProjectId && !isEditMode ? (
                 <Field
                   label={tModal('projectsLabel')}
                   validationMessage={errors.selectedProject?.message}
@@ -590,8 +598,9 @@ export function CreateTaskModal({
                       color: tokens.colorNeutralForeground2,
                     }}
                   >
-                    {projects.find((p) => p.id === defaultProjectId)?.name ||
-                      defaultProjectId}
+                    {isEditMode
+                      ? initialTask?.projects?.[0]?.name || initialTask?.projects?.[0]?.id
+                      : projects.find((p) => p.id === defaultProjectId)?.name || defaultProjectId}
                   </div>
                 </Field>
               )}
@@ -607,8 +616,8 @@ export function CreateTaskModal({
                       value={
                         field.value && users.length > 0
                           ? users.find((u) => u.id === field.value)?.name ||
-                            users.find((u) => u.id === field.value)?.email ||
-                            userSearchQuery
+                          users.find((u) => u.id === field.value)?.email ||
+                          userSearchQuery
                           : userSearchQuery
                       }
                       onInput={(e: React.ChangeEvent<HTMLInputElement>) => {

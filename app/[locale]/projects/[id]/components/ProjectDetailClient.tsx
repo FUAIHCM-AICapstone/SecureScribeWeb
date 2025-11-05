@@ -720,8 +720,6 @@ export function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
               page={tasksPage}
               onPageChange={setTasksPage}
               hasMore={hasMoreProjectTasks}
-              currentUserRole={getCurrentUserRole()}
-              currentUserId={user?.id}
               projectId={projectId}
               onTaskDeleted={handleTaskDeleted}
               onTaskUpdated={handleTaskUpdated}
