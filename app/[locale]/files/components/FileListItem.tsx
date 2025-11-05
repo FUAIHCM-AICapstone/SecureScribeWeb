@@ -1,26 +1,25 @@
 'use client';
 
-import React from 'react';
-import { useTranslations } from 'next-intl';
 import {
-  TableRow,
-  TableCell,
-  Text,
-  Badge,
-  Caption1,
-  makeStyles,
-  tokens,
-  shorthands,
-} from '@fluentui/react-components';
-import { format } from 'date-fns';
-import type { FileResponse } from 'types/file.type';
-import { FileActionsMenu } from './FileActionsMenu';
-import {
-  getFileIcon,
   formatFileSize,
+  getFileIcon,
   getFileTypeBadgeColor,
   getFileTypeFromMime,
 } from '@/lib/fileUtils';
+import {
+  Badge,
+  Caption1,
+  makeStyles,
+  shorthands,
+  TableCell,
+  TableRow,
+  Text,
+  tokens,
+} from '@fluentui/react-components';
+import { format } from 'date-fns';
+import { useTranslations } from 'next-intl';
+import type { FileResponse } from 'types/file.type';
+import { FileActionsMenu } from './FileActionsMenu';
 
 const useStyles = makeStyles({
   row: {
@@ -44,9 +43,12 @@ const useStyles = makeStyles({
 
 interface FileListItemProps {
   file: FileResponse;
+  onFileDeleted?: () => void;
+  onFileRenamed?: () => void;
+  onFileMoved?: () => void;
 }
 
-export function FileListItem({ file }: FileListItemProps) {
+export function FileListItem({ file, onFileDeleted, onFileRenamed, onFileMoved }: FileListItemProps) {
   const styles = useStyles();
   const t = useTranslations('Files');
 
@@ -78,7 +80,12 @@ export function FileListItem({ file }: FileListItemProps) {
         </Caption1>
       </TableCell>
       <TableCell>
-        <FileActionsMenu file={file} />
+        <FileActionsMenu
+          file={file}
+          onDeleteSuccess={onFileDeleted}
+          onRenameSuccess={onFileRenamed}
+          onMoveSuccess={onFileMoved}
+        />
       </TableCell>
     </TableRow>
   );

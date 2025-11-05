@@ -17,6 +17,7 @@ import {
 import { format } from 'date-fns';
 import { useTranslations } from 'next-intl';
 import type { UserProjectResponse } from 'types/project.type';
+import { MemberActionsMenu } from './MemberActionsMenu';
 
 const useStyles = makeStyles({
     container: {
@@ -102,12 +103,20 @@ interface MembersTableProps {
     members: UserProjectResponse[];
     isLoading?: boolean;
     formatDateTime?: (dateString: string | null) => string;
+    currentUserRole?: string | null;
+    projectId?: string;
+    onMemberRemoved?: () => void;
+    onMemberRoleChanged?: () => void;
 }
 
 export function MembersTable({
     members,
     isLoading = false,
     formatDateTime,
+    currentUserRole,
+    projectId,
+    onMemberRemoved,
+    onMemberRoleChanged,
 }: MembersTableProps) {
     const styles = useStyles();
     const t = useTranslations('ProjectDetail');
@@ -160,6 +169,15 @@ export function MembersTable({
                     <Badge appearance="outline" size="small">
                         {member.role}
                     </Badge>
+                    {projectId && (
+                        <MemberActionsMenu
+                            member={member}
+                            projectId={projectId}
+                            currentUserRole={currentUserRole}
+                            onMemberRemoved={onMemberRemoved}
+                            onMemberRoleChanged={onMemberRoleChanged}
+                        />
+                    )}
                 </div>
             ))}
         </div>

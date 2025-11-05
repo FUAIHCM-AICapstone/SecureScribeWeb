@@ -1,29 +1,28 @@
 'use client';
 
-import React from 'react';
-import { useTranslations } from 'next-intl';
-import Image from 'next/image';
 import {
+  formatFileSize,
+  getFileIcon,
+  getFileTypeBadgeColor,
+  getFileTypeFromMime,
+  truncateFilename,
+} from '@/lib/fileUtils';
+import {
+  Badge,
+  Caption1,
   Card,
   CardHeader,
   CardPreview,
-  Text,
-  Caption1,
-  Badge,
   makeStyles,
-  tokens,
   shorthands,
+  Text,
+  tokens,
 } from '@fluentui/react-components';
 import { format } from 'date-fns';
+import { useTranslations } from 'next-intl';
+import Image from 'next/image';
 import type { FileResponse } from 'types/file.type';
 import { FileActionsMenu } from './FileActionsMenu';
-import {
-  getFileIcon,
-  formatFileSize,
-  truncateFilename,
-  getFileTypeBadgeColor,
-  getFileTypeFromMime,
-} from '@/lib/fileUtils';
 
 const useStyles = makeStyles({
   card: {
@@ -93,9 +92,12 @@ const useStyles = makeStyles({
 interface FileCardProps {
   file: FileResponse;
   onPreview?: (file: FileResponse) => void;
+  onFileDeleted?: () => void;
+  onFileRenamed?: () => void;
+  onFileMoved?: () => void;
 }
 
-export function FileCard({ file, onPreview }: FileCardProps) {
+export function FileCard({ file, onPreview, onFileDeleted, onFileRenamed, onFileMoved }: FileCardProps) {
   const styles = useStyles();
   const t = useTranslations('Files');
 
@@ -151,7 +153,12 @@ export function FileCard({ file, onPreview }: FileCardProps) {
               </div>
             </div>
             <div className={styles.actionsContainer}>
-              <FileActionsMenu file={file} />
+              <FileActionsMenu
+                file={file}
+                onDeleteSuccess={onFileDeleted}
+                onRenameSuccess={onFileRenamed}
+                onMoveSuccess={onFileMoved}
+              />
             </div>
           </div>
         }

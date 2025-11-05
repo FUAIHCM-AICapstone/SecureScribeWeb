@@ -40,9 +40,12 @@ const useStyles = makeStyles({
 
 interface TaskActionsMenuProps {
   task: TaskResponse;
+  currentUserRole?: string | null;
+  onTaskDeleted?: () => void;
+  onTaskUpdated?: () => void;
 }
 
-export function TaskActionsMenu({ task }: TaskActionsMenuProps) {
+export function TaskActionsMenu({ task, currentUserRole, onTaskDeleted, onTaskUpdated }: TaskActionsMenuProps) {
   const styles = useStyles();
   const t = useTranslations('Tasks');
   const tCommon = useTranslations('Common');
@@ -67,6 +70,13 @@ export function TaskActionsMenu({ task }: TaskActionsMenuProps) {
       queryClient.invalidateQueries({ queryKey: queryKeys.myTasks });
       queryClient.invalidateQueries({ queryKey: queryKeys.task(task.id) });
       showToast('success', t('deleteTask.deleteSuccess'));
+      // Invoke callback to notify parent of successful deletion
+      if (onTaskDeleted) {
+        onTaskDeleted();
+      }
+      if (onTaskUpdated) {
+        onTaskUpdated();
+      }
       setIsDeleteOpen(false);
       setIsDetailsOpen(false);
     },
@@ -108,6 +118,16 @@ export function TaskActionsMenu({ task }: TaskActionsMenuProps) {
   const handleConfirmDelete = () => {
     deleteTaskMutation.mutate();
   };
+
+  // Check if user can manage this task (owner/admin)
+  const canManageTask = (): boolean => {
+    return currentUserRole === 'owner' || currentUserRole === 'admin';
+  };
+
+  // Don't show menu if user cannot manage tasks
+  if (!canManageTask()) {
+    return null;
+  }
 
   return (
     <>

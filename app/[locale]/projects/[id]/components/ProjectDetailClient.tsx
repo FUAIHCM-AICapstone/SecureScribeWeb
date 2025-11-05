@@ -3,7 +3,9 @@
 import MeetingSchedulerModal from '@/components/modal/MeetingSchedulerModal';
 import { FileUploadModal } from '@/components/modal/FileUploadModal';
 import { AddMemberModal } from '@/components/modal/AddMemberModal';
+import { CreateTaskModal } from '@/app/[locale]/tasks/components/CreateTaskModal';
 import { showToast } from '@/hooks/useShowToast';
+import { useAuth } from '@/context/AuthContext';
 import { queryKeys } from '@/lib/queryClient';
 import { getProjectFiles } from '@/services/api/file';
 import { getProjectMeetings } from '@/services/api/meeting';
@@ -242,6 +244,7 @@ export function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
   const tProjects = useTranslations('Projects');
   const router = useRouter();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
   const [isDeleting, setIsDeleting] = useState(false);
 
   // Pagination state
@@ -257,6 +260,22 @@ export function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
 
   // Add member modal state
   const [showAddMemberModal, setShowAddMemberModal] = useState(false);
+
+  // Create task modal state
+  const [showTaskModal, setShowTaskModal] = useState(false);
+
+  // Helper function to get current user's role in the project
+  const getCurrentUserRole = (): string | null => {
+    if (!user?.id || !project?.members) return null;
+    const currentMember = project.members.find((m) => m.user_id === user.id);
+    return currentMember?.role || null;
+  };
+
+  // Helper function to check if user can manage project resources
+  const canManageProject = (): boolean => {
+    const role = getCurrentUserRole();
+    return role === 'owner' || role === 'admin';
+  };
 
   // Fetch project data
   const {
@@ -387,6 +406,53 @@ export function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
     queryClient.invalidateQueries({ queryKey: ['projects', projectId, 'files'] });
   };
 
+  const handleFileDeleted = () => {
+    // Invalidate files query to refresh the list after deletion
+    queryClient.invalidateQueries({ queryKey: ['projects', projectId, 'files'] });
+  };
+
+  const handleFileRenamed = () => {
+    // Invalidate files query to refresh the list after rename
+    queryClient.invalidateQueries({ queryKey: ['projects', projectId, 'files'] });
+  };
+
+  const handleFileMoved = () => {
+    // Invalidate files query to refresh the list after move
+    queryClient.invalidateQueries({ queryKey: ['projects', projectId, 'files'] });
+  };
+
+  const handleMemberRemoved = () => {
+    // Invalidate project query to refresh members list after removal
+    queryClient.invalidateQueries({ queryKey: queryKeys.project(projectId) });
+  };
+
+  const handleMemberRoleChanged = () => {
+    // Invalidate project query to refresh members list after role change
+    queryClient.invalidateQueries({ queryKey: queryKeys.project(projectId) });
+  };
+
+  const handleTaskModalOpen = () => {
+    setShowTaskModal(true);
+  };
+
+  const handleTaskModalClose = (open: boolean) => {
+    setShowTaskModal(open);
+    if (!open) {
+      // Invalidate tasks query to refresh the list
+      queryClient.invalidateQueries({ queryKey: queryKeys.projectTasks(projectId, tasksPage) });
+    }
+  };
+
+  const handleTaskDeleted = () => {
+    // Invalidate tasks query to refresh the list after deletion
+    queryClient.invalidateQueries({ queryKey: queryKeys.projectTasks(projectId, tasksPage) });
+  };
+
+  const handleTaskUpdated = () => {
+    // Invalidate tasks query to refresh the list after update
+    queryClient.invalidateQueries({ queryKey: queryKeys.projectTasks(projectId, tasksPage) });
+  };
+
   const handleArchiveToggle = () => {
     if (project?.is_archived) {
       unarchiveMutation.mutate();
@@ -487,6 +553,7 @@ export function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
               appearance="secondary"
               icon={<Edit20Regular />}
               onClick={handleEdit}
+              disabled={!canManageProject()}
             >
               {t('edit')}
             </Button>
@@ -495,14 +562,14 @@ export function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
               icon={<Archive20Regular />}
               onClick={handleArchiveToggle}
               disabled={
-                archiveMutation.isPending || unarchiveMutation.isPending
+                !canManageProject() || archiveMutation.isPending || unarchiveMutation.isPending
               }
             >
               {project.is_archived ? t('unarchive') : t('archive')}
             </Button>
             <Menu>
               <MenuTrigger disableButtonEnhancement>
-                <Button appearance="subtle" icon={<MoreVertical20Regular />} />
+                <Button appearance="subtle" icon={<MoreVertical20Regular />} disabled={!canManageProject()} />
               </MenuTrigger>
               <MenuPopover>
                 <MenuList>
@@ -534,7 +601,7 @@ export function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
           <div className={styles.metaItem}>
             <People20Regular className={styles.metaIcon} />
             <div className={styles.metaContent}>
-              <Caption1 className={styles.metaLabel}>{t('members')}:</Caption1>
+              <Caption1 className={styles.metaLabel}>{t('membersLabel')}:</Caption1>
               <Body1 className={styles.metaValue}>
                 {project.members?.length || 0}
               </Body1>
@@ -594,6 +661,9 @@ export function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
               page={filesPage}
               onPageChange={setFilesPage}
               hasMore={filesData?.pagination?.has_next || false}
+              onFileDeleted={handleFileDeleted}
+              onFileRenamed={handleFileRenamed}
+              onFileMoved={handleFileMoved}
             />
           </Card>
         </div>
@@ -604,12 +674,13 @@ export function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
             <div className={styles.sectionTitle}>
               <div>
                 <People20Regular className={styles.sectionIcon} />
-                <Text className={styles.sectionHeading}>{t('members')}</Text>
+                <Text className={styles.sectionHeading}>{t('membersLabel')}</Text>
               </div>
               <Button
                 appearance="primary"
                 icon={<Add20Regular />}
                 onClick={() => setShowAddMemberModal(true)}
+                disabled={!canManageProject()}
               >
                 {t('addMember')}
               </Button>
@@ -618,6 +689,10 @@ export function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
               <MembersTable
                 members={project.members}
                 formatDateTime={formatDateTime}
+                currentUserRole={getCurrentUserRole()}
+                projectId={projectId}
+                onMemberRemoved={handleMemberRemoved}
+                onMemberRoleChanged={handleMemberRoleChanged}
               />
             ) : (
               <Body1 className={styles.noContent}>{t('noMembers')}</Body1>
@@ -627,8 +702,17 @@ export function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
           {/* Tasks Section */}
           <Card className={styles.section}>
             <div className={styles.sectionTitle}>
-              <TaskListSquareLtr20Regular className={styles.sectionIcon} />
-              <Text className={styles.sectionHeading}>{t('tasks')}</Text>
+              <div>
+                <TaskListSquareLtr20Regular className={styles.sectionIcon} />
+                <Text className={styles.sectionHeading}>{t('tasks')}</Text>
+              </div>
+              <Button
+                appearance="primary"
+                icon={<Add20Regular />}
+                onClick={handleTaskModalOpen}
+              >
+                {t('createTask')}
+              </Button>
             </div>
             <TasksTable
               data={projectTasks}
@@ -636,6 +720,10 @@ export function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
               page={tasksPage}
               onPageChange={setTasksPage}
               hasMore={hasMoreProjectTasks}
+              currentUserRole={getCurrentUserRole()}
+              projectId={projectId}
+              onTaskDeleted={handleTaskDeleted}
+              onTaskUpdated={handleTaskUpdated}
             />
           </Card>
         </div>
@@ -661,6 +749,13 @@ export function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
         onOpenChange={setShowAddMemberModal}
         projectId={projectId}
         existingMembers={project?.members || []}
+      />
+
+      {/* Create Task Modal */}
+      <CreateTaskModal
+        open={showTaskModal}
+        onClose={() => handleTaskModalClose(false)}
+        defaultProjectId={projectId}
       />
     </div>
   );

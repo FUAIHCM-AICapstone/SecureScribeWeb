@@ -5,9 +5,8 @@ import { useTranslations } from 'next-intl';
 import { Controller, useForm } from 'react-hook-form';
 import {
   useMutation,
-  useQuery,
-  useQueryClient,
   useInfiniteQuery,
+  useQueryClient,
 } from '@tanstack/react-query';
 import {
   Button,
@@ -115,6 +114,7 @@ interface CreateTaskModalProps {
   mode?: 'create' | 'edit';
   taskId?: string;
   initialTask?: TaskResponse;
+  defaultProjectId?: string;
 }
 
 export function CreateTaskModal({
@@ -123,6 +123,7 @@ export function CreateTaskModal({
   mode = 'create',
   taskId,
   initialTask,
+  defaultProjectId,
 }: CreateTaskModalProps) {
   const styles = useStyles();
   const tTasks = useTranslations('Tasks');
@@ -145,6 +146,7 @@ export function CreateTaskModal({
   useEffect(() => {
     if (!open) {
       reset(defaultFormValues);
+      setUserSearchQuery('');
       return;
     }
 
@@ -178,8 +180,12 @@ export function CreateTaskModal({
       return;
     }
 
-    reset(defaultFormValues);
-  }, [open, reset, initialTask, isEditMode]);
+    // Use defaultProjectId if provided
+    reset({
+      ...defaultFormValues,
+      selectedProject: defaultProjectId ?? defaultFormValues.selectedProject,
+    });
+  }, [open, reset, initialTask, isEditMode, defaultProjectId]);
 
   // Project search state
   const [projectSearchQuery, setProjectSearchQuery] = useState('');
@@ -228,13 +234,58 @@ export function CreateTaskModal({
     }
   };
 
-  const { data: usersData } = useQuery({
-    queryKey: ['users', 'task-create'],
-    queryFn: () => getUsers({ limit: 50, page: 1 }),
-    enabled: open,
+  // User search state
+  const [userSearchQuery, setUserSearchQuery] = useState('');
+  const debouncedUserQuery = useDebounce(userSearchQuery, 300);
+
+  // Only fetch users when search query is not empty (lazy load)
+  const shouldFetchUsers = debouncedUserQuery.trim().length > 0;
+
+  // Infinite query for users with search
+  const {
+    data: usersData,
+    isLoading: isLoadingUsers,
+    fetchNextPage: fetchNextUsersPage,
+    hasNextPage: hasNextUsersPage,
+    isFetchingNextPage: isFetchingNextUsersPage,
+  } = useInfiniteQuery({
+    queryKey: [
+      'users',
+      'task-create',
+      'infinite',
+      debouncedUserQuery,
+      defaultProjectId,
+    ],
+    queryFn: ({ pageParam = 1 }) =>
+      getUsers({
+        ...(debouncedUserQuery ? { name: debouncedUserQuery } : {}),
+        ...(defaultProjectId && { project_id: defaultProjectId }),
+        limit: 20,
+        page: pageParam,
+      }),
+    getNextPageParam: (lastPage) => {
+      if (lastPage.pagination && lastPage.pagination.has_next) {
+        return lastPage.pagination.page + 1;
+      }
+      return undefined;
+    },
+    initialPageParam: 1,
+    enabled: shouldFetchUsers,
   });
 
-  const users: User[] = usersData?.data || [];
+  const users: User[] = useMemo(() => {
+    if (!usersData?.pages) return [];
+    return usersData.pages.flatMap((page) => page.data || []);
+  }, [usersData]);
+
+  const handleUsersListScroll = (event: React.UIEvent<HTMLDivElement>) => {
+    const target = event.target as HTMLDivElement;
+    const isNearBottom =
+      target.scrollHeight - target.scrollTop <= target.clientHeight * 1.5;
+    if (isNearBottom && hasNextUsersPage && !isFetchingNextUsersPage) {
+      fetchNextUsersPage();
+    }
+  };
 
   const dueDateValue = watch('due_date');
   const reminderDateValue = watch('reminder_at');
@@ -330,9 +381,9 @@ export function CreateTaskModal({
       showToast(
         'error',
         apiMessage ||
-          (isEditMode
-            ? 'Failed to update task. Please try again.'
-            : tTasks('createTaskError')),
+        (isEditMode
+          ? 'Failed to update task. Please try again.'
+          : tTasks('createTaskError')),
       );
     },
   });
@@ -452,49 +503,133 @@ export function CreateTaskModal({
                 />
               </Field>
 
-              <Field
-                label={tModal('projectsLabel')}
-                validationMessage={errors.selectedProject?.message}
-                required
-              >
+              {!defaultProjectId ? (
+                <Field
+                  label={tModal('projectsLabel')}
+                  validationMessage={errors.selectedProject?.message}
+                  required
+                >
+                  <Controller
+                    name="selectedProject"
+                    control={control}
+                    defaultValue={defaultFormValues.selectedProject}
+                    rules={{
+                      validate: (value) =>
+                        (typeof value === 'string' && value.trim() !== '') ||
+                        tModal('projectsRequired'),
+                    }}
+                    render={({ field }) => {
+                      const selectedProjectName = field.value
+                        ? projects.find((p) => p.id === field.value)?.name
+                        : '';
+                      return (
+                        <Combobox
+                          placeholder={
+                            isLoadingProjects
+                              ? 'Loading...'
+                              : tModal('projectsPlaceholder')
+                          }
+                          value={selectedProjectName || projectSearchQuery}
+                          onInput={(e: React.ChangeEvent<HTMLInputElement>) => {
+                            setProjectSearchQuery(e.target.value);
+                          }}
+                          onOptionSelect={(_: any, data: any) => {
+                            field.onChange(data.optionValue || '');
+                            setProjectSearchQuery('');
+                          }}
+                          listbox={{
+                            onScroll: handleProjectsListScroll,
+                          }}
+                        >
+                          {projects.map((project) => (
+                            <Option key={project.id} value={project.id}>
+                              {project.name}
+                            </Option>
+                          ))}
+                          {isFetchingNextProjectsPage && (
+                            <div
+                              style={{
+                                padding: '8px 12px',
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                gap: '8px',
+                              }}
+                            >
+                              <Spinner size="small" />
+                              <Caption1>Loading...</Caption1>
+                            </div>
+                          )}
+                          {!isLoadingProjects &&
+                            projects.length === 0 &&
+                            debouncedProjectQuery && (
+                              <div
+                                style={{ padding: '12px', textAlign: 'center' }}
+                              >
+                                <Caption1>{tModal('noProjects')}</Caption1>
+                              </div>
+                            )}
+                        </Combobox>
+                      );
+                    }}
+                  />
+                  {!isLoadingProjects &&
+                    projects.length === 0 &&
+                    !debouncedProjectQuery && (
+                      <span className={styles.helper}>
+                        {tModal('noProjects')}
+                      </span>
+                    )}
+                </Field>
+              ) : (
+                <Field label={tModal('projectsLabel')}>
+                  <div
+                    style={{
+                      padding: '8px 12px',
+                      backgroundColor: tokens.colorNeutralBackground3,
+                      borderRadius: tokens.borderRadiusSmall,
+                      border: `1px solid ${tokens.colorNeutralStroke2}`,
+                      color: tokens.colorNeutralForeground2,
+                    }}
+                  >
+                    {projects.find((p) => p.id === defaultProjectId)?.name ||
+                      defaultProjectId}
+                  </div>
+                </Field>
+              )}
+
+              <Field label={tModal('assigneeLabel')}>
                 <Controller
-                  name="selectedProject"
+                  name="assignee_id"
                   control={control}
-                  defaultValue={defaultFormValues.selectedProject}
-                  rules={{
-                    validate: (value) =>
-                      (typeof value === 'string' && value.trim() !== '') ||
-                      tModal('projectsRequired'),
-                  }}
+                  defaultValue={defaultFormValues.assignee_id}
                   render={({ field }) => {
-                    const selectedProjectName = field.value
-                      ? projects.find((p) => p.id === field.value)?.name
+                    const selectedUserName = field.value
+                      ? users.find((u) => u.id === field.value)?.name ||
+                      users.find((u) => u.id === field.value)?.email
                       : '';
                     return (
                       <Combobox
-                        placeholder={
-                          isLoadingProjects
-                            ? 'Loading...'
-                            : tModal('projectsPlaceholder')
-                        }
-                        value={selectedProjectName || projectSearchQuery}
+                        placeholder={tModal('assigneePlaceholder')}
+                        value={selectedUserName || userSearchQuery}
                         onInput={(e: React.ChangeEvent<HTMLInputElement>) => {
-                          setProjectSearchQuery(e.target.value);
+                          setUserSearchQuery(e.target.value);
                         }}
                         onOptionSelect={(_: any, data: any) => {
-                          field.onChange(data.optionValue || '');
-                          setProjectSearchQuery('');
+                          field.onChange(data.optionValue || undefined);
+                          setUserSearchQuery('');
                         }}
                         listbox={{
-                          onScroll: handleProjectsListScroll,
+                          onScroll: handleUsersListScroll,
                         }}
                       >
-                        {projects.map((project) => (
-                          <Option key={project.id} value={project.id}>
-                            {project.name}
+                        <Option value="">{tModal('unassigned')}</Option>
+                        {users.map((user) => (
+                          <Option key={user.id} value={user.id}>
+                            {user.name || user.email}
                           </Option>
                         ))}
-                        {isFetchingNextProjectsPage && (
+                        {isFetchingNextUsersPage && (
                           <div
                             style={{
                               padding: '8px 12px',
@@ -508,50 +643,25 @@ export function CreateTaskModal({
                             <Caption1>Loading...</Caption1>
                           </div>
                         )}
-                        {!isLoadingProjects &&
-                          projects.length === 0 &&
-                          debouncedProjectQuery && (
+                        {!isLoadingUsers &&
+                          shouldFetchUsers &&
+                          users.length === 0 &&
+                          debouncedUserQuery && (
                             <div
                               style={{ padding: '12px', textAlign: 'center' }}
                             >
-                              <Caption1>{tModal('noProjects')}</Caption1>
+                              <Caption1>{tModal('noUsers')}</Caption1>
                             </div>
                           )}
                       </Combobox>
                     );
                   }}
                 />
-                {!isLoadingProjects &&
-                  projects.length === 0 &&
-                  !debouncedProjectQuery && (
-                    <span className={styles.helper}>
-                      {tModal('noProjects')}
-                    </span>
-                  )}
-              </Field>
-
-              <Field label={tModal('assigneeLabel')}>
-                <Controller
-                  name="assignee_id"
-                  control={control}
-                  defaultValue={defaultFormValues.assignee_id}
-                  render={({ field }) => (
-                    <Dropdown
-                      placeholder={tModal('assigneePlaceholder')}
-                      selectedOptions={field.value ? [field.value] : []}
-                      onOptionSelect={(_, data: OptionOnSelectData) =>
-                        field.onChange(data.optionValue || undefined)
-                      }
-                    >
-                      <Option value="">{tModal('unassigned')}</Option>
-                      {users.map((user) => (
-                        <Option key={user.id} value={user.id}>
-                          {user.name || user.email}
-                        </Option>
-                      ))}
-                    </Dropdown>
-                  )}
-                />
+                {!shouldFetchUsers && (
+                  <span className={styles.helper}>
+                    {tModal('searchAssignee')}
+                  </span>
+                )}
               </Field>
 
               <Field label={tModal('dueDateLabel')}>

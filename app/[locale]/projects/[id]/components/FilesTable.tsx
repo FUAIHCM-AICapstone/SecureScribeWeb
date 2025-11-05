@@ -1,5 +1,6 @@
 'use client';
 
+import { FileActionsMenu } from '@/app/[locale]/files/components/FileActionsMenu';
 import { Button, Spinner, Text, tokens } from '@fluentui/react-components';
 import {
     createColumnHelper,
@@ -17,9 +18,21 @@ interface FilesTableProps {
     page: number;
     onPageChange: (page: number) => void;
     hasMore: boolean;
+    onFileDeleted?: () => void;
+    onFileRenamed?: () => void;
+    onFileMoved?: () => void;
 }
 
-export function FilesTable({ data, isLoading, page, onPageChange, hasMore }: FilesTableProps) {
+export function FilesTable({
+    data,
+    isLoading,
+    page,
+    onPageChange,
+    hasMore,
+    onFileDeleted,
+    onFileRenamed,
+    onFileMoved,
+}: FilesTableProps) {
     const t = useTranslations('ProjectDetail');
 
     // Create columns with translations
@@ -51,8 +64,21 @@ export function FilesTable({ data, isLoading, page, onPageChange, hasMore }: Fil
                 },
                 size: 100,
             }),
+            fileColumnHelper.display({
+                id: 'actions',
+                header: t('tableHeaders.actions'),
+                cell: (info) => (
+                    <FileActionsMenu
+                        file={info.row.original}
+                        onDeleteSuccess={onFileDeleted}
+                        onRenameSuccess={onFileRenamed}
+                        onMoveSuccess={onFileMoved}
+                    />
+                ),
+                size: 100,
+            }),
         ],
-        [fileColumnHelper, t]
+        [fileColumnHelper, t, onFileDeleted, onFileRenamed, onFileMoved]
     );
 
     const table = useReactTable({

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
 import { Badge, Button, Spinner, Text, tokens } from '@fluentui/react-components';
@@ -11,6 +12,7 @@ import { format } from 'date-fns';
 import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
 import type { TaskResponse } from 'types/task.type';
+import { TaskActionsMenu } from '@/app/[locale]/tasks/components/TaskActionsMenu';
 
 interface TasksTableProps {
     data: TaskResponse[];
@@ -18,9 +20,13 @@ interface TasksTableProps {
     page: number;
     onPageChange: (page: number) => void;
     hasMore: boolean;
+    currentUserRole?: string | null;
+    projectId?: string;
+    onTaskDeleted?: () => void;
+    onTaskUpdated?: () => void;
 }
 
-export function TasksTable({ data, isLoading, page, onPageChange, hasMore }: TasksTableProps) {
+export function TasksTable({ data, isLoading, page, onPageChange, hasMore, currentUserRole, projectId, onTaskDeleted, onTaskUpdated }: TasksTableProps) {
     const t = useTranslations('ProjectDetail');
 
     // Create columns with translations
@@ -69,8 +75,24 @@ export function TasksTable({ data, isLoading, page, onPageChange, hasMore }: Tas
                 },
                 size: 150,
             }),
+            taskColumnHelper.display({
+                id: 'actions',
+                header: '',
+                cell: (info) => {
+                    if (!projectId) return null;
+                    return (
+                        <TaskActionsMenu
+                            task={info.row.original}
+                            currentUserRole={currentUserRole}
+                            onTaskDeleted={onTaskDeleted}
+                            onTaskUpdated={onTaskUpdated}
+                        />
+                    );
+                },
+                size: 50,
+            }),
         ],
-        [taskColumnHelper, t]
+        [taskColumnHelper, t, projectId]
     );
 
     const table = useReactTable({

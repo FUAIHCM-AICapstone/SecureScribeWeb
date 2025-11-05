@@ -1,40 +1,39 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useTranslations } from 'next-intl';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { FileMoveModal } from '@/components/modal/FileMoveModal';
+import { showToast } from '@/hooks/useShowToast';
+import { deleteFile, updateFile } from '@/services/api/file';
 import {
-  Menu,
-  MenuTrigger,
-  MenuButton,
-  MenuPopover,
-  MenuList,
-  MenuItem,
-  MenuDivider,
+  Button,
   Dialog,
+  DialogActions,
+  DialogBody,
+  DialogContent,
   DialogSurface,
   DialogTitle,
-  DialogBody,
-  DialogActions,
-  DialogContent,
-  Button,
-  Input,
   Field,
+  Input,
   makeStyles,
+  Menu,
+  MenuButton,
+  MenuDivider,
+  MenuItem,
+  MenuList,
+  MenuPopover,
+  MenuTrigger,
 } from '@fluentui/react-components';
 import {
-  MoreHorizontal20Regular,
-  Eye20Regular,
   ArrowDownload20Regular,
-  Rename20Regular,
-  Delete20Regular,
   ArrowMove20Regular,
+  Delete20Regular,
+  Eye20Regular,
+  MoreHorizontal20Regular,
+  Rename20Regular,
 } from '@fluentui/react-icons';
+import { useMutation } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
+import { useState } from 'react';
 import type { FileResponse } from 'types/file.type';
-import { deleteFile, updateFile } from '@/services/api/file';
-import { queryKeys } from '@/lib/queryClient';
-import { showToast } from '@/hooks/useShowToast';
-import { FileMoveModal } from '@/components/modal/FileMoveModal';
 
 const useStyles = makeStyles({
   dialogContent: {
@@ -46,12 +45,14 @@ const useStyles = makeStyles({
 
 interface FileActionsMenuProps {
   file: FileResponse;
+  onRenameSuccess?: () => void;
+  onDeleteSuccess?: () => void;
+  onMoveSuccess?: () => void;
 }
 
-export function FileActionsMenu({ file }: FileActionsMenuProps) {
+export function FileActionsMenu({ file, onRenameSuccess, onDeleteSuccess, onMoveSuccess }: FileActionsMenuProps) {
   const styles = useStyles();
   const t = useTranslations('Files');
-  const queryClient = useQueryClient();
   const [renameOpen, setRenameOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [moveOpen, setMoveOpen] = useState(false);
@@ -62,16 +63,9 @@ export function FileActionsMenu({ file }: FileActionsMenuProps) {
     mutationFn: (newName: string) => updateFile(file.id, { filename: newName }),
     onSuccess: () => {
       showToast('success', t('rename.renameSuccess'));
-      queryClient.invalidateQueries({ queryKey: queryKeys.files });
-      if (file.project_id) {
-        queryClient.invalidateQueries({
-          queryKey: ['projects', file.project_id, 'files'],
-        });
-      }
-      if (file.meeting_id) {
-        queryClient.invalidateQueries({
-          queryKey: queryKeys.meetingFiles(file.meeting_id),
-        });
+      // Call the callback to notify parent of successful rename
+      if (onRenameSuccess) {
+        onRenameSuccess();
       }
       setRenameOpen(false);
     },
@@ -85,16 +79,9 @@ export function FileActionsMenu({ file }: FileActionsMenuProps) {
     mutationFn: () => deleteFile(file.id),
     onSuccess: () => {
       showToast('success', t('delete.deleteSuccess'));
-      queryClient.invalidateQueries({ queryKey: queryKeys.files });
-      if (file.project_id) {
-        queryClient.invalidateQueries({
-          queryKey: ['projects', file.project_id, 'files'],
-        });
-      }
-      if (file.meeting_id) {
-        queryClient.invalidateQueries({
-          queryKey: queryKeys.meetingFiles(file.meeting_id),
-        });
+      // Call the callback to notify parent of successful deletion
+      if (onDeleteSuccess) {
+        onDeleteSuccess();
       }
       setDeleteOpen(false);
     },
@@ -263,6 +250,10 @@ export function FileActionsMenu({ file }: FileActionsMenuProps) {
         onClose={() => setMoveOpen(false)}
         file={file}
         onMoveSuccess={() => {
+          // Call the callback to notify parent of successful move
+          if (onMoveSuccess) {
+            onMoveSuccess();
+          }
           setMoveOpen(false);
         }}
       />

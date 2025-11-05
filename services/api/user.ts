@@ -16,6 +16,7 @@ export const getUsers = async (params?: {
   dir?: string;
   name?: string;
   email?: string;
+  project_id?: string;
   position?: string;
   created_at_gte?: string;
   created_at_lte?: string;
