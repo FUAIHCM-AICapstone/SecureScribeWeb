@@ -21,12 +21,13 @@ interface TasksTableProps {
     onPageChange: (page: number) => void;
     hasMore: boolean;
     currentUserRole?: string | null;
+    currentUserId?: string;
     projectId?: string;
     onTaskDeleted?: () => void;
     onTaskUpdated?: () => void;
 }
 
-export function TasksTable({ data, isLoading, page, onPageChange, hasMore, currentUserRole, projectId, onTaskDeleted, onTaskUpdated }: TasksTableProps) {
+export function TasksTable({ data, isLoading, page, onPageChange, hasMore, currentUserRole, currentUserId, projectId, onTaskDeleted, onTaskUpdated }: TasksTableProps) {
     const t = useTranslations('ProjectDetail');
 
     // Create columns with translations
@@ -84,6 +85,7 @@ export function TasksTable({ data, isLoading, page, onPageChange, hasMore, curre
                         <TaskActionsMenu
                             task={info.row.original}
                             currentUserRole={currentUserRole}
+                            currentUserId={currentUserId}
                             onTaskDeleted={onTaskDeleted}
                             onTaskUpdated={onTaskUpdated}
                         />

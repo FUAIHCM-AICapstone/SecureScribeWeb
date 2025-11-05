@@ -41,11 +41,12 @@ const useStyles = makeStyles({
 interface TaskActionsMenuProps {
   task: TaskResponse;
   currentUserRole?: string | null;
+  currentUserId?: string;
   onTaskDeleted?: () => void;
   onTaskUpdated?: () => void;
 }
 
-export function TaskActionsMenu({ task, currentUserRole, onTaskDeleted, onTaskUpdated }: TaskActionsMenuProps) {
+export function TaskActionsMenu({ task, currentUserRole, currentUserId, onTaskDeleted, onTaskUpdated }: TaskActionsMenuProps) {
   const styles = useStyles();
   const t = useTranslations('Tasks');
   const tCommon = useTranslations('Common');
@@ -119,15 +120,17 @@ export function TaskActionsMenu({ task, currentUserRole, onTaskDeleted, onTaskUp
     deleteTaskMutation.mutate();
   };
 
-  // Check if user can manage this task (owner/admin)
-  const canManageTask = (): boolean => {
+  const canViewTask = (): boolean => {
+    return true;
+  };
+
+  const canEditTask = (): boolean => {
     return currentUserRole === 'owner' || currentUserRole === 'admin';
   };
 
-  // Don't show menu if user cannot manage tasks
-  if (!canManageTask()) {
-    return null;
-  }
+  const canDeleteTask = (): boolean => {
+    return currentUserRole === 'owner' || currentUserRole === 'admin';
+  };
 
   return (
     <>
@@ -147,10 +150,10 @@ export function TaskActionsMenu({ task, currentUserRole, onTaskDeleted, onTaskUp
             <MenuItem icon={<Eye20Regular />} onClick={handleView}>
               {t('actions.view')}
             </MenuItem>
-            <MenuItem icon={<Edit20Regular />} onClick={handleEdit}>
+            <MenuItem icon={<Edit20Regular />} onClick={handleEdit} disabled={!canEditTask()}>
               {t('actions.edit')}
             </MenuItem>
-            <MenuItem icon={<Delete20Regular />} onClick={handleDelete}>
+            <MenuItem icon={<Delete20Regular />} onClick={handleDelete} disabled={!canDeleteTask()}>
               {t('actions.delete')}
             </MenuItem>
           </MenuList>
