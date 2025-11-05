@@ -400,7 +400,8 @@
     "status": {
       "active": "Active",
       "completed": "Completed",
-      "cancelled": "Cancelled"
+      "cancelled": "Cancelled",
+      "archived": "Archived"
     },
     "actions": {
       "label": "Meeting actions",
@@ -408,11 +409,16 @@
       "edit": "Edit Meeting",
       "share": "Share",
       "archive": "Archive",
+      "unarchive": "Unarchive",
       "delete": "Delete",
       "deleteConfirmTitle": "Delete Meeting",
       "deleteConfirmMessage": "Are you sure you want to delete \"{title}\"? This action cannot be undone.",
       "deleteSuccess": "\"{title}\" has been deleted successfully.",
       "deleteError": "Failed to delete \"{title}\". Please try again.",
+      "archiveSuccess": "Meeting archived successfully",
+      "archiveError": "Failed to archive meeting",
+      "unarchiveSuccess": "Meeting unarchived successfully",
+      "unarchiveError": "Failed to unarchive meeting",
       "cancel": "Cancel",
       "deleting": "Deleting..."
     },
@@ -452,6 +458,37 @@
     "files": "Files",
     "noFiles": "No files uploaded",
     "filesCount": "{count} {count, plural, =1 {file} other {files}}"
+  },
+  "MeetingEdit": {
+    "editMeeting": "Edit Meeting",
+    "meetingTitle": "Meeting Title",
+    "meetingTitlePlaceholder": "Enter meeting title",
+    "meetingDescription": "Meeting Description",
+    "meetingDescriptionPlaceholder": "Enter meeting description (optional)",
+    "meetingUrl": "Meeting URL",
+    "meetingUrlPlaceholder": "https://meet.google.com/...",
+    "meetingTitleMaxLength": "Title must not exceed 200 characters",
+    "meetingDescriptionMaxLength": "Description must not exceed 1000 characters",
+    "meetingUrlInvalid": "Please enter a valid URL",
+    "cancel": "Cancel",
+    "save": "Save Changes",
+    "saving": "Saving...",
+    "editSuccess": "Meeting updated successfully",
+    "editError": "Failed to update meeting"
+  },
+  "MeetingShare": {
+    "title": "Share Meeting",
+    "untitledMeeting": "Untitled Meeting",
+    "meetingDetailLink": "Meeting Detail Link",
+    "meetingUrl": "Meeting URL",
+    "shareDescription": "Share this link with others to give them access to the meeting details",
+    "urlDescription": "Direct link to join the meeting",
+    "copy": "Copy",
+    "copied": "Copied!",
+    "done": "Done",
+    "linkCopied": "Link copied to clipboard",
+    "urlCopied": "URL copied to clipboard",
+    "copyError": "Failed to copy to clipboard"
   },
   "Projects": {
     "title": "Projects",

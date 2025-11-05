@@ -108,6 +108,12 @@ export function MeetingRow({ meeting }: MeetingRowProps) {
             {t('status.cancelled')}
           </Badge>
         );
+      case 'archived':
+        return (
+          <Badge appearance="filled" color="warning" size="small">
+            {t('status.archived')}
+          </Badge>
+        );
       default:
         return (
           <Badge appearance="outline" size="small">

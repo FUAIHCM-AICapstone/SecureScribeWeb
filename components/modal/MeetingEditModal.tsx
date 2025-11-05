@@ -20,9 +20,9 @@ import { useTranslations } from 'next-intl';
 import React, { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { updateProject } from '@/services/api/project';
+import { updateMeeting } from '@/services/api/meeting';
 import { queryKeys } from '@/lib/queryClient';
-import type { ProjectResponse, ProjectUpdate } from 'types/project.type';
+import type { MeetingResponse, MeetingUpdate } from 'types/meeting.type';
 
 const useStyles = makeStyles({
   form: {
@@ -45,26 +45,27 @@ const useStyles = makeStyles({
   },
 });
 
-interface ProjectFormData {
-  name: string;
+interface MeetingFormData {
+  title: string;
   description: string;
+  url: string;
 }
 
-interface ProjectEditModalProps {
+interface MeetingEditModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  project: ProjectResponse;
+  meeting: MeetingResponse;
   onEditSuccess?: () => void;
 }
 
-export default function ProjectEditModal({
+export default function MeetingEditModal({
   open,
   onOpenChange,
-  project,
+  meeting,
   onEditSuccess,
-}: ProjectEditModalProps) {
+}: MeetingEditModalProps) {
   const styles = useStyles();
-  const t = useTranslations('ProjectEdit');
+  const t = useTranslations('MeetingEdit');
   const queryClient = useQueryClient();
 
   const {
@@ -72,32 +73,34 @@ export default function ProjectEditModal({
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<ProjectFormData>({
+  } = useForm<MeetingFormData>({
     defaultValues: {
-      name: project.name,
-      description: project.description || '',
+      title: meeting.title || '',
+      description: meeting.description || '',
+      url: meeting.url || '',
     },
   });
 
-  // Reset form when project changes or modal opens
+  // Reset form when meeting changes or modal opens
   useEffect(() => {
     if (open) {
       reset({
-        name: project.name,
-        description: project.description || '',
+        title: meeting.title || '',
+        description: meeting.description || '',
+        url: meeting.url || '',
       });
     }
-  }, [open, project, reset]);
+  }, [open, meeting, reset]);
 
-  // Update project mutation
-  const updateProjectMutation = useMutation({
-    mutationFn: (projectData: ProjectUpdate) =>
-      updateProject(project.id, projectData),
+  // Update meeting mutation
+  const updateMeetingMutation = useMutation({
+    mutationFn: (meetingData: MeetingUpdate) =>
+      updateMeeting(meeting.id, meetingData),
     onSuccess: () => {
       // Invalidate related queries to refresh data
-      queryClient.invalidateQueries({ queryKey: queryKeys.projects });
+      queryClient.invalidateQueries({ queryKey: queryKeys.meetings });
       queryClient.invalidateQueries({
-        queryKey: queryKeys.project(project.id),
+        queryKey: queryKeys.meeting(meeting.id),
       });
 
       // Show success toast
@@ -115,7 +118,7 @@ export default function ProjectEditModal({
       onOpenChange(false);
     },
     onError: (error: any) => {
-      console.error('Error updating project:', error);
+      console.error('Error updating meeting:', error);
       const errorMessage = error?.message || t('editError');
       showToast('error', errorMessage, {
         duration: 5000,
@@ -123,16 +126,17 @@ export default function ProjectEditModal({
     },
   });
 
-  const onSubmit = (data: ProjectFormData) => {
+  const onSubmit = (data: MeetingFormData) => {
     try {
-      const projectData: ProjectUpdate = {
-        name: data.name.trim(),
+      const meetingData: MeetingUpdate = {
+        title: data.title.trim() || undefined,
         description: data.description?.trim() || undefined,
+        url: data.url?.trim() || undefined,
       };
 
-      updateProjectMutation.mutate(projectData);
+      updateMeetingMutation.mutate(meetingData);
     } catch (error) {
-      console.error('Error preparing project data:', error);
+      console.error('Error preparing meeting data:', error);
       showToast('error', t('editError'));
     }
   };
@@ -145,46 +149,38 @@ export default function ProjectEditModal({
   return (
     <Dialog open={open} onOpenChange={(_, data) => onOpenChange(data.open)}>
       <DialogSurface>
-        <DialogTitle>{t('editProject')}</DialogTitle>
+        <DialogTitle>{t('editMeeting')}</DialogTitle>
         <form onSubmit={handleSubmit(onSubmit)}>
           <DialogBody>
             <DialogContent className={styles.form}>
-              {/* Project Name */}
+              {/* Meeting Title */}
               <Field
-                label={t('projectName')}
-                required
-                validationMessage={errors.name?.message}
-                validationState={errors.name ? 'error' : 'none'}
+                label={t('meetingTitle')}
+                validationMessage={errors.title?.message}
+                validationState={errors.title ? 'error' : 'none'}
               >
                 <Controller
-                  name="name"
+                  name="title"
                   control={control}
                   rules={{
-                    required: t('projectNameRequired'),
-                    minLength: {
-                      value: 3,
-                      message: t('projectNameMinLength'),
-                    },
                     maxLength: {
-                      value: 100,
-                      message: t('projectNameMaxLength'),
+                      value: 200,
+                      message: t('meetingTitleMaxLength'),
                     },
-                    validate: (value) =>
-                      value.trim().length >= 3 || t('projectNameRequired'),
                   }}
                   render={({ field }) => (
                     <Input
                       {...field}
-                      placeholder={t('projectNamePlaceholder')}
-                      disabled={updateProjectMutation.isPending}
+                      placeholder={t('meetingTitlePlaceholder')}
+                      disabled={updateMeetingMutation.isPending}
                     />
                   )}
                 />
               </Field>
 
-              {/* Project Description */}
+              {/* Meeting Description */}
               <Field
-                label={t('projectDescription')}
+                label={t('meetingDescription')}
                 validationMessage={errors.description?.message}
                 validationState={errors.description ? 'error' : 'none'}
               >
@@ -193,16 +189,43 @@ export default function ProjectEditModal({
                   control={control}
                   rules={{
                     maxLength: {
-                      value: 500,
-                      message: t('projectDescriptionMaxLength'),
+                      value: 1000,
+                      message: t('meetingDescriptionMaxLength'),
                     },
                   }}
                   render={({ field }) => (
                     <Textarea
                       {...field}
-                      placeholder={t('projectDescriptionPlaceholder')}
+                      placeholder={t('meetingDescriptionPlaceholder')}
                       rows={4}
-                      disabled={updateProjectMutation.isPending}
+                      disabled={updateMeetingMutation.isPending}
+                    />
+                  )}
+                />
+              </Field>
+
+              {/* Meeting URL */}
+              <Field
+                label={t('meetingUrl')}
+                validationMessage={errors.url?.message}
+                validationState={errors.url ? 'error' : 'none'}
+              >
+                <Controller
+                  name="url"
+                  control={control}
+                  rules={{
+                    pattern: {
+                      value:
+                        /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/,
+                      message: t('meetingUrlInvalid'),
+                    },
+                  }}
+                  render={({ field }) => (
+                    <Input
+                      {...field}
+                      type="url"
+                      placeholder={t('meetingUrlPlaceholder')}
+                      disabled={updateMeetingMutation.isPending}
                     />
                   )}
                 />
@@ -214,19 +237,19 @@ export default function ProjectEditModal({
             <Button
               appearance="secondary"
               onClick={handleCancel}
-              disabled={updateProjectMutation.isPending}
+              disabled={updateMeetingMutation.isPending}
             >
               {t('cancel')}
             </Button>
             <Button
               appearance="primary"
               type="submit"
-              disabled={updateProjectMutation.isPending}
+              disabled={updateMeetingMutation.isPending}
               icon={
-                updateProjectMutation.isPending ? undefined : <Edit20Regular />
+                updateMeetingMutation.isPending ? undefined : <Edit20Regular />
               }
             >
-              {updateProjectMutation.isPending ? t('saving') : t('save')}
+              {updateMeetingMutation.isPending ? t('saving') : t('save')}
             </Button>
           </DialogActions>
         </form>

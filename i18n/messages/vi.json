@@ -400,7 +400,8 @@
     "status": {
       "active": "Đang hoạt động",
       "completed": "Đã hoàn thành",
-      "cancelled": "Đã hủy"
+      "cancelled": "Đã hủy",
+      "archived": "Đã lưu trữ"
     },
     "actions": {
       "label": "Hành động",
@@ -408,11 +409,16 @@
       "edit": "Chỉnh sửa",
       "share": "Chia sẻ",
       "archive": "Lưu trữ",
+      "unarchive": "Bỏ lưu trữ",
       "delete": "Xóa",
       "deleteConfirmTitle": "Xóa cuộc họp",
       "deleteConfirmMessage": "Bạn có chắc chắn muốn xóa \"{title}\"? Hành động này không thể hoàn tác.",
       "deleteSuccess": "\"{title}\" đã được xóa thành công.",
       "deleteError": "Không thể xóa \"{title}\". Vui lòng thử lại.",
+      "archiveSuccess": "Đã lưu trữ cuộc họp thành công",
+      "archiveError": "Không thể lưu trữ cuộc họp",
+      "unarchiveSuccess": "Đã bỏ lưu trữ cuộc họp thành công",
+      "unarchiveError": "Không thể bỏ lưu trữ cuộc họp",
       "cancel": "Hủy",
       "deleting": "Đang xóa..."
     },
@@ -452,6 +458,37 @@
     "files": "Tệp tin",
     "noFiles": "Chưa có tệp tin",
     "filesCount": "{count} tệp tin"
+  },
+  "MeetingEdit": {
+    "editMeeting": "Chỉnh sửa cuộc họp",
+    "meetingTitle": "Tiêu đề cuộc họp",
+    "meetingTitlePlaceholder": "Nhập tiêu đề cuộc họp",
+    "meetingDescription": "Mô tả cuộc họp",
+    "meetingDescriptionPlaceholder": "Nhập mô tả cuộc họp (tùy chọn)",
+    "meetingUrl": "Link cuộc họp",
+    "meetingUrlPlaceholder": "https://meet.google.com/...",
+    "meetingTitleMaxLength": "Tiêu đề không được vượt quá 200 ký tự",
+    "meetingDescriptionMaxLength": "Mô tả không được vượt quá 1000 ký tự",
+    "meetingUrlInvalid": "Vui lòng nhập URL hợp lệ",
+    "cancel": "Hủy",
+    "save": "Lưu thay đổi",
+    "saving": "Đang lưu...",
+    "editSuccess": "Cập nhật cuộc họp thành công",
+    "editError": "Không thể cập nhật cuộc họp"
+  },
+  "MeetingShare": {
+    "title": "Chia sẻ cuộc họp",
+    "untitledMeeting": "Cuộc họp chưa đặt tên",
+    "meetingDetailLink": "Link chi tiết cuộc họp",
+    "meetingUrl": "Link tham gia cuộc họp",
+    "shareDescription": "Chia sẻ link này để người khác có thể xem chi tiết cuộc họp",
+    "urlDescription": "Link trực tiếp để tham gia cuộc họp",
+    "copy": "Sao chép",
+    "copied": "Đã sao chép!",
+    "done": "Xong",
+    "linkCopied": "Đã sao chép link vào clipboard",
+    "urlCopied": "Đã sao chép URL vào clipboard",
+    "copyError": "Không thể sao chép vào clipboard"
   },
   "Projects": {
     "title": "Dự án",
