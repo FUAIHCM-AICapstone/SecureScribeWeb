@@ -163,7 +163,8 @@
       "type": "Type",
       "size": "Size",
       "taskTitle": "Task Title",
-      "status": "Status"
+      "status": "Status",
+      "actions": "Actions"
     },
     "pagination": {
       "previous": "Previous",

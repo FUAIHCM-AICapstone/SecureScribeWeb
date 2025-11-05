@@ -163,7 +163,8 @@
       "type": "Loại",
       "size": "Kích thước",
       "taskTitle": "Tiêu đề nhiệm vụ",
-      "status": "Trạng thái"
+      "status": "Trạng thái",
+      "actions": "Hành động"
     },
     "pagination": {
       "previous": "Trước",

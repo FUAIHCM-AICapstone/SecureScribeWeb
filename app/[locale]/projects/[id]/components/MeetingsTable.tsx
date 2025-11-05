@@ -19,6 +19,7 @@ interface MeetingsTableProps {
     page: number;
     onPageChange: (page: number) => void;
     hasMore: boolean;
+    onMeetingDeleted?: () => void;
 }
 
 export function MeetingsTable({
@@ -27,6 +28,7 @@ export function MeetingsTable({
     page,
     onPageChange,
     hasMore,
+    onMeetingDeleted,
 }: MeetingsTableProps) {
     const t = useTranslations('ProjectDetail');
 
@@ -52,11 +54,16 @@ export function MeetingsTable({
             meetingColumnHelper.display({
                 id: 'actions',
                 header: t('tableHeaders.actions'),
-                cell: (info) => <MeetingActionsMenu meeting={info.row.original} />,
+                cell: (info) => (
+                    <MeetingActionsMenu
+                        meeting={info.row.original}
+                        onDeleteSuccess={onMeetingDeleted}
+                    />
+                ),
                 size: 100,
             }),
         ],
-        [meetingColumnHelper, t]
+        [meetingColumnHelper, t, onMeetingDeleted]
     );
 
     const table = useReactTable({

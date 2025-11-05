@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { useQueryClient } from '@tanstack/react-query';
 import {
   Menu,
   MenuTrigger,
@@ -40,12 +39,12 @@ const useStyles = makeStyles({
 
 interface MeetingActionsMenuProps {
   meeting: MeetingResponse;
+  onDeleteSuccess?: () => void;
 }
 
-export function MeetingActionsMenu({ meeting }: MeetingActionsMenuProps) {
+export function MeetingActionsMenu({ meeting, onDeleteSuccess }: MeetingActionsMenuProps) {
   const t = useTranslations('Meetings');
   const router = useRouter();
-  const queryClient = useQueryClient();
   const styles = useStyles();
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -56,11 +55,13 @@ export function MeetingActionsMenu({ meeting }: MeetingActionsMenuProps) {
       setIsDeleting(true);
       await deleteMeeting(meeting.id);
 
-      // Invalidate meetings queries to refresh data
-      await queryClient.invalidateQueries({ queryKey: ['meetings'] });
-
       // Show success toast
       showToast('success', t('actions.deleteSuccess', { title: meeting.title || 'Meeting' }));
+
+      // Call the callback to notify parent of successful deletion
+      if (onDeleteSuccess) {
+        onDeleteSuccess();
+      }
 
       // Close dialog
       setShowDeleteDialog(false);

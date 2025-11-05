@@ -360,6 +360,11 @@ export function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
     queryClient.invalidateQueries({ queryKey: ['projects', projectId, 'meetings'] });
   };
 
+  const handleMeetingDeleted = () => {
+    // Invalidate meetings query to refresh the list after deletion
+    queryClient.invalidateQueries({ queryKey: ['projects', projectId, 'meetings'] });
+  };
+
   const handleMeetingModalOpen = () => {
     setShowMeetingModal(true);
   };
@@ -564,6 +569,7 @@ export function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
               page={meetingsPage}
               onPageChange={setMeetingsPage}
               hasMore={meetingsData?.pagination?.has_next || false}
+              onMeetingDeleted={handleMeetingDeleted}
             />
           </Card>
 
