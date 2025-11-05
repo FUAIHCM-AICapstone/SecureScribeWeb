@@ -115,6 +115,7 @@ interface CreateTaskModalProps {
   taskId?: string;
   initialTask?: TaskResponse;
   defaultProjectId?: string;
+  onTaskRefetch?: () => void;
 }
 
 export function CreateTaskModal({
@@ -124,6 +125,7 @@ export function CreateTaskModal({
   taskId,
   initialTask,
   defaultProjectId,
+  onTaskRefetch,
 }: CreateTaskModalProps) {
   const styles = useStyles();
   const tTasks = useTranslations('Tasks');
@@ -353,7 +355,7 @@ export function CreateTaskModal({
 
   const successToastMessage = useMemo(
     () =>
-      isEditMode ? 'Task updated successfully' : tTasks('createTaskSuccess'),
+      isEditMode ? tTasks('updateTaskSuccess') : tTasks('createTaskSuccess'),
     [isEditMode, tTasks],
   );
 
@@ -376,6 +378,10 @@ export function CreateTaskModal({
         queryClient.invalidateQueries({ queryKey: queryKeys.task(taskId) });
       }
       showToast('success', successToastMessage);
+      // Call refetch callback if provided
+      if (onTaskRefetch) {
+        onTaskRefetch();
+      }
       reset(defaultFormValues);
       onClose();
     },
@@ -388,7 +394,7 @@ export function CreateTaskModal({
         'error',
         apiMessage ||
         (isEditMode
-          ? 'Failed to update task. Please try again.'
+          ? tTasks('updateTaskError')
           : tTasks('createTaskError')),
       );
     },

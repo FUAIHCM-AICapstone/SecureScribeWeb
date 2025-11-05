@@ -554,7 +554,9 @@
       "done": "Hoàn thành"
     },
     "createTaskSuccess": "Tạo nhiệm vụ thành công.",
+    "updateTaskSuccess": "Cập nhật nhiệm vụ thành công.",
     "createTaskError": "Tạo nhiệm vụ thất bại. Vui lòng thử lại.",
+    "updateTaskError": "Cập nhật nhiệm vụ thất bại. Vui lòng thử lại.",
     "createTaskModal": {
       "title": "Tạo nhiệm vụ",
       "titleLabel": "Tiêu đề nhiệm vụ",

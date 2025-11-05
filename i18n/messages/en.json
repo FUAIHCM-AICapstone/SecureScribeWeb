@@ -560,7 +560,9 @@
       "done": "Done"
     },
     "createTaskSuccess": "Task created successfully.",
+    "updateTaskSuccess": "Task updated successfully.",
     "createTaskError": "Failed to create task. Please try again.",
+    "updateTaskError": "Failed to update task. Please try again.",
     "createTaskModal": {
       "title": "Create Task",
       "titleLabel": "Task title",

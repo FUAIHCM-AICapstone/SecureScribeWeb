@@ -23,9 +23,10 @@ interface TasksTableProps {
     projectId?: string;
     onTaskDeleted?: () => void;
     onTaskUpdated?: () => void;
+    onTaskRefetch?: () => void;
 }
 
-export function TasksTable({ data, isLoading, page, onPageChange, hasMore, projectId, onTaskDeleted, onTaskUpdated }: TasksTableProps) {
+export function TasksTable({ data, isLoading, page, onPageChange, hasMore, projectId, onTaskDeleted, onTaskUpdated, onTaskRefetch }: TasksTableProps) {
     const t = useTranslations('ProjectDetail');
 
     // Create columns with translations
@@ -84,6 +85,7 @@ export function TasksTable({ data, isLoading, page, onPageChange, hasMore, proje
                             task={info.row.original}
                             onTaskDeleted={onTaskDeleted}
                             onTaskUpdated={onTaskUpdated}
+                            onTaskRefetch={onTaskRefetch}
                         />
                     );
                 },

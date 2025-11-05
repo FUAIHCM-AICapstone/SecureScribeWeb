@@ -311,6 +311,7 @@ export function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
   const {
     data: tasksData,
     isLoading: tasksLoading,
+    refetch: refetchTasks,
   } = useQuery({
     queryKey: queryKeys.projectTasks(projectId, tasksPage),
     queryFn: () => getTasks({}, { page: tasksPage, limit: 10 }),
@@ -723,6 +724,7 @@ export function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
               projectId={projectId}
               onTaskDeleted={handleTaskDeleted}
               onTaskUpdated={handleTaskUpdated}
+              onTaskRefetch={refetchTasks}
             />
           </Card>
         </div>

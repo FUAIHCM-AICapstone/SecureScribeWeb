@@ -42,9 +42,10 @@ interface TaskActionsMenuProps {
   task: TaskResponse;
   onTaskDeleted?: () => void;
   onTaskUpdated?: () => void;
+  onTaskRefetch?: () => void;
 }
 
-export function TaskActionsMenu({ task, onTaskDeleted, onTaskUpdated }: TaskActionsMenuProps) {
+export function TaskActionsMenu({ task, onTaskDeleted, onTaskUpdated, onTaskRefetch }: TaskActionsMenuProps) {
   const styles = useStyles();
   const t = useTranslations('Tasks');
   const tCommon = useTranslations('Common');
@@ -174,6 +175,7 @@ export function TaskActionsMenu({ task, onTaskDeleted, onTaskUpdated }: TaskActi
         mode="edit"
         taskId={task.id}
         initialTask={editTaskData}
+        onTaskRefetch={onTaskRefetch}
       />
 
       <Dialog
