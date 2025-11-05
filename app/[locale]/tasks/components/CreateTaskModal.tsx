@@ -236,10 +236,7 @@ export function CreateTaskModal({
 
   // User search state
   const [userSearchQuery, setUserSearchQuery] = useState('');
-  const debouncedUserQuery = useDebounce(userSearchQuery, 300);
-
-  // Only fetch users when search query is not empty (lazy load)
-  const shouldFetchUsers = debouncedUserQuery.trim().length > 0;
+  const debouncedUserQuery = useDebounce(userSearchQuery, 400);
 
   // Infinite query for users with search
   const {
@@ -260,7 +257,7 @@ export function CreateTaskModal({
       getUsers({
         ...(debouncedUserQuery ? { name: debouncedUserQuery } : {}),
         ...(defaultProjectId && { project_id: defaultProjectId }),
-        limit: 20,
+        limit: 50,
         page: pageParam,
       }),
     getNextPageParam: (lastPage) => {
@@ -270,7 +267,8 @@ export function CreateTaskModal({
       return undefined;
     },
     initialPageParam: 1,
-    enabled: shouldFetchUsers,
+    staleTime: 5 * 60 * 1000,
+    enabled: open,
   });
 
   const users: User[] = useMemo(() => {
@@ -603,61 +601,60 @@ export function CreateTaskModal({
                   name="assignee_id"
                   control={control}
                   defaultValue={defaultFormValues.assignee_id}
-                  render={({ field }) => {
-                    const selectedUserName = field.value
-                      ? users.find((u) => u.id === field.value)?.name ||
-                      users.find((u) => u.id === field.value)?.email
-                      : '';
-                    return (
-                      <Combobox
-                        placeholder={tModal('assigneePlaceholder')}
-                        value={selectedUserName || userSearchQuery}
-                        onInput={(e: React.ChangeEvent<HTMLInputElement>) => {
-                          setUserSearchQuery(e.target.value);
-                        }}
-                        onOptionSelect={(_: any, data: any) => {
-                          field.onChange(data.optionValue || undefined);
-                          setUserSearchQuery('');
-                        }}
-                        listbox={{
-                          onScroll: handleUsersListScroll,
-                        }}
-                      >
-                        <Option value="">{tModal('unassigned')}</Option>
-                        {users.map((user) => (
-                          <Option key={user.id} value={user.id}>
-                            {user.name || user.email}
-                          </Option>
-                        ))}
-                        {isFetchingNextUsersPage && (
+                  render={({ field }) => (
+                    <Combobox
+                      placeholder={tModal('assigneePlaceholder')}
+                      value={
+                        field.value && users.length > 0
+                          ? users.find((u) => u.id === field.value)?.name ||
+                            users.find((u) => u.id === field.value)?.email ||
+                            userSearchQuery
+                          : userSearchQuery
+                      }
+                      onInput={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        setUserSearchQuery(e.target.value);
+                      }}
+                      onOptionSelect={(_: any, data: any) => {
+                        field.onChange(data.optionValue || undefined);
+                        setUserSearchQuery('');
+                      }}
+                      listbox={{
+                        onScroll: handleUsersListScroll,
+                      }}
+                    >
+                      <Option value="">{tModal('unassigned')}</Option>
+                      {users.map((user) => (
+                        <Option key={user.id} value={user.id}>
+                          {user.name || user.email}
+                        </Option>
+                      ))}
+                      {isFetchingNextUsersPage && (
+                        <div
+                          style={{
+                            padding: '8px 12px',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            gap: '8px',
+                          }}
+                        >
+                          <Spinner size="small" />
+                          <Caption1>{tModal('loading')}</Caption1>
+                        </div>
+                      )}
+                      {!isLoadingUsers &&
+                        users.length === 0 &&
+                        debouncedUserQuery && (
                           <div
-                            style={{
-                              padding: '8px 12px',
-                              display: 'flex',
-                              justifyContent: 'center',
-                              alignItems: 'center',
-                              gap: '8px',
-                            }}
+                            style={{ padding: '12px', textAlign: 'center' }}
                           >
-                            <Spinner size="small" />
-                            <Caption1>Loading...</Caption1>
+                            <Caption1>{tModal('noUsers')}</Caption1>
                           </div>
                         )}
-                        {!isLoadingUsers &&
-                          shouldFetchUsers &&
-                          users.length === 0 &&
-                          debouncedUserQuery && (
-                            <div
-                              style={{ padding: '12px', textAlign: 'center' }}
-                            >
-                              <Caption1>{tModal('noUsers')}</Caption1>
-                            </div>
-                          )}
-                      </Combobox>
-                    );
-                  }}
+                    </Combobox>
+                  )}
                 />
-                {!shouldFetchUsers && (
+                {!debouncedUserQuery && (
                   <span className={styles.helper}>
                     {tModal('searchAssignee')}
                   </span>
