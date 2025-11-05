@@ -77,7 +77,6 @@ export interface ProjectFilter {
     name?: string;
     is_archived?: boolean;
     created_by?: string;
-    member_id?: string;
     created_at_gte?: string;
     created_at_lte?: string;
     page?: number;
@@ -93,10 +92,8 @@ export interface ProjectQueryParams {
     name?: string;
     is_archived?: boolean;
     created_by?: string;
-    member_id?: string;
     created_at_gte?: string;
     created_at_lte?: string;
-    my_projects_only?: boolean;
 }
 
 export interface ProjectMembersQueryParams {

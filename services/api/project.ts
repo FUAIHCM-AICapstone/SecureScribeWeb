@@ -205,12 +205,6 @@ export const requestRoleChange = async (
     );
 };
 
-// Convenience functions for common operations
-export const getMyProjects = async (
-    params?: Omit<ProjectQueryParams, 'my_projects_only'>
-): Promise<{ data: ProjectResponse[]; pagination: any }> => {
-    return getProjects({}, { ...params, my_projects_only: true });
-};
 
 export const getActiveProjects = async (
     params?: Omit<ProjectQueryParams, 'is_archived'>
