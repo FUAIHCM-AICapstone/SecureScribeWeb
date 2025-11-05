@@ -6,6 +6,7 @@ import { FileUploadModal } from '@/components/modal/FileUploadModal';
 import MeetingSchedulerModal from '@/components/modal/MeetingSchedulerModal';
 import ProjectEditModal from '@/components/modal/ProjectEditModal';
 import { useAuth } from '@/context/AuthContext';
+import { useDebounce } from '@/hooks/useDebounce';
 import { showToast } from '@/hooks/useShowToast';
 import { queryKeys } from '@/lib/queryClient';
 import { getProjectFiles } from '@/services/api/file';
@@ -23,6 +24,7 @@ import {
   Button,
   Caption1,
   Card,
+  Input,
   Menu,
   MenuItem,
   MenuList,
@@ -45,13 +47,14 @@ import {
   Folder20Regular,
   MoreVertical20Regular,
   People20Regular,
+  Search20Regular,
   TaskListSquareLtr20Regular,
 } from '@fluentui/react-icons';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FilesTable } from './FilesTable';
 import { MeetingsTable } from './MeetingsTable';
 import { MembersTable } from './MembersTable';
@@ -179,6 +182,11 @@ const useStyles = makeStyles({
     justifyContent: 'space-between',
     ...shorthands.gap('12px'),
   },
+  searchAndActionContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    ...shorthands.gap('12px'),
+  },
   sectionIcon: {
     color: tokens.colorBrandForeground2,
     opacity: 0.8,
@@ -268,6 +276,16 @@ export function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
   // Edit project modal state
   const [showEditModal, setShowEditModal] = useState(false);
 
+  // Search states
+  const [meetingSearch, setMeetingSearch] = useState('');
+  const [memberSearch, setMemberSearch] = useState('');
+  const [fileSearch, setFileSearch] = useState('');
+
+  // Debounced search values
+  const debouncedMeetingSearch = useDebounce(meetingSearch, 300);
+  const debouncedFileSearch = useDebounce(fileSearch, 300);
+  const debouncedMemberSearch = useDebounce(memberSearch, 300);
+
   // Helper function to get current user's role in the project
   const getCurrentUserRole = (): string | null => {
     if (!user?.id || !project?.members) return null;
@@ -281,6 +299,15 @@ export function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
     return role === 'owner' || role === 'admin';
   };
 
+  // Reset pagination when search changes
+  useEffect(() => {
+    setMeetingsPage(1);
+  }, [debouncedMeetingSearch]);
+
+  useEffect(() => {
+    setFilesPage(1);
+  }, [debouncedFileSearch]);
+
   // Fetch project data
   const {
     data: project,
@@ -291,13 +318,25 @@ export function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
     queryFn: () => getProject(projectId, true),
   });
 
+  // Filter members client-side based on debounced search
+  const filteredMembers = project?.members?.filter((member) => {
+    const searchLower = debouncedMemberSearch.toLowerCase();
+    return member.user_id.toLowerCase().includes(searchLower);
+  }) || [];
+
   // Fetch meetings for this project
   const {
     data: meetingsData,
     isLoading: meetingsLoading,
   } = useQuery({
-    queryKey: queryKeys.projectMeetings(projectId, meetingsPage),
-    queryFn: () => getProjectMeetings(projectId, { page: meetingsPage, limit: 10 }),
+    queryKey: debouncedMeetingSearch
+      ? queryKeys.searchProjectMeetings(projectId, debouncedMeetingSearch, meetingsPage)
+      : queryKeys.projectMeetings(projectId, meetingsPage),
+    queryFn: () => getProjectMeetings(projectId, {
+      page: meetingsPage,
+      limit: 10,
+      ...(debouncedMeetingSearch && { title: debouncedMeetingSearch })
+    }),
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
@@ -306,8 +345,14 @@ export function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
     data: filesData,
     isLoading: filesLoading,
   } = useQuery({
-    queryKey: queryKeys.projectFiles(projectId, filesPage),
-    queryFn: () => getProjectFiles(projectId, { page: filesPage, limit: 10 }),
+    queryKey: debouncedFileSearch
+      ? queryKeys.searchProjectFiles(projectId, debouncedFileSearch, filesPage)
+      : queryKeys.projectFiles(projectId, filesPage),
+    queryFn: () => getProjectFiles(projectId, {
+      page: filesPage,
+      limit: 10,
+      ...(debouncedFileSearch && { filename: debouncedFileSearch })
+    }),
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
@@ -625,13 +670,22 @@ export function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
                   {t('relatedMeetings')}
                 </Text>
               </div>
-              <Button
-                appearance="primary"
-                icon={<Add20Regular />}
-                onClick={handleMeetingModalOpen}
-              >
-                {t('createMeeting')}
-              </Button>
+              <div className={styles.searchAndActionContainer}>
+                <Input
+                  placeholder={t('search')}
+                  value={meetingSearch}
+                  onChange={(e, data) => setMeetingSearch(data.value)}
+                  contentBefore={<Search20Regular />}
+                />
+                <Button
+                  appearance="primary"
+                  icon={<Add20Regular />}
+                  onClick={handleMeetingModalOpen}
+                >
+                  {t('createMeeting')}
+                </Button>
+              </div>
+
             </div>
 
             <MeetingsTable
@@ -651,13 +705,21 @@ export function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
                 <Folder20Regular className={styles.sectionIcon} />
                 <Text className={styles.sectionHeading}>{t('files')}</Text>
               </div>
-              <Button
-                appearance="primary"
-                icon={<Add20Regular />}
-                onClick={handleFileModalOpen}
-              >
-                {t('uploadFile')}
-              </Button>
+              <div className={styles.searchAndActionContainer}>
+                <Input
+                  placeholder={t('search')}
+                  value={fileSearch}
+                  onChange={(e, data) => setFileSearch(data.value)}
+                  contentBefore={<Search20Regular />}
+                />
+                <Button
+                  appearance="primary"
+                  icon={<Add20Regular />}
+                  onClick={handleFileModalOpen}
+                >
+                  {t('uploadFile')}
+                </Button>
+              </div>
             </div>
             <FilesTable
               data={filesData?.data || []}
@@ -680,18 +742,27 @@ export function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
                 <People20Regular className={styles.sectionIcon} />
                 <Text className={styles.sectionHeading}>{t('membersLabel')}</Text>
               </div>
-              <Button
-                appearance="primary"
-                icon={<Add20Regular />}
-                onClick={() => setShowAddMemberModal(true)}
-                disabled={!canManageProject()}
-              >
-                {t('addMember')}
-              </Button>
+              <div className={styles.searchAndActionContainer}>
+                <Input
+                  placeholder={t('search')}
+                  value={memberSearch}
+                  onChange={(e, data) => setMemberSearch(data.value)}
+                  contentBefore={<Search20Regular />}
+                />
+                <Button
+                  appearance="primary"
+                  icon={<Add20Regular />}
+                  onClick={() => setShowAddMemberModal(true)}
+                  disabled={!canManageProject()}
+                >
+                  {t('addMember')}
+                </Button>
+              </div>
+
             </div>
             {project.members && project.members.length > 0 ? (
               <MembersTable
-                members={project.members}
+                members={filteredMembers}
                 formatDateTime={formatDateTime}
                 currentUserRole={getCurrentUserRole()}
                 projectId={projectId}

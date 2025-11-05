@@ -25,6 +25,8 @@ export const queryKeys = {
   project: (id: string) => ['projects', id] as const,
   projectMeetings: (id: string, page: number) => ['projects', id, 'meetings', page] as const,
   projectFiles: (id: string, page: number) => ['projects', id, 'files', page] as const,
+  searchProjectMeetings: (id: string, search: string, page: number) => ['projects', id, 'meetings', 'search', search, page] as const,
+  searchProjectFiles: (id: string, search: string, page: number) => ['projects', id, 'files', 'search', search, page] as const,
 
   meetings: ['meetings'] as const,
   personalMeetings: ['meetings', 'personal'] as const,

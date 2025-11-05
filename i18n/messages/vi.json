@@ -118,6 +118,7 @@
     "deleteConfirmMessage": "Bạn có chắc chắn muốn xóa \"{name}\"? Hành động này không thể hoàn tác."
   },
   "ProjectDetail": {
+    "search": "Tìm kiếm trong dự án...",
     "addMember": "Thêm thành viên",
     "createMeeting": "Tạo cuộc họp",
     "uploadFile": "Tải lên Tệp",

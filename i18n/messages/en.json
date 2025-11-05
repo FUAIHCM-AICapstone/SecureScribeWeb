@@ -118,6 +118,7 @@
     "deleteConfirmMessage": "Are you sure you want to delete \"{name}\"? This action cannot be undone."
   },
   "ProjectDetail": {
+    "search": "Search in project...",
     "addMember": "Add Member",
     "createMeeting": "Create Meeting",
     "uploadFile": "Upload File",
