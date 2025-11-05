@@ -1,11 +1,11 @@
 "use client";
-import * as React from "react";
+import { useAuth } from "@/context/AuthContext";
 import { Button, Divider, makeStyles } from "@fluentui/react-components";
 import { useTranslations } from "next-intl";
+import * as React from "react";
+import ForgotPasswordForm from "./ForgotPasswordForm";
 import LoginViaEmailForm from "./LoginViaEmailForm";
 import SignUpViaEmail from "./SignUpViaEmail";
-import ForgotPasswordForm from "./ForgotPasswordForm";
-import { useAuth } from "../../context/AuthContext";
 
 type Mode = "login" | "signup" | "forgot";
 

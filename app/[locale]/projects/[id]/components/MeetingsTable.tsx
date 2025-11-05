@@ -1,5 +1,6 @@
 'use client';
 
+import { MeetingActionsMenu } from '@/app/[locale]/meetings/components/MeetingActionsMenu';
 import { Button, Spinner, Text, tokens } from '@fluentui/react-components';
 import {
     createColumnHelper,
@@ -10,7 +11,7 @@ import {
 import { format } from 'date-fns';
 import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
-import type { MeetingResponse } from '../../../../../types/meeting.type';
+import { MeetingResponse } from 'types/meeting.type';
 
 interface MeetingsTableProps {
     data: MeetingResponse[];
@@ -47,6 +48,12 @@ export function MeetingsTable({
                     return dateStr ? format(new Date(dateStr), 'PPpp') : '—';
                 },
                 size: 200,
+            }),
+            meetingColumnHelper.display({
+                id: 'actions',
+                header: t('tableHeaders.actions'),
+                cell: (info) => <MeetingActionsMenu meeting={info.row.original} />,
+                size: 100,
             }),
         ],
         [meetingColumnHelper, t]

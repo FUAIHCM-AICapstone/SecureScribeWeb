@@ -1,10 +1,10 @@
 'use client';
 
+import { makeStyles, tokens } from '@fluentui/react-components';
 import { useEffect, useRef } from 'react';
+import { ChatMessageResponse } from 'types/chat.type';
 import { ChatMessage } from './ChatMessages';
 import { EmptyChatState } from './EmptyChatState';
-import { makeStyles, tokens } from '@fluentui/react-components';
-import type { ChatMessageResponse } from '../../types/chat.type';
 
 const useStyles = makeStyles({
   container: {

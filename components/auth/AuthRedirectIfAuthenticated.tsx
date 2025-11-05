@@ -1,7 +1,7 @@
 "use client";
-import * as React from "react";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 import { usePathname, useRouter } from "next/navigation";
+import * as React from "react";
 
 function getLocaleFromPath(pathname: string): string {
     const seg = pathname.split("/").filter(Boolean);

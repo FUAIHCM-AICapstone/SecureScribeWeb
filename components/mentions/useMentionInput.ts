@@ -1,9 +1,9 @@
 'use client'
 
 import * as React from 'react'
+import { Mention, MentionSearchItem } from 'types/chat.type'
 import { getCaretViewportPosition } from './caretUtils'
 import { findTriggerRange, replaceRangeWithMention } from './tokenUtils'
-import type { MentionSearchItem, Mention } from '../../types/chat.type'
 
 type UseMentionInputOptions = {
     editorRef: React.RefObject<HTMLElement>

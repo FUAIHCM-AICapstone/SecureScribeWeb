@@ -1,4 +1,4 @@
-import type { Mention, MentionOccurrence, MentionType } from '../../types/chat.type'
+import type { Mention, MentionOccurrence, MentionType } from 'types/chat.type';
 
 const TOKEN_REGEX = /@\{(meeting|project|file)\}\{([^}]+)\}/g
 

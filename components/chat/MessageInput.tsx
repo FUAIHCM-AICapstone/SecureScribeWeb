@@ -1,13 +1,13 @@
 'use client';
 
-import { Send24Regular } from '@fluentui/react-icons';
-import { useEffect, useRef, useState } from 'react';
 import MentionSuggestions from '@/components/mentions/MentionSuggestions';
+import { createMentionChip, parseTokensFromText, serializeContenteditableToText } from '@/components/mentions/tokenUtils';
 import useMentionInput from '@/components/mentions/useMentionInput';
-import { serializeContenteditableToText, parseTokensFromText, createMentionChip } from '@/components/mentions/tokenUtils';
 import { dynamicSearch } from '@/services/api/search';
 import { makeStyles, tokens } from '@fluentui/react-components';
-import type { ChatMessageCreate, Mention } from '../../types/chat.type';
+import { Send24Regular } from '@fluentui/react-icons';
+import { useEffect, useRef, useState } from 'react';
+import type { ChatMessageCreate, Mention } from 'types/chat.type';
 
 const useStyles = makeStyles({
   root: {

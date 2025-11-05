@@ -1,4 +1,5 @@
 "use client";
+import { useAuth } from "@/context/AuthContext";
 import {
     Button,
     Field,
@@ -10,14 +11,13 @@ import {
 } from "@fluentui/react-components";
 import {
     ArrowRightRegular,
-    PersonRegular,
+    CheckmarkRegular,
     PasswordRegular,
-    CheckmarkRegular
+    PersonRegular
 } from "@fluentui/react-icons";
 import { useTranslations } from "next-intl";
 import * as React from "react";
 import { useForm } from "react-hook-form";
-import { useAuth } from "../../context/AuthContext";
 
 type SignUpValues = { email: string; password: string; confirm: string };
 

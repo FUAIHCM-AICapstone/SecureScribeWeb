@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect } from 'react';
-import { ChatWelcome } from './ChatWelcome';
 import { useTranslations } from 'next-intl';
+import { useEffect } from 'react';
+import type { ChatMessageResponse } from 'types/chat.type';
+import { ChatWelcome } from './ChatWelcome';
 import { MessagesContainer } from './MessageContainer';
-import type { ChatMessageResponse } from '../../types/chat.type';
 
 
 interface ChatInterfaceProps {

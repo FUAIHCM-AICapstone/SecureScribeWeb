@@ -2,10 +2,10 @@
 'use client'
 
 import { Button, Input, Tab, TabList, Tooltip, makeStyles, tokens } from '@fluentui/react-components'
-import { Add24Regular, Dismiss16Regular, Edit16Regular, Checkmark16Regular } from '@fluentui/react-icons'
+import { Add24Regular, Checkmark16Regular, Dismiss16Regular, Edit16Regular } from '@fluentui/react-icons'
 import { useTranslations } from 'next-intl'
 import { useRef, useState } from 'react'
-import type { ConversationResponse } from '../../types/chat.type'
+import type { ConversationResponse } from 'types/chat.type'
 
 // Helper function to format conversation title
 const getConversationTitle = (conversation: ConversationResponse): string => {

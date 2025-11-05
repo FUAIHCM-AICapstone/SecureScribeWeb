@@ -6,7 +6,7 @@ import type {
     ConversationResponse,
     ConversationUpdate,
     Mention
-} from '../../types/chat.type';
+} from 'types/chat.type';
 import axiosInstance from './axiosInstance';
 import { ApiWrapper, QueryBuilder, SSEHelper } from './utilities';
 

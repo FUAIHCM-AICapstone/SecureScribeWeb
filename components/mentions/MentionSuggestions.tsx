@@ -1,9 +1,8 @@
 'use client'
 
-import * as React from 'react'
-import type { MentionSearchItem } from '../../types/chat.type'
-import { CalendarLtr24Regular, Document24Regular, Folder24Regular } from '@fluentui/react-icons'
 import { makeStyles, tokens } from '@fluentui/react-components'
+import { CalendarLtr24Regular, Document24Regular, Folder24Regular } from '@fluentui/react-icons'
+import type { MentionSearchItem } from 'types/chat.type'
 
 type Props = {
     open: boolean

@@ -1,15 +1,15 @@
 'use client';
 
-import React, { useMemo } from 'react';
-import { useTranslations } from 'next-intl';
+import { Button, Spinner, Text, tokens } from '@fluentui/react-components';
 import {
     createColumnHelper,
     flexRender,
     getCoreRowModel,
     useReactTable,
 } from '@tanstack/react-table';
-import { Button, Text, Spinner, tokens } from '@fluentui/react-components';
-import type { FileResponse } from '../../../../../types/file.type';
+import { useTranslations } from 'next-intl';
+import { useMemo } from 'react';
+import { FileResponse } from 'types/file.type';
 
 interface FilesTableProps {
     data: FileResponse[];

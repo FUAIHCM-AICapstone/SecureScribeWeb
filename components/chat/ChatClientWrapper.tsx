@@ -2,13 +2,13 @@
 /* eslint-disable @typescript-eslint/no-empty-object-type */
 'use client'
 
+import { useConversationManager } from '@/hooks/useConversationManager'
+import { useSSEManager } from '@/hooks/useSSEManager'
 import { makeStyles } from '@fluentui/react-components'
 import { useEffect, useState } from 'react'
 import { ChatInterface } from './ChatInterface'
-import { MessageInput } from './MessageInput'
 import { ConversationTabs } from './ConversationTabs'
-import { useConversationManager } from '../../hooks/useConversationManager'
-import { useSSEManager } from '../../hooks/useSSEManager'
+import { MessageInput } from './MessageInput'
 
 interface ChatClientWrapperProps {
     // No props needed for standalone version

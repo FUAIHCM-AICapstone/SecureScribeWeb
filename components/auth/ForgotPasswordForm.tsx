@@ -1,6 +1,5 @@
 "use client";
-import * as React from "react";
-import { useForm } from "react-hook-form";
+import { useAuth } from "@/context/AuthContext";
 import {
     Button,
     Field,
@@ -10,9 +9,10 @@ import {
     makeStyles,
     tokens
 } from "@fluentui/react-components";
-import { MailRegular, ArrowRightRegular } from "@fluentui/react-icons";
+import { ArrowRightRegular, MailRegular } from "@fluentui/react-icons";
 import { useTranslations } from "next-intl";
-import { useAuth } from "../../context/AuthContext";
+import * as React from "react";
+import { useForm } from "react-hook-form";
 
 type ForgotValues = { email: string };
 

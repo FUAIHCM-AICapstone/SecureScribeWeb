@@ -1,17 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
+import { getBrandConfig } from '@/lib/utils/runtimeConfig';
+import { Button, makeStyles, tokens } from '@fluentui/react-components';
+import { Checkmark24Regular, Copy24Regular } from '@fluentui/react-icons';
+import { useTranslations } from 'next-intl';
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { Button } from '@fluentui/react-components';
-import { Copy24Regular, Checkmark24Regular } from '@fluentui/react-icons';
-import Image from 'next/image';
+import type { ChatMessageResponse } from 'types/chat.type';
 import { MessageCodeBlock } from './MessageCodeBlock';
-import { useTranslations } from 'next-intl';
-import { makeStyles, tokens } from '@fluentui/react-components';
-import { getBrandConfig } from '@/lib/utils/runtimeConfig';
-import type { ChatMessageResponse } from '../../types/chat.type';
 
 const useStyles = makeStyles({
   userMessage: {
