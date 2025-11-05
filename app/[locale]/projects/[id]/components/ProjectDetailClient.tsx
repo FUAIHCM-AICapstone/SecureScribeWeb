@@ -1,11 +1,12 @@
 'use client';
 
-import MeetingSchedulerModal from '@/components/modal/MeetingSchedulerModal';
-import { FileUploadModal } from '@/components/modal/FileUploadModal';
-import { AddMemberModal } from '@/components/modal/AddMemberModal';
 import { CreateTaskModal } from '@/app/[locale]/tasks/components/CreateTaskModal';
-import { showToast } from '@/hooks/useShowToast';
+import { AddMemberModal } from '@/components/modal/AddMemberModal';
+import { FileUploadModal } from '@/components/modal/FileUploadModal';
+import MeetingSchedulerModal from '@/components/modal/MeetingSchedulerModal';
+import ProjectEditModal from '@/components/modal/ProjectEditModal';
 import { useAuth } from '@/context/AuthContext';
+import { showToast } from '@/hooks/useShowToast';
 import { queryKeys } from '@/lib/queryClient';
 import { getProjectFiles } from '@/services/api/file';
 import { getProjectMeetings } from '@/services/api/meeting';
@@ -53,8 +54,8 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { FilesTable } from './FilesTable';
 import { MeetingsTable } from './MeetingsTable';
-import { TasksTable } from './TasksTable';
 import { MembersTable } from './MembersTable';
+import { TasksTable } from './TasksTable';
 
 const useStyles = makeStyles({
   container: {
@@ -264,6 +265,9 @@ export function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
   // Create task modal state
   const [showTaskModal, setShowTaskModal] = useState(false);
 
+  // Edit project modal state
+  const [showEditModal, setShowEditModal] = useState(false);
+
   // Helper function to get current user's role in the project
   const getCurrentUserRole = (): string | null => {
     if (!user?.id || !project?.members) return null;
@@ -371,8 +375,7 @@ export function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
   });
 
   const handleEdit = () => {
-    // TODO: Open edit modal
-    showToast('info', 'Edit functionality coming soon');
+    setShowEditModal(true);
   };
 
   const handleMeetingCreated = () => {
@@ -757,6 +760,13 @@ export function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
         open={showTaskModal}
         onClose={() => handleTaskModalClose(false)}
         defaultProjectId={projectId}
+      />
+
+      {/* Project Edit Modal */}
+      <ProjectEditModal
+        open={showEditModal}
+        onOpenChange={setShowEditModal}
+        project={project}
       />
     </div>
   );
