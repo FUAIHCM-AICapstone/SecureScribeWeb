@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState } from 'react';
@@ -21,10 +22,19 @@ import {
   Delete20Regular,
   Share20Regular,
   Archive20Regular,
+  ArchiveArrowBack20Regular,
 } from '@fluentui/react-icons';
-import { deleteMeeting } from 'services/api/meeting';
+import {
+  deleteMeeting,
+  archiveMeeting,
+  unarchiveMeeting,
+} from 'services/api/meeting';
 import { showToast } from 'hooks/useShowToast';
 import { DeleteConfirmationModal } from 'components/modal/DeleteConfirmationModal';
+import MeetingEditModal from 'components/modal/MeetingEditModal';
+import MeetingShareModal from 'components/modal/MeetingShareModal';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { queryKeys } from '@/lib/queryClient';
 import type { MeetingResponse } from 'types/meeting.type';
 
 const useStyles = makeStyles({
@@ -39,64 +49,140 @@ const useStyles = makeStyles({
 
 interface MeetingActionsMenuProps {
   meeting: MeetingResponse;
+  onEditSuccess?: () => void;
+  onArchiveSuccess?: () => void;
+  onUnarchiveSuccess?: () => void;
+  onShareSuccess?: () => void;
   onDeleteSuccess?: () => void;
 }
 
-export function MeetingActionsMenu({ meeting, onDeleteSuccess }: MeetingActionsMenuProps) {
+export function MeetingActionsMenu({
+  meeting,
+  onEditSuccess,
+  onArchiveSuccess,
+  onUnarchiveSuccess,
+  onShareSuccess,
+  onDeleteSuccess,
+}: MeetingActionsMenuProps) {
   const t = useTranslations('Meetings');
   const router = useRouter();
   const styles = useStyles();
-  const [isDeleting, setIsDeleting] = useState(false);
+  const queryClient = useQueryClient();
+
+  // Modal states
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [shareModalOpen, setShareModalOpen] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isDeleteHovered, setIsDeleteHovered] = useState(false);
 
-  const handleDelete = async () => {
-    try {
-      setIsDeleting(true);
-      await deleteMeeting(meeting.id);
+  // Archive mutation
+  const archiveMutation = useMutation({
+    mutationFn: () => archiveMeeting(meeting.id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.meetings });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.meeting(meeting.id),
+      });
+      showToast('success', t('actions.archiveSuccess'), { duration: 3000 });
 
-      // Show success toast
-      showToast('success', t('actions.deleteSuccess', { title: meeting.title || 'Meeting' }));
+      if (onArchiveSuccess) {
+        onArchiveSuccess();
+      }
+    },
+    onError: (error: any) => {
+      console.error('Error archiving meeting:', error);
+      showToast('error', error?.message || t('actions.archiveError'), {
+        duration: 5000,
+      });
+    },
+  });
 
-      // Call the callback to notify parent of successful deletion
+  // Unarchive mutation
+  const unarchiveMutation = useMutation({
+    mutationFn: () => unarchiveMeeting(meeting.id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.meetings });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.meeting(meeting.id),
+      });
+      showToast('success', t('actions.unarchiveSuccess'), { duration: 3000 });
+
+      if (onUnarchiveSuccess) {
+        onUnarchiveSuccess();
+      }
+    },
+    onError: (error: any) => {
+      console.error('Error unarchiving meeting:', error);
+      showToast('error', error?.message || t('actions.unarchiveError'), {
+        duration: 5000,
+      });
+    },
+  });
+
+  // Delete mutation
+  const deleteMutation = useMutation({
+    mutationFn: () => deleteMeeting(meeting.id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.meetings });
+      showToast(
+        'success',
+        t('actions.deleteSuccess', { title: meeting.title || 'Meeting' }),
+        { duration: 3000 },
+      );
+      setShowDeleteDialog(false);
+
       if (onDeleteSuccess) {
         onDeleteSuccess();
       }
+    },
+    onError: (error: any) => {
+      console.error('Error deleting meeting:', error);
+      showToast(
+        'error',
+        error?.message ||
+          t('actions.deleteError', { title: meeting.title || 'Meeting' }),
+        {
+          duration: 5000,
+        },
+      );
+    },
+  });
 
-      // Close dialog
-      setShowDeleteDialog(false);
-    } catch (error) {
-      console.error('Failed to delete meeting:', error);
-      showToast('error', t('actions.deleteError', { title: meeting.title || 'Meeting' }));
-    } finally {
-      setIsDeleting(false);
-    }
+  const handleDelete = () => {
+    deleteMutation.mutate();
   };
 
-  const handleAction = (action: string) => {
-    switch (action) {
-      case 'view':
-        router.push(`/meetings/${meeting.id}`);
-        break;
-      case 'edit':
-        console.log('Edit meeting:', meeting.title);
-        // TODO: Implement edit functionality
-        break;
-      case 'share':
-        console.log('Share meeting:', meeting.title);
-        // TODO: Implement share functionality
-        break;
-      case 'archive':
-        console.log('Archive meeting:', meeting.title);
-        // TODO: Implement archive functionality
-        break;
-      case 'delete':
-        setShowDeleteDialog(true);
-        break;
-      default:
-        break;
-    }
+  const handleViewDetails = () => {
+    router.push(`/meetings/${meeting.id}`);
   };
+
+  const handleEdit = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setEditModalOpen(true);
+  };
+
+  const handleShare = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShareModalOpen(true);
+  };
+
+  const handleArchive = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    archiveMutation.mutate();
+  };
+
+  const handleUnarchive = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    unarchiveMutation.mutate();
+  };
+
+  const handleDeleteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShowDeleteDialog(true);
+  };
+
+  // Check if meeting is archived (based on status)
+  const isArchived = meeting.status === 'archived';
 
   return (
     <>
@@ -112,36 +198,42 @@ export function MeetingActionsMenu({ meeting, onDeleteSuccess }: MeetingActionsM
 
         <MenuPopover>
           <MenuList>
-            <MenuItem
-              icon={<Eye20Regular />}
-              onClick={() => handleAction('view')}
-            >
+            <MenuItem icon={<Eye20Regular />} onClick={handleViewDetails}>
               {t('actions.view')}
             </MenuItem>
-            <MenuItem
-              icon={<Edit20Regular />}
-              onClick={() => handleAction('edit')}
-            >
+            <MenuItem icon={<Edit20Regular />} onClick={handleEdit}>
               {t('actions.edit')}
             </MenuItem>
-            <MenuItem
-              icon={<Share20Regular />}
-              onClick={() => handleAction('share')}
-            >
+            <MenuItem icon={<Share20Regular />} onClick={handleShare}>
               {t('actions.share')}
             </MenuItem>
-            <MenuItem
-              icon={<Archive20Regular />}
-              onClick={() => handleAction('archive')}
-            >
-              {t('actions.archive')}
-            </MenuItem>
+            {isArchived ? (
+              <MenuItem
+                icon={<ArchiveArrowBack20Regular />}
+                onClick={handleUnarchive}
+                disabled={unarchiveMutation.isPending}
+              >
+                {t('actions.unarchive')}
+              </MenuItem>
+            ) : (
+              <MenuItem
+                icon={<Archive20Regular />}
+                onClick={handleArchive}
+                disabled={archiveMutation.isPending}
+              >
+                {t('actions.archive')}
+              </MenuItem>
+            )}
             <MenuDivider />
             <MenuItem
               icon={<Delete20Regular />}
-              onClick={() => handleAction('delete')}
-              disabled={isDeleting}
-              className={isDeleteHovered ? styles.deleteMenuItemHover : styles.deleteMenuItem}
+              onClick={handleDeleteClick}
+              disabled={deleteMutation.isPending}
+              className={
+                isDeleteHovered
+                  ? styles.deleteMenuItemHover
+                  : styles.deleteMenuItem
+              }
               onMouseEnter={() => setIsDeleteHovered(true)}
               onMouseLeave={() => setIsDeleteHovered(false)}
             >
@@ -151,11 +243,28 @@ export function MeetingActionsMenu({ meeting, onDeleteSuccess }: MeetingActionsM
         </MenuPopover>
       </Menu>
 
+      {/* Edit Modal */}
+      <MeetingEditModal
+        open={editModalOpen}
+        onOpenChange={setEditModalOpen}
+        meeting={meeting}
+        onEditSuccess={onEditSuccess}
+      />
+
+      {/* Share Modal */}
+      <MeetingShareModal
+        open={shareModalOpen}
+        onOpenChange={setShareModalOpen}
+        meeting={meeting}
+        onShareSuccess={onShareSuccess}
+      />
+
+      {/* Delete Confirmation Modal */}
       <DeleteConfirmationModal
         isOpen={showDeleteDialog}
         onOpenChange={setShowDeleteDialog}
         onConfirm={handleDelete}
-        isDeleting={isDeleting}
+        isDeleting={deleteMutation.isPending}
         title={t('actions.deleteConfirmTitle')}
         itemName={meeting.title || 'Meeting'}
       />

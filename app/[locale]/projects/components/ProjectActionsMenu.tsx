@@ -40,9 +40,19 @@ const useStyles = makeStyles({
 
 interface ProjectActionsMenuProps {
   project: ProjectResponse;
+  onEditSuccess?: () => void;
+  onArchiveSuccess?: () => void;
+  onUnarchiveSuccess?: () => void;
+  onDeleteSuccess?: () => void;
 }
 
-export function ProjectActionsMenu({ project }: ProjectActionsMenuProps) {
+export function ProjectActionsMenu({
+  project,
+  onEditSuccess,
+  onArchiveSuccess,
+  onUnarchiveSuccess,
+  onDeleteSuccess,
+}: ProjectActionsMenuProps) {
   const styles = useStyles();
   const router = useRouter();
   const t = useTranslations('Projects');
@@ -62,8 +72,15 @@ export function ProjectActionsMenu({ project }: ProjectActionsMenuProps) {
     mutationFn: () => archiveProject(project.id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.projects });
-      queryClient.invalidateQueries({ queryKey: queryKeys.project(project.id) });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.project(project.id),
+      });
       showToast('success', tEdit('archiveSuccess'), { duration: 3000 });
+
+      // Call the callback to notify parent of successful archive
+      if (onArchiveSuccess) {
+        onArchiveSuccess();
+      }
     },
     onError: (error: any) => {
       console.error('Error archiving project:', error);
@@ -78,8 +95,15 @@ export function ProjectActionsMenu({ project }: ProjectActionsMenuProps) {
     mutationFn: () => unarchiveProject(project.id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.projects });
-      queryClient.invalidateQueries({ queryKey: queryKeys.project(project.id) });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.project(project.id),
+      });
       showToast('success', tEdit('unarchiveSuccess'), { duration: 3000 });
+
+      // Call the callback to notify parent of successful unarchive
+      if (onUnarchiveSuccess) {
+        onUnarchiveSuccess();
+      }
     },
     onError: (error: any) => {
       console.error('Error unarchiving project:', error);
@@ -96,6 +120,11 @@ export function ProjectActionsMenu({ project }: ProjectActionsMenuProps) {
       queryClient.invalidateQueries({ queryKey: queryKeys.projects });
       showToast('success', tEdit('deleteSuccess'), { duration: 3000 });
       setDeleteModalOpen(false);
+
+      // Call the callback to notify parent of successful deletion
+      if (onDeleteSuccess) {
+        onDeleteSuccess();
+      }
     },
     onError: (error: any) => {
       console.error('Error deleting project:', error);
@@ -178,6 +207,7 @@ export function ProjectActionsMenu({ project }: ProjectActionsMenuProps) {
         open={editModalOpen}
         onOpenChange={setEditModalOpen}
         project={project}
+        onEditSuccess={onEditSuccess}
       />
 
       {/* Delete Confirmation Modal */}
