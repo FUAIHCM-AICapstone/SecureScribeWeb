@@ -40,12 +40,17 @@ const useStyles = makeStyles({
 
 interface TaskActionsMenuProps {
   task: TaskResponse;
-  onTaskDeleted?: () => void;
-  onTaskUpdated?: () => void;
-  onTaskRefetch?: () => void;
+  onEditSuccess?: () => void;
+  onDeleteSuccess?: () => void;
+  onUpdateSuccess?: () => void;
 }
 
-export function TaskActionsMenu({ task, onTaskDeleted, onTaskUpdated, onTaskRefetch }: TaskActionsMenuProps) {
+export function TaskActionsMenu({
+  task,
+  onEditSuccess,
+  onDeleteSuccess,
+  onUpdateSuccess,
+}: TaskActionsMenuProps) {
   const styles = useStyles();
   const t = useTranslations('Tasks');
   const tCommon = useTranslations('Common');
@@ -70,12 +75,10 @@ export function TaskActionsMenu({ task, onTaskDeleted, onTaskUpdated, onTaskRefe
       queryClient.invalidateQueries({ queryKey: queryKeys.myTasks });
       queryClient.invalidateQueries({ queryKey: queryKeys.task(task.id) });
       showToast('success', t('deleteTask.deleteSuccess'));
+
       // Invoke callback to notify parent of successful deletion
-      if (onTaskDeleted) {
-        onTaskDeleted();
-      }
-      if (onTaskUpdated) {
-        onTaskUpdated();
+      if (onDeleteSuccess) {
+        onDeleteSuccess();
       }
       setIsDeleteOpen(false);
       setIsDetailsOpen(false);
@@ -175,7 +178,14 @@ export function TaskActionsMenu({ task, onTaskDeleted, onTaskUpdated, onTaskRefe
         mode="edit"
         taskId={task.id}
         initialTask={editTaskData}
-        onTaskRefetch={onTaskRefetch}
+        onTaskRefetch={() => {
+          if (onEditSuccess) {
+            onEditSuccess();
+          }
+          if (onUpdateSuccess) {
+            onUpdateSuccess();
+          }
+        }}
       />
 
       <Dialog
@@ -193,9 +203,7 @@ export function TaskActionsMenu({ task, onTaskDeleted, onTaskUpdated, onTaskRefe
           <DialogBody>
             <DialogTitle>{t('actions.delete')}</DialogTitle>
             <DialogContent>
-              <Text>
-                {t('deleteTask.confirmMessage')}
-              </Text>
+              <Text>{t('deleteTask.confirmMessage')}</Text>
             </DialogContent>
             <DialogActions>
               <Button appearance="secondary" onClick={handleCloseDelete}>
@@ -206,7 +214,9 @@ export function TaskActionsMenu({ task, onTaskDeleted, onTaskUpdated, onTaskRefe
                 onClick={handleConfirmDelete}
                 disabled={deleteTaskMutation.isPending}
               >
-                {deleteTaskMutation.isPending ? tCommon('deleting') : t('actions.delete')}
+                {deleteTaskMutation.isPending
+                  ? tCommon('deleting')
+                  : t('actions.delete')}
               </Button>
             </DialogActions>
           </DialogBody>

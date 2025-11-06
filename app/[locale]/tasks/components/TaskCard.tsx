@@ -127,9 +127,17 @@ const useStyles = makeStyles({
 
 interface TaskCardProps {
   task: TaskResponse;
+  onEditSuccess?: () => void;
+  onDeleteSuccess?: () => void;
+  onUpdateSuccess?: () => void;
 }
 
-export function TaskCard({ task }: TaskCardProps) {
+export function TaskCard({
+  task,
+  onEditSuccess,
+  onDeleteSuccess,
+  onUpdateSuccess,
+}: TaskCardProps) {
   const styles = useStyles();
   const t = useTranslations('Tasks');
 
@@ -221,7 +229,12 @@ export function TaskCard({ task }: TaskCardProps) {
             <Text className={styles.title}>
               {task.title || t('untitledTask')}
             </Text>
-            <TaskActionsMenu task={task} />
+            <TaskActionsMenu
+              task={task}
+              onEditSuccess={onEditSuccess}
+              onDeleteSuccess={onDeleteSuccess}
+              onUpdateSuccess={onUpdateSuccess}
+            />
           </div>
         }
       />

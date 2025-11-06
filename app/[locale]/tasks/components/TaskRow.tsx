@@ -105,9 +105,17 @@ const useStyles = makeStyles({
 
 interface TaskRowProps {
   task: TaskResponse;
+  onEditSuccess?: () => void;
+  onDeleteSuccess?: () => void;
+  onUpdateSuccess?: () => void;
 }
 
-export function TaskRow({ task }: TaskRowProps) {
+export function TaskRow({
+  task,
+  onEditSuccess,
+  onDeleteSuccess,
+  onUpdateSuccess,
+}: TaskRowProps) {
   const styles = useStyles();
   const t = useTranslations('Tasks');
 
@@ -218,7 +226,12 @@ export function TaskRow({ task }: TaskRowProps) {
       </div>
 
       <div className={styles.actionsCell}>
-        <TaskActionsMenu task={task} />
+        <TaskActionsMenu
+          task={task}
+          onEditSuccess={onEditSuccess}
+          onDeleteSuccess={onDeleteSuccess}
+          onUpdateSuccess={onUpdateSuccess}
+        />
       </div>
     </div>
   );

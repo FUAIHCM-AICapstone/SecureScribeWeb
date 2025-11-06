@@ -14,7 +14,10 @@ import {
 import { ArrowLeft20Regular, ArrowRight20Regular } from '@fluentui/react-icons';
 import { getTasks } from '@/services/api/task';
 import { queryKeys } from '@/lib/queryClient';
-import { showLoadingToast, hideLoadingToast } from '@/components/loading/LoadingToast';
+import {
+  showLoadingToast,
+  hideLoadingToast,
+} from '@/components/loading/LoadingToast';
 import { useAuth } from '@/context/AuthContext';
 import { TasksHeader } from './TasksHeader';
 import { TasksGrid } from './TasksGrid';
@@ -259,8 +262,24 @@ export function TasksPageClient() {
     setIsCreateModalOpen(false);
   }, []);
 
+  // Callback handlers for better loading after actions
+  const handleTaskEditSuccess = useCallback(() => {
+    refetch();
+  }, [refetch]);
+
+  const handleTaskDeleteSuccess = useCallback(() => {
+    refetch();
+  }, [refetch]);
+
+  const handleTaskUpdateSuccess = useCallback(() => {
+    refetch();
+  }, [refetch]);
+
   const createTaskModal = (
-    <CreateTaskModal open={isCreateModalOpen} onClose={handleCloseCreateModal} />
+    <CreateTaskModal
+      open={isCreateModalOpen}
+      onClose={handleCloseCreateModal}
+    />
   );
 
   // Determine if filters are active
@@ -269,7 +288,8 @@ export function TasksPageClient() {
   );
 
   // Loading states
-  const isInitialLoading = (isLoading && !data) || (isMyTasks === true && !assigneeFilter);
+  const isInitialLoading =
+    (isLoading && !data) || (isMyTasks === true && !assigneeFilter);
 
   // Initial loading state - show header + skeleton
   if (isInitialLoading) {
@@ -347,9 +367,19 @@ export function TasksPageClient() {
             onCreateClick={handleCreateClick}
           />
         ) : viewMode === 'grid' ? (
-          <TasksGrid tasks={tasks} />
+          <TasksGrid
+            tasks={tasks}
+            onEditSuccess={handleTaskEditSuccess}
+            onDeleteSuccess={handleTaskDeleteSuccess}
+            onUpdateSuccess={handleTaskUpdateSuccess}
+          />
         ) : (
-          <TasksList tasks={tasks} />
+          <TasksList
+            tasks={tasks}
+            onEditSuccess={handleTaskEditSuccess}
+            onDeleteSuccess={handleTaskDeleteSuccess}
+            onUpdateSuccess={handleTaskUpdateSuccess}
+          />
         )}
       </div>
 

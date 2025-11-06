@@ -15,15 +15,29 @@ const useStyles = makeStyles({
 
 interface TasksListProps {
   tasks: TaskResponse[];
+  onEditSuccess?: () => void;
+  onDeleteSuccess?: () => void;
+  onUpdateSuccess?: () => void;
 }
 
-export function TasksList({ tasks }: TasksListProps) {
+export function TasksList({
+  tasks,
+  onEditSuccess,
+  onDeleteSuccess,
+  onUpdateSuccess,
+}: TasksListProps) {
   const styles = useStyles();
 
   return (
     <div className={styles.list}>
       {tasks.map((task) => (
-        <TaskRow key={task.id} task={task} />
+        <TaskRow
+          key={task.id}
+          task={task}
+          onEditSuccess={onEditSuccess}
+          onDeleteSuccess={onDeleteSuccess}
+          onUpdateSuccess={onUpdateSuccess}
+        />
       ))}
     </div>
   );

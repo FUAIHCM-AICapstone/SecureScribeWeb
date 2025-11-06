@@ -26,15 +26,29 @@ const useStyles = makeStyles({
 
 interface TasksGridProps {
   tasks: TaskResponse[];
+  onEditSuccess?: () => void;
+  onDeleteSuccess?: () => void;
+  onUpdateSuccess?: () => void;
 }
 
-export function TasksGrid({ tasks }: TasksGridProps) {
+export function TasksGrid({
+  tasks,
+  onEditSuccess,
+  onDeleteSuccess,
+  onUpdateSuccess,
+}: TasksGridProps) {
   const styles = useStyles();
 
   return (
     <div className={styles.grid}>
       {tasks.map((task) => (
-        <TaskCard key={task.id} task={task} />
+        <TaskCard
+          key={task.id}
+          task={task}
+          onEditSuccess={onEditSuccess}
+          onDeleteSuccess={onDeleteSuccess}
+          onUpdateSuccess={onUpdateSuccess}
+        />
       ))}
     </div>
   );
