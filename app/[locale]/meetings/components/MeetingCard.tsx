@@ -124,6 +124,12 @@ const useStyles = makeStyles({
   projectBadge: {
     fontSize: tokens.fontSizeBase100,
   },
+  actionsMenu: {
+    position: 'absolute',
+    top: '8px',
+    right: '8px',
+    zIndex: 10,
+  },
 });
 
 interface MeetingCardProps {
@@ -185,14 +191,15 @@ export function MeetingCard({ meeting }: MeetingCardProps) {
       <CardHeader
         className={styles.header}
         header={
-          <div className={styles.headerContent}>
-            <Text className={styles.title}>
-              {meeting.title || t('untitledMeeting')}
-            </Text>
-            <MeetingActionsMenu meeting={meeting} />
-          </div>
+          <Text className={styles.title}>
+            {meeting.title || t('untitledMeeting')}
+          </Text>
         }
       />
+
+      <div className={styles.actionsMenu}>
+        <MeetingActionsMenu meeting={meeting} />
+      </div>
 
       <div className={styles.body}>
         <div className={styles.badgeRow}>
