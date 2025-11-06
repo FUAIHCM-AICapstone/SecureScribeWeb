@@ -1,36 +1,48 @@
 'use client';
 
-import React from 'react';
-import { useTranslations } from 'next-intl';
-import { useRouter } from 'next/navigation';
-import { useQuery } from '@tanstack/react-query';
+import { DeleteConfirmationModal } from '@/components/modal/DeleteConfirmationModal';
+import MeetingEditModal from '@/components/modal/MeetingEditModal';
+import { showToast } from '@/hooks/useShowToast';
+import { queryKeys } from '@/lib/queryClient';
+import { archiveMeeting, deleteMeeting, getMeeting, unarchiveMeeting } from '@/services/api/meeting';
 import {
-  Text,
-  Caption1,
-  Body1,
   Badge,
+  Body1,
   Button,
+  Caption1,
   Card,
+  Menu,
+  MenuItem,
+  MenuList,
+  MenuPopover,
+  MenuTrigger,
   Spinner,
+  Text,
   makeStyles,
-  tokens,
   shorthands,
+  tokens,
 } from '@fluentui/react-components';
 import {
+  Archive20Regular,
   ArrowLeft20Regular,
   CalendarClock20Regular,
-  People20Regular,
+  Delete20Regular,
   Document20Regular,
+  Edit20Regular,
   Link20Regular,
+  MoreVertical20Regular,
+  People20Regular,
 } from '@fluentui/react-icons';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { queryKeys } from '@/lib/queryClient';
-import { getMeeting } from '@/services/api/meeting';
+import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
+import React from 'react';
 import type { MeetingWithProjects } from 'types/meeting.type';
+import { LinkedProjectsSection } from './LinkedProjectsSection';
 
 const useStyles = makeStyles({
   container: {
-    maxWidth: '1600px',
     margin: '0 auto',
     ...shorthands.padding('40px', '32px', '24px'),
     '@media (max-width: 768px)': {
@@ -73,6 +85,11 @@ const useStyles = makeStyles({
     alignItems: 'center',
     ...shorthands.gap('8px'),
     flexWrap: 'wrap',
+  },
+  actionsRow: {
+    display: 'flex',
+    ...shorthands.gap('8px'),
+    alignItems: 'center',
   },
   metaRow: {
     display: 'flex',
@@ -253,6 +270,10 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
   const t = useTranslations('MeetingDetail');
   const tMeetings = useTranslations('Meetings');
   const router = useRouter();
+  const queryClient = useQueryClient();
+  const [isDeleting, setIsDeleting] = React.useState(false);
+  const [showEditModal, setShowEditModal] = React.useState(false);
+  const [showDeleteModal, setShowDeleteModal] = React.useState(false);
 
   const {
     data: meeting,
@@ -262,6 +283,77 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
     queryKey: queryKeys.meeting(meetingId),
     queryFn: () => getMeeting(meetingId),
   });
+
+  // Delete mutation
+  const deleteMutation = useMutation({
+    mutationFn: () => deleteMeeting(meetingId),
+    onSuccess: () => {
+      showToast('success', tMeetings('actions.deleteSuccess'));
+      router.push('/meetings');
+    },
+    onError: (error: any) => {
+      showToast('error', error?.response?.data?.detail || tMeetings('actions.deleteError'));
+      setIsDeleting(false);
+    },
+  });
+
+  // Archive mutation
+  const archiveMutation = useMutation({
+    mutationFn: () => archiveMeeting(meetingId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.meetings });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.meeting(meetingId),
+      });
+      showToast('success', tMeetings('actions.archiveSuccess'), { duration: 3000 });
+    },
+    onError: (error: any) => {
+      console.error('Error archiving meeting:', error);
+      showToast('error', error?.message || tMeetings('actions.archiveError'), {
+        duration: 5000,
+      });
+    },
+  });
+
+  // Unarchive mutation
+  const unarchiveMutation = useMutation({
+    mutationFn: () => unarchiveMeeting(meetingId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.meetings });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.meeting(meetingId),
+      });
+      showToast('success', tMeetings('actions.unarchiveSuccess'), { duration: 3000 });
+    },
+    onError: (error: any) => {
+      console.error('Error unarchiving meeting:', error);
+      showToast('error', error?.message || tMeetings('actions.unarchiveError'), {
+        duration: 5000,
+      });
+    },
+  });
+
+  const handleEdit = () => {
+    setShowEditModal(true);
+  };
+
+  const handleDelete = () => {
+    setShowDeleteModal(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    setIsDeleting(true);
+    setShowDeleteModal(false);
+    deleteMutation.mutate();
+  };
+
+  const handleArchiveToggle = () => {
+    if (meeting?.status === 'archived') {
+      unarchiveMutation.mutate();
+    } else {
+      archiveMutation.mutate();
+    }
+  };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -281,6 +373,12 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
         return (
           <Badge appearance="filled" color="danger" size="large">
             {tMeetings('status.cancelled')}
+          </Badge>
+        );
+      case 'archived':
+        return (
+          <Badge appearance="outline" color="warning" size="large">
+            {tMeetings('status.archived')}
           </Badge>
         );
       default:
@@ -354,7 +452,55 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
                   {tMeetings('badges.personal')}
                 </Badge>
               )}
+              {meeting.url && (
+                <Badge
+                  appearance="outline"
+                  size="large"
+                  color="brand"
+                  icon={<Link20Regular />}
+                >
+                  {t('hasMeetingUrl')}
+                </Badge>
+              )}
             </div>
+            {meeting.description && (
+              <Body1 className={styles.description}>
+                {meeting.description}
+              </Body1>
+            )}
+          </div>
+          <div className={styles.actionsRow}>
+            <Button
+              appearance="secondary"
+              icon={<Edit20Regular />}
+              onClick={handleEdit}
+            >
+              {t('edit')}
+            </Button>
+            <Button
+              appearance="secondary"
+              icon={<Archive20Regular />}
+              onClick={handleArchiveToggle}
+              disabled={archiveMutation.isPending || unarchiveMutation.isPending}
+            >
+              {meeting.status === 'archived' ? tMeetings('actions.unarchive') : tMeetings('actions.archive')}
+            </Button>
+            <Menu>
+              <MenuTrigger disableButtonEnhancement>
+                <Button appearance="subtle" icon={<MoreVertical20Regular />} />
+              </MenuTrigger>
+              <MenuPopover>
+                <MenuList>
+                  <MenuItem
+                    icon={<Delete20Regular />}
+                    onClick={handleDelete}
+                    disabled={isDeleting}
+                  >
+                    {t('delete')}
+                  </MenuItem>
+                </MenuList>
+              </MenuPopover>
+            </Menu>
           </div>
         </div>
 
@@ -383,26 +529,33 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
               </Body1>
             </div>
           </div>
+          <div className={styles.metaItem}>
+            <Document20Regular className={styles.metaIcon} />
+            <div className={styles.metaContent}>
+              <Caption1 className={styles.metaLabel}>
+                {t('createdAt')}:
+              </Caption1>
+              <Body1 className={styles.metaValue}>
+                {formatDateTime(meeting.created_at)}
+              </Body1>
+            </div>
+          </div>
+          <div className={styles.metaItem}>
+            <Document20Regular className={styles.metaIcon} />
+            <div className={styles.metaContent}>
+              <Caption1 className={styles.metaLabel}>
+                {t('updatedAt')}:
+              </Caption1>
+              <Body1 className={styles.metaValue}>
+                {formatDateTime(meeting.updated_at || null)}
+              </Body1>
+            </div>
+          </div>
         </div>
       </div>
 
       <div className={styles.content}>
         <div className={styles.mainColumn}>
-          {/* Description Section */}
-          <Card className={styles.section}>
-            <div className={styles.sectionTitle}>
-              <Document20Regular className={styles.sectionIcon} />
-              <Text className={styles.sectionHeading}>{t('description')}</Text>
-            </div>
-            {meeting.description ? (
-              <Body1 className={styles.description}>
-                {meeting.description}
-              </Body1>
-            ) : (
-              <Body1 className={styles.noContent}>{t('noDescription')}</Body1>
-            )}
-          </Card>
-
           {/* Notes Section */}
           <Card className={styles.section}>
             <div className={styles.sectionTitle}>
@@ -412,19 +565,6 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
             <div className={styles.placeholder}>
               <Body1 className={styles.placeholderText}>
                 {t('notes')} - Coming soon
-              </Body1>
-            </div>
-          </Card>
-
-          {/* Transcripts Section */}
-          <Card className={styles.section}>
-            <div className={styles.sectionTitle}>
-              <Document20Regular className={styles.sectionIcon} />
-              <Text className={styles.sectionHeading}>{t('transcripts')}</Text>
-            </div>
-            <div className={styles.placeholder}>
-              <Body1 className={styles.placeholderText}>
-                {t('transcripts')} - Coming soon
               </Body1>
             </div>
           </Card>
@@ -444,26 +584,23 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
         </div>
 
         <div className={styles.sideColumn}>
-          {/* Related Projects */}
+          {/* Transcripts Section */}
           <Card className={styles.section}>
             <div className={styles.sectionTitle}>
-              <People20Regular className={styles.sectionIcon} />
-              <Text className={styles.sectionHeading}>{t('projects')}</Text>
+              <Document20Regular className={styles.sectionIcon} />
+              <Text className={styles.sectionHeading}>{t('transcripts')}</Text>
             </div>
-            {meeting.projects && meeting.projects.length > 0 ? (
-              <div className={styles.projectsList}>
-                {meeting.projects.map((project) => (
-                  <div key={project.id} className={styles.projectItem}>
-                    <Text className={styles.projectName}>
-                      {project.name || 'Untitled Project'}
-                    </Text>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <Body1 className={styles.noContent}>{t('noProjects')}</Body1>
-            )}
+            <div className={styles.placeholder}>
+              <Body1 className={styles.placeholderText}>
+                {t('transcripts')} - Coming soon
+              </Body1>
+            </div>
           </Card>
+
+          {/* Related Projects */}
+          {meeting.projects && meeting.projects.length > 0 && (
+            <LinkedProjectsSection projects={meeting.projects} />
+          )}
 
           {/* Meeting URL */}
           {meeting.url && (
@@ -482,44 +619,30 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
               </Button>
             </Card>
           )}
-
-          {/* Metadata */}
-          <Card className={styles.section}>
-            <div className={styles.sectionTitle}>
-              <Document20Regular className={styles.sectionIcon} />
-              <Text className={styles.sectionHeading}>{t('overview')}</Text>
-            </div>
-            <div
-              style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
-            >
-              <div className={styles.overviewItem}>
-                <Caption1 className={styles.overviewLabel}>
-                  {t('createdAt')}:
-                </Caption1>
-                <Body1 className={styles.overviewValue}>
-                  {formatDateTime(meeting.created_at)}
-                </Body1>
-              </div>
-              <div className={styles.overviewItem}>
-                <Caption1 className={styles.overviewLabel}>
-                  {t('updatedAt')}:
-                </Caption1>
-                <Body1 className={styles.overviewValue}>
-                  {formatDateTime(meeting.updated_at || null)}
-                </Body1>
-              </div>
-              <div className={styles.overviewItem}>
-                <Caption1 className={styles.overviewLabel}>
-                  {t('status')}:
-                </Caption1>
-                <div style={{ marginTop: '8px' }}>
-                  {getStatusBadge(meeting.status)}
-                </div>
-              </div>
-            </div>
-          </Card>
         </div>
       </div>
+
+      {/* Meeting Edit Modal */}
+      {meeting && (
+        <MeetingEditModal
+          open={showEditModal}
+          onOpenChange={setShowEditModal}
+          meeting={meeting}
+          onEditSuccess={() => {
+            setShowEditModal(false);
+          }}
+        />
+      )}
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={showDeleteModal}
+        onOpenChange={setShowDeleteModal}
+        onConfirm={handleDeleteConfirm}
+        isDeleting={isDeleting}
+        title={tMeetings('actions.deleteConfirmTitle')}
+        itemName={meeting?.title || tMeetings('untitledMeeting')}
+      />
     </div>
   );
 }

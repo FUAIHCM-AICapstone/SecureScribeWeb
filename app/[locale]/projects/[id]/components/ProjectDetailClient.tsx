@@ -62,7 +62,6 @@ import { TasksTable } from './TasksTable';
 
 const useStyles = makeStyles({
   container: {
-    maxWidth: '1600px',
     margin: '0 auto',
     ...shorthands.padding('40px', '32px', '24px'),
     '@media (max-width: 768px)': {

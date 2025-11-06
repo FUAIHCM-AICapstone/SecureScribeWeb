@@ -1,21 +1,21 @@
 'use client';
 
-import React from 'react';
-import { useRouter } from 'next/navigation';
-import { useTranslations } from 'next-intl';
 import {
-  Card,
-  CardHeader,
-  CardFooter,
-  Text,
-  Caption1,
   Badge,
+  Caption1,
+  Card,
+  CardFooter,
+  CardHeader,
   makeStyles,
-  tokens,
   shorthands,
+  Text,
+  tokens,
 } from '@fluentui/react-components';
-import { format } from 'date-fns';
 import { CalendarClock20Regular, People20Regular } from '@fluentui/react-icons';
+import { format } from 'date-fns';
+import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
+import React from 'react';
 import type { ProjectResponse } from 'types/project.type';
 import { ProjectActionsMenu } from './ProjectActionsMenu';
 
@@ -106,6 +106,12 @@ const useStyles = makeStyles({
     fontSize: tokens.fontSizeBase100,
     color: tokens.colorNeutralForeground3,
   },
+  actionsMenu: {
+    position: 'absolute',
+    top: '8px',
+    right: '8px',
+    zIndex: 10,
+  },
 });
 
 interface ProjectCardProps {
@@ -158,7 +164,9 @@ export function ProjectCard({ project }: ProjectCardProps) {
             <Text className={styles.title}>
               {project.name || t('untitledProject')}
             </Text>
-            <ProjectActionsMenu project={project} />
+            <div className={styles.actionsMenu}>
+              <ProjectActionsMenu project={project} />
+            </div>
           </div>
         }
       />
