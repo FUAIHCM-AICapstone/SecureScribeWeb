@@ -431,7 +431,8 @@
       "actions": "Hành động"
     },
     "badges": {
-      "personal": "Cá nhân"
+      "personal": "Cá nhân",
+      "owner": "Chủ sở hữu"
     }
   },
   "MeetingDetail": {

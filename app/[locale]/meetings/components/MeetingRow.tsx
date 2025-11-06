@@ -6,18 +6,22 @@ import {
   Text,
   Badge,
   Caption1,
+  Avatar,
   makeStyles,
   tokens,
   shorthands,
 } from '@fluentui/react-components';
 import { format } from 'date-fns';
+import { PersonCircle20Regular } from '@fluentui/react-icons';
 import type { MeetingResponse } from 'types/meeting.type';
+import { useAuth } from 'context/AuthContext';
+import { isUserMeetingOwner } from 'lib/utils';
 import { MeetingActionsMenu } from './MeetingActionsMenu';
 
 const useStyles = makeStyles({
   row: {
     display: 'grid',
-    gridTemplateColumns: '2fr 1.5fr 1fr 1fr auto',
+    gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr auto',
     alignItems: 'center',
     ...shorthands.gap('16px'),
     ...shorthands.padding('16px'),
@@ -78,6 +82,36 @@ const useStyles = makeStyles({
       display: 'none',
     },
   },
+  creatorCell: {
+    display: 'flex',
+    alignItems: 'center',
+    ...shorthands.gap('8px'),
+    minWidth: 0,
+  },
+  creatorName: {
+    fontSize: tokens.fontSizeBase200,
+    color: tokens.colorNeutralForeground2,
+    ...shorthands.overflow('hidden'),
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+    minWidth: 0,
+  },
+  tooltipBadgeContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    ...shorthands.gap('6px'),
+    ...shorthands.padding('8px', '0'),
+  },
+  projectBadgesContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    ...shorthands.gap('6px'),
+    ...shorthands.padding('8px', '0'),
+  },
+  projectBadge: {
+    fontSize: tokens.fontSizeBase100,
+  },
 });
 
 interface MeetingRowProps {
@@ -87,6 +121,8 @@ interface MeetingRowProps {
 export function MeetingRow({ meeting }: MeetingRowProps) {
   const styles = useStyles();
   const t = useTranslations('Meetings');
+  const { user } = useAuth();
+  const isOwner = isUserMeetingOwner(user?.id, meeting.created_by);
 
   const getStatusBadge = () => {
     switch (meeting.status) {
@@ -149,6 +185,16 @@ export function MeetingRow({ meeting }: MeetingRowProps) {
               {t('badges.personal')}
             </Badge>
           )}
+          {isOwner && (
+            <Badge
+              appearance="filled"
+              size="small"
+              color="brand"
+              className={styles.personalBadge}
+            >
+              {t('badges.owner')}
+            </Badge>
+          )}
         </div>
         {meeting.description && (
           <Caption1 className={styles.description}>
@@ -156,14 +202,40 @@ export function MeetingRow({ meeting }: MeetingRowProps) {
           </Caption1>
         )}
       </div>
+      <div className={`${styles.creatorCell} ${styles.hiddenOnTablet}`}>
+        <Avatar
+          size={28}
+          image={
+            meeting.creator?.avatar_url
+              ? { src: meeting.creator.avatar_url }
+              : undefined
+          }
+          icon={<PersonCircle20Regular />}
+          aria-label={meeting.creator?.name || 'Meeting creator'}
+        />
+        <Caption1 className={styles.creatorName}>
+          {meeting.creator?.name || t('unknownCreator')}
+        </Caption1>
+      </div>
       <div className={styles.hiddenOnMobile}>
         <Caption1>{formatStartTime()}</Caption1>
       </div>
       <div className={styles.hiddenOnMobile}>{getStatusBadge()}</div>
       <div className={styles.hiddenOnTablet}>
-        <Caption1>
-          {t('projectCount', { count: meeting.projects?.length || 0 })}
-        </Caption1>
+        {meeting.projects && meeting.projects.length > 0 && (
+          <div className={styles.projectBadgesContainer}>
+            {meeting.projects.map((project) => (
+              <Badge
+                key={project.id}
+                appearance="outline"
+                size="small"
+                className={styles.projectBadge}
+              >
+                {project.name}
+              </Badge>
+            ))}
+          </div>
+        )}
       </div>
       <div>
         <MeetingActionsMenu meeting={meeting} />

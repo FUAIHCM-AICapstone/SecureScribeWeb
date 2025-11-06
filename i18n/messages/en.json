@@ -431,7 +431,8 @@
       "actions": "Actions"
     },
     "badges": {
-      "personal": "Personal"
+      "personal": "Personal",
+      "owner": "Owner"
     }
   },
   "MeetingDetail": {

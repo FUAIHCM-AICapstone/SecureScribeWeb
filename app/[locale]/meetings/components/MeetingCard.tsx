@@ -20,6 +20,8 @@ import {
   PersonCircle20Regular,
 } from '@fluentui/react-icons';
 import type { MeetingResponse } from 'types/meeting.type';
+import { useAuth } from 'context/AuthContext';
+import { isUserMeetingOwner } from 'lib/utils';
 import { MeetingActionsMenu } from './MeetingActionsMenu';
 
 const useStyles = makeStyles({
@@ -110,6 +112,18 @@ const useStyles = makeStyles({
     fontSize: tokens.fontSizeBase100,
     color: tokens.colorNeutralForeground2,
   },
+  creatorAvatar: {
+    flexShrink: 0,
+  },
+  projectBadgesContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    ...shorthands.gap('6px'),
+  },
+  projectBadge: {
+    fontSize: tokens.fontSizeBase100,
+  },
 });
 
 interface MeetingCardProps {
@@ -119,6 +133,8 @@ interface MeetingCardProps {
 export function MeetingCard({ meeting }: MeetingCardProps) {
   const styles = useStyles();
   const t = useTranslations('Meetings');
+  const { user } = useAuth();
+  const isOwner = isUserMeetingOwner(user?.id, meeting.created_by);
 
   const getStatusBadge = () => {
     switch (meeting.status) {
@@ -186,6 +202,11 @@ export function MeetingCard({ meeting }: MeetingCardProps) {
               {t('badges.personal')}
             </Badge>
           )}
+          {isOwner && (
+            <Badge appearance="filled" size="small" color="brand">
+              {t('badges.owner')}
+            </Badge>
+          )}
         </div>
 
         <div className={styles.timeRow}>
@@ -200,9 +221,18 @@ export function MeetingCard({ meeting }: MeetingCardProps) {
         )}
 
         {meeting.projects && meeting.projects.length > 0 && (
-          <Caption1 className={styles.projectsInfo}>
-            {t('projectCount', { count: meeting.projects.length })}
-          </Caption1>
+          <div className={styles.projectBadgesContainer}>
+            {meeting.projects.map((project) => (
+              <Badge
+                key={project.id}
+                appearance="outline"
+                size="small"
+                className={styles.projectBadge}
+              >
+                {project.name}
+              </Badge>
+            ))}
+          </div>
         )}
       </div>
 
@@ -210,10 +240,18 @@ export function MeetingCard({ meeting }: MeetingCardProps) {
         <div className={styles.creatorInfo}>
           <Avatar
             size={28}
+            image={
+              meeting.creator?.avatar_url
+                ? { src: meeting.creator.avatar_url }
+                : undefined
+            }
             icon={<PersonCircle20Regular />}
-            aria-label="Meeting creator"
+            aria-label={meeting.creator?.name || 'Meeting creator'}
+            className={styles.creatorAvatar}
           />
-          <Caption1 className={styles.creatorName}>{t('createdBy')}</Caption1>
+          <Caption1 className={styles.creatorName}>
+            {meeting.creator?.name || t('unknownCreator')}
+          </Caption1>
         </div>
       </CardFooter>
     </Card>

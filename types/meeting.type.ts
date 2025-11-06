@@ -55,6 +55,7 @@ export interface MeetingResponse {
     created_at: string;
     updated_at?: string;
     projects: ProjectResponse[];
+    creator: User;
     can_access: boolean;
 }
 
@@ -81,3 +82,4 @@ export interface MeetingQueryParams {
 
 // Import common types
 import type { ApiResponse, PaginatedResponse } from './common.type';
+import type { User } from './user.type';
