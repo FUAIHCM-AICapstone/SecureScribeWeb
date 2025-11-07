@@ -4,10 +4,10 @@ import { DeleteConfirmationModal } from '@/components/modal/DeleteConfirmationMo
 import MeetingEditModal from '@/components/modal/MeetingEditModal';
 import { showToast } from '@/hooks/useShowToast';
 import { queryKeys } from '@/lib/queryClient';
-import { archiveMeeting, deleteMeeting, getMeeting, unarchiveMeeting } from '@/services/api/meeting';
 import { getMeetingAudioFiles } from '@/services/api/audio';
-import { getTranscriptsByMeeting } from '@/services/api/transcript';
+import { archiveMeeting, deleteMeeting, getMeeting, unarchiveMeeting } from '@/services/api/meeting';
 import { getMeetingNote } from '@/services/api/meetingNote';
+import { getTranscriptsByMeeting } from '@/services/api/transcript';
 import {
   Badge,
   Body1,
@@ -43,10 +43,10 @@ import { format } from 'date-fns';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import React from 'react';
-import type { MeetingWithProjects } from 'types/meeting.type';
 import type { AudioFileResponse } from 'types/audio_file.type';
-import type { TranscriptResponse } from 'types/transcript.type';
+import type { MeetingWithProjects } from 'types/meeting.type';
 import type { MeetingNoteResponse } from 'types/meeting_note.type';
+import type { TranscriptResponse } from 'types/transcript.type';
 import { LinkedProjectsSection } from './LinkedProjectsSection';
 
 const useStyles = makeStyles({
@@ -167,6 +167,7 @@ const useStyles = makeStyles({
     ...shorthands.borderBottom('2px', 'solid', tokens.colorNeutralStroke2),
     display: 'flex',
     alignItems: 'center',
+    justifyContent: 'space-between',
     ...shorthands.gap('12px'),
   },
   sectionIcon: {
@@ -366,12 +367,6 @@ const useStyles = makeStyles({
   },
   actionButtonSmall: {
     minWidth: '40px',
-  },
-  sectionActions: {
-    display: 'flex',
-    ...shorthands.gap('8px'),
-    alignItems: 'center',
-    marginTop: '16px',
   },
 });
 
@@ -745,8 +740,30 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
           {/* Notes Section */}
           <Card className={styles.section}>
             <div className={styles.sectionTitle}>
-              <Document20Regular className={styles.sectionIcon} />
-              <Text className={styles.sectionHeading}>{t('notes')}</Text>
+              <div>
+                <Document20Regular className={styles.sectionIcon} />
+                <Text className={styles.sectionHeading}>{t('notes')}</Text>
+              </div>
+              {meetingNote ? (
+                <Button
+                  appearance="primary"
+                  icon={<Edit20Regular />}
+                  onClick={() => {
+                    // TODO: Implement edit meeting note functionality
+                    console.log('Edit note clicked');
+                  }}
+                >
+                  {t('edit')}
+                </Button>
+              ) : <Button
+                    appearance="primary"
+                    onClick={() => {
+                      // TODO: Implement create AI-generated note functionality
+                      console.log('Create note clicked');
+                    }}
+                  >
+                    {t('createNote')}
+                  </Button>}
             </div>
             {isLoadingNote ? (
               <div style={{ display: 'flex', justifyContent: 'center', padding: '24px' }}>
@@ -761,33 +778,10 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
                 <div className={styles.noteContent}>
                   <Text>{meetingNote.content || 'No content'}</Text>
                 </div>
-                <div className={styles.sectionActions}>
-                  <Button
-                    appearance="primary"
-                    icon={<Edit20Regular />}
-                    onClick={() => {
-                      // TODO: Implement edit meeting note functionality
-                      console.log('Edit note clicked');
-                    }}
-                  >
-                    {t('edit')}
-                  </Button>
-                </div>
               </div>
             ) : (
               <div className={styles.noteEmpty}>
                 <Body1>{t('noNotes')}</Body1>
-                <div className={styles.sectionActions}>
-                  <Button
-                    appearance="primary"
-                    onClick={() => {
-                      // TODO: Implement create AI-generated note functionality
-                      console.log('Create note clicked');
-                    }}
-                  >
-                    {t('createNote')}
-                  </Button>
-                </div>
               </div>
             )}
           </Card>
@@ -857,8 +851,20 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
           {/* Transcripts Section */}
           <Card className={styles.section}>
             <div className={styles.sectionTitle}>
-              <Document20Regular className={styles.sectionIcon} />
-              <Text className={styles.sectionHeading}>{t('transcripts')}</Text>
+              <div>
+                <Document20Regular className={styles.sectionIcon} />
+                <Text className={styles.sectionHeading}>{t('transcripts')}</Text>
+              </div>
+              <Button
+                appearance="primary"
+                icon={<CloudAdd20Regular />}
+                onClick={() => {
+                  // TODO: Implement upload audio for new transcript functionality
+                  console.log('Upload audio clicked');
+                }}
+              >
+                {t('uploadAudio')}
+              </Button>
             </div>
             {isLoadingTranscripts ? (
               <div style={{ display: 'flex', justifyContent: 'center', padding: '24px' }}>
@@ -927,37 +933,12 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
                     )}
                   </div>
                 ))}
-
-                <div className={styles.sectionActions}>
-                  <Button
-                    appearance="primary"
-                    icon={<CloudAdd20Regular />}
-                    onClick={() => {
-                      // TODO: Implement upload audio for new transcript functionality
-                      console.log('Upload audio clicked');
-                    }}
-                  >
-                    {t('uploadAudio')}
-                  </Button>
-                </div>
               </div>
             ) : (
               <div className={styles.placeholder}>
                 <Body1 className={styles.placeholderText}>
                   {t('noTranscripts')}
                 </Body1>
-                <div className={styles.sectionActions}>
-                  <Button
-                    appearance="primary"
-                    icon={<CloudAdd20Regular />}
-                    onClick={() => {
-                      // TODO: Implement upload audio for new transcript functionality
-                      console.log('Upload audio clicked');
-                    }}
-                  >
-                    {t('uploadAudio')}
-                  </Button>
-                </div>
               </div>
             )}
           </Card>
