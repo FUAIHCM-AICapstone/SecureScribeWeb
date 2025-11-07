@@ -1,5 +1,7 @@
-// Meeting Management Types
-// Based on backend schemas from app/schemas/meeting.py
+import type { ApiResponse, PaginatedResponse } from './common.type';
+import type { MeetingNoteResponse } from './meeting_note.type';
+import type { TranscriptResponse } from './transcript.type';
+import { User } from './user.type';
 
 export interface ProjectResponse {
     id: string;
@@ -62,6 +64,8 @@ export interface MeetingResponse {
 export interface MeetingWithProjects extends MeetingResponse {
     project_count: number;
     member_count: number;
+    meeting_note?: MeetingNoteResponse | null;
+    transcripts?: TranscriptResponse[];
 }
 
 // API Response Types
@@ -80,6 +84,15 @@ export interface MeetingQueryParams {
     tag_ids?: string;
 }
 
-// Import common types
-import type { ApiResponse, PaginatedResponse } from './common.type';
-import type { User } from './user.type';
+// Re-export Meeting Note Types from meeting_note.type for backward compatibility
+export type { MeetingNoteRequest, MeetingNoteResponse, MeetingNoteSummaryResponse } from './meeting_note.type';
+
+export const PREDEFINED_SECTIONS = [
+    'Key Points',
+    'Action Items',
+    'Decisions',
+    'Discussion',
+    'Follow-up',
+    'Attendees',
+    'Agenda',
+];
