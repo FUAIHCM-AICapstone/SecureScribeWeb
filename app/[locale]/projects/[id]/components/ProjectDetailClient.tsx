@@ -68,9 +68,6 @@ const useStyles = makeStyles({
       ...shorthands.padding('24px', '16px', '16px'),
     },
   },
-  backButton: {
-    marginBottom: '24px',
-  },
   header: {
     marginBottom: '32px',
     ...shorthands.padding('32px'),
@@ -571,15 +568,6 @@ export function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
 
   return (
     <div className={styles.container}>
-      <Button
-        appearance="subtle"
-        icon={<ArrowLeft20Regular />}
-        onClick={() => router.push('/projects')}
-        className={styles.backButton}
-      >
-        {t('backToProjects')}
-      </Button>
-
       <div className={styles.header}>
         <div className={styles.titleRow}>
           <div className={styles.titleSection}>
@@ -597,30 +585,35 @@ export function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
             )}
           </div>
           <div className={styles.actionsRow}>
-            <Button
-              appearance="secondary"
-              icon={<Edit20Regular />}
-              onClick={handleEdit}
-              disabled={!canManageProject()}
-            >
-              {t('edit')}
-            </Button>
-            <Button
-              appearance="secondary"
-              icon={<Archive20Regular />}
-              onClick={handleArchiveToggle}
-              disabled={
-                !canManageProject() || archiveMutation.isPending || unarchiveMutation.isPending
-              }
-            >
-              {project.is_archived ? t('unarchive') : t('archive')}
-            </Button>
+
             <Menu>
               <MenuTrigger disableButtonEnhancement>
                 <Button appearance="subtle" icon={<MoreVertical20Regular />} disabled={!canManageProject()} />
               </MenuTrigger>
               <MenuPopover>
                 <MenuList>
+                  <MenuItem
+                    icon={<ArrowLeft20Regular />}
+                    onClick={() => router.push('/projects')}
+                  >
+                    {t('backToProjects')}
+                  </MenuItem>
+                  <MenuItem
+                    icon={<Edit20Regular />}
+                    onClick={handleEdit}
+                    disabled={!canManageProject()}
+                  >
+                    {t('edit')}
+                  </MenuItem>
+                  <MenuItem
+                    icon={<Archive20Regular />}
+                    onClick={handleArchiveToggle}
+                    disabled={
+                      !canManageProject() || archiveMutation.isPending || unarchiveMutation.isPending
+                    }
+                  >
+                    {project.is_archived ? t('unarchive') : t('archive')}
+                  </MenuItem>
                   <MenuItem
                     icon={<Delete20Regular />}
                     onClick={handleDelete}
