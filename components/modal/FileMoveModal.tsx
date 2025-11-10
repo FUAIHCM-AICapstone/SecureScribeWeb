@@ -21,13 +21,14 @@ import {
   Text,
   makeStyles,
   shorthands,
-  tokens
+  tokens,
 } from '@fluentui/react-components';
+import { ArrowMove24Regular, Dismiss24Regular } from '@fluentui/react-icons';
 import {
-  ArrowMove24Regular,
-  Dismiss24Regular,
-} from '@fluentui/react-icons';
-import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+  useInfiniteQuery,
+  useMutation,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import React, { useCallback, useEffect, useState } from 'react';
 import type { FileResponse } from 'types/file.type';
@@ -74,13 +75,14 @@ export function FileMoveModal({
 }: FileMoveModalProps) {
   const styles = useStyles();
   const t = useTranslations('Files');
+  const tMeetings = useTranslations('Meetings');
   const queryClient = useQueryClient();
 
   const [projectId, setProjectId] = useState<string | undefined>(
-    file?.project_id
+    file?.project_id,
   );
   const [meetingId, setMeetingId] = useState<string | undefined>(
-    file?.meeting_id
+    file?.meeting_id,
   );
 
   // Search states for Combobox
@@ -103,7 +105,7 @@ export function FileMoveModal({
     queryFn: ({ pageParam = 1 }: { pageParam?: number }) =>
       getProjects(
         debouncedProjectQuery ? { name: debouncedProjectQuery } : {},
-        { limit: 50, page: pageParam }
+        { limit: 50, page: pageParam },
       ),
     initialPageParam: 1,
     getNextPageParam: (lastPage: any, pages) => {
@@ -131,7 +133,7 @@ export function FileMoveModal({
           ...(projectId ? { project_id: projectId } : {}),
           ...(debouncedMeetingQuery ? { title: debouncedMeetingQuery } : {}),
         },
-        { limit: 50, page: pageParam }
+        { limit: 50, page: pageParam },
       ),
     initialPageParam: 1,
     getNextPageParam: (lastPage: any, pages) => {
@@ -268,9 +270,7 @@ export function FileMoveModal({
 
             {/* Project Selection with Search */}
             <div className={styles.filterSection}>
-              <label className={styles.label}>
-                {t('selectProject')}
-              </label>
+              <label className={styles.label}>{t('selectProject')}</label>
               <Combobox
                 placeholder={t('selectProject')}
                 value={
@@ -304,24 +304,32 @@ export function FileMoveModal({
                   </Option>
                 ))}
                 {isFetchingNextProjectsPage && (
-                  <div style={{ padding: '8px 12px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}>
+                  <div
+                    style={{
+                      padding: '8px 12px',
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      gap: '8px',
+                    }}
+                  >
                     <Spinner size="small" />
                     <Caption1>{t('loading')}</Caption1>
                   </div>
                 )}
-                {!isLoadingProjects && projects.length === 0 && debouncedProjectQuery && (
-                  <div style={{ padding: '12px', textAlign: 'center' }}>
-                    <Caption1>{t('noResults')}</Caption1>
-                  </div>
-                )}
+                {!isLoadingProjects &&
+                  projects.length === 0 &&
+                  debouncedProjectQuery && (
+                    <div style={{ padding: '12px', textAlign: 'center' }}>
+                      <Caption1>{t('noResults')}</Caption1>
+                    </div>
+                  )}
               </Combobox>
             </div>
 
             {/* Meeting Selection with Search */}
             <div className={styles.filterSection}>
-              <label className={styles.label}>
-                {t('selectMeeting')}
-              </label>
+              <label className={styles.label}>{t('selectMeeting')}</label>
               <Combobox
                 placeholder={t('selectMeeting')}
                 value={
@@ -350,16 +358,33 @@ export function FileMoveModal({
                   </Option>
                 ))}
                 {isFetchingNextMeetingsPage && (
-                  <div style={{ padding: '8px 12px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}>
+                  <div
+                    style={{
+                      padding: '8px 12px',
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      gap: '8px',
+                    }}
+                  >
                     <Spinner size="small" />
                     <Caption1>{t('loading')}</Caption1>
                   </div>
                 )}
-                {!isLoadingMeetings && meetings.length === 0 && debouncedMeetingQuery && (
-                  <div style={{ padding: '12px', textAlign: 'center' }}>
-                    <Caption1>{t('noResults')}</Caption1>
-                  </div>
-                )}
+                {!isLoadingMeetings &&
+                  meetings.length === 0 &&
+                  debouncedMeetingQuery && (
+                    <div style={{ padding: '12px', textAlign: 'center' }}>
+                      <Caption1>{t('noResults')}</Caption1>
+                    </div>
+                  )}
+                {!isLoadingMeetings &&
+                  meetings.length === 0 &&
+                  !debouncedMeetingQuery && (
+                    <div style={{ padding: '12px', textAlign: 'center' }}>
+                      <Caption1>{tMeetings('noAvailableMeetings')}</Caption1>
+                    </div>
+                  )}
               </Combobox>
             </div>
           </DialogContent>
@@ -376,9 +401,7 @@ export function FileMoveModal({
               appearance="primary"
               onClick={handleMove}
               disabled={!hasMoved || moveMutation.isPending}
-              icon={
-                moveMutation.isPending ? undefined : <ArrowMove24Regular />
-              }
+              icon={moveMutation.isPending ? undefined : <ArrowMove24Regular />}
             >
               {moveMutation.isPending ? t('move.moving') : t('move.move')}
             </Button>
