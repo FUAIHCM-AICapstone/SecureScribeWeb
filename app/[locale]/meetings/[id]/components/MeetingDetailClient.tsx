@@ -1,14 +1,23 @@
 'use client';
 
 import MeetingEditModal from '@/components/modal/MeetingEditModal';
-import { Body1, Button, Card, Spinner, Text, makeStyles, shorthands, tokens } from '@fluentui/react-components';
+import {
+  Body1,
+  Button,
+  Card,
+  Spinner,
+  Text,
+  makeStyles,
+  shorthands,
+  tokens,
+} from '@fluentui/react-components';
 import { ArrowLeft20Regular } from '@fluentui/react-icons';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import React from 'react';
 import { MeetingHeader } from './MeetingHeader';
 import { MeetingNotes } from './MeetingNotes';
-import { MeetingAudioFiles } from './MeetingAudioFiles';
+import { MeetingFiles } from './MeetingFiles';
 import { MeetingTranscripts } from './MeetingTranscripts';
 import { MeetingModals } from './MeetingModals';
 import { LinkedProjectsSection } from './LinkedProjectsSection';
@@ -90,6 +99,9 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
     audioFiles,
     isLoadingAudio,
     audioError,
+    files,
+    isLoadingFiles,
+    filesError,
     transcripts,
     isLoadingTranscripts,
     transcriptError,
@@ -120,10 +132,15 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
   const [showEditModal, setShowEditModal] = React.useState(false);
   const [showDeleteModal, setShowDeleteModal] = React.useState(false);
   const [showNoteModal, setShowNoteModal] = React.useState(false);
-  const [noteModalMode, setNoteModalMode] = React.useState<'create' | 'edit'>('create');
+  const [noteModalMode, setNoteModalMode] = React.useState<'create' | 'edit'>(
+    'create',
+  );
   const [showUploadModal, setShowUploadModal] = React.useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
-  const [deleteTarget, setDeleteTarget] = React.useState<{ type: 'audio' | 'transcript'; id: string } | null>(null);
+  const [deleteTarget, setDeleteTarget] = React.useState<{
+    type: 'audio' | 'transcript';
+    id: string;
+  } | null>(null);
   const [customNotePrompt, setCustomNotePrompt] = React.useState('');
   const [noteContent, setNoteContent] = React.useState('');
   const [isUploadingAudio, setIsUploadingAudio] = React.useState(false);
@@ -262,11 +279,14 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
             isUpdating={updateNoteMutation.isPending}
           />
 
-          {/* Audio Files Section */}
-          <MeetingAudioFiles
+          {/* Files Section */}
+          <MeetingFiles
             audioFiles={audioFiles}
-            isLoading={isLoadingAudio}
-            error={audioError}
+            files={files}
+            isLoadingAudio={isLoadingAudio}
+            isLoadingFiles={isLoadingFiles}
+            audioError={audioError}
+            filesError={filesError}
             onDeleteAudio={handleDeleteAudio}
             isDeleting={deleteAudioMutation.isPending}
           />
@@ -292,8 +312,17 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
           {/* Meeting URL */}
           {meeting.url && (
             <Card className={styles.section}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                <Text style={{ fontWeight: 700, fontSize: tokens.fontSizeBase400 }}>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: '16px',
+                }}
+              >
+                <Text
+                  style={{ fontWeight: 700, fontSize: tokens.fontSizeBase400 }}
+                >
                   {t('meetingUrl')}
                 </Text>
               </div>
@@ -343,8 +372,14 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
         isDeletingTranscript={deleteTranscriptMutation.isPending}
         onDeleteConfirmOpenChange={setShowDeleteConfirm}
         onConfirmDelete={handleConfirmDelete}
-        deleteTitle={deleteTarget?.type === 'audio' ? 'Delete Audio File' : 'Delete Transcript'}
-        deleteItemName={deleteTarget?.type === 'audio' ? 'audio file' : 'transcript'}
+        deleteTitle={
+          deleteTarget?.type === 'audio'
+            ? 'Delete Audio File'
+            : 'Delete Transcript'
+        }
+        deleteItemName={
+          deleteTarget?.type === 'audio' ? 'audio file' : 'transcript'
+        }
         showDeleteModal={showDeleteModal}
         isDeleting={isDeleting}
         onDeleteModalOpenChange={setShowDeleteModal}

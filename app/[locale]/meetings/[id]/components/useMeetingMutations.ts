@@ -1,147 +1,191 @@
 'use client';
 
-import { showErrorToast, showSuccessToast, showToast } from '@/hooks/useShowToast';
+import {
+  showErrorToast,
+  showSuccessToast,
+  showToast,
+} from '@/hooks/useShowToast';
 import { queryKeys } from '@/lib/queryClient';
-import { deleteAudioFile, uploadAndTranscribeAudio } from '@/services/api/audio';
-import { archiveMeeting, deleteMeeting, unarchiveMeeting } from '@/services/api/meeting';
-import { createMeetingNote, updateMeetingNote } from '@/services/api/meetingNote';
+import {
+  deleteAudioFile,
+  uploadAndTranscribeAudio,
+} from '@/services/api/audio';
+import {
+  archiveMeeting,
+  deleteMeeting,
+  unarchiveMeeting,
+} from '@/services/api/meeting';
+import {
+  createMeetingNote,
+  updateMeetingNote,
+} from '@/services/api/meetingNote';
 import { deleteTranscript } from '@/services/api/transcript';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import React from 'react';
 
-export const useMeetingMutations = (meetingId: string, tMeetings: (key: string) => string, t: (key: string) => string, onUploadModalClose?: () => void) => {
-    const router = useRouter();
-    const queryClient = useQueryClient();
-    const [isDeleting, setIsDeleting] = React.useState(false);
+export const useMeetingMutations = (
+  meetingId: string,
+  tMeetings: (key: string) => string,
+  t: (key: string) => string,
+  onUploadModalClose?: () => void,
+) => {
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const [isDeleting, setIsDeleting] = React.useState(false);
 
-    // Delete meeting mutation
-    const deleteMutation = useMutation({
-        mutationFn: () => deleteMeeting(meetingId),
-        onSuccess: () => {
-            showToast('success', tMeetings('actions.deleteSuccess'));
-            router.push('/meetings');
-        },
-        onError: (error: any) => {
-            showToast('error', error?.response?.data?.detail || tMeetings('actions.deleteError'));
-            setIsDeleting(false);
-        },
-    });
+  // Delete meeting mutation
+  const deleteMutation = useMutation({
+    mutationFn: () => deleteMeeting(meetingId),
+    onSuccess: () => {
+      showToast('success', tMeetings('actions.deleteSuccess'));
+      router.push('/meetings');
+    },
+    onError: (error: any) => {
+      showToast(
+        'error',
+        error?.response?.data?.detail || tMeetings('actions.deleteError'),
+      );
+      setIsDeleting(false);
+    },
+  });
 
-    // Archive mutation
-    const archiveMutation = useMutation({
-        mutationFn: () => archiveMeeting(meetingId),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: queryKeys.meetings });
-            queryClient.invalidateQueries({
-                queryKey: queryKeys.meeting(meetingId),
-            });
-            showToast('success', tMeetings('actions.archiveSuccess'), { duration: 3000 });
-        },
-        onError: (error: any) => {
-            console.error('Error archiving meeting:', error);
-            showToast('error', error?.message || tMeetings('actions.archiveError'), {
-                duration: 5000,
-            });
-        },
-    });
+  // Archive mutation
+  const archiveMutation = useMutation({
+    mutationFn: () => archiveMeeting(meetingId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.meetings });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.meeting(meetingId),
+      });
+      showToast('success', tMeetings('actions.archiveSuccess'), {
+        duration: 3000,
+      });
+    },
+    onError: (error: any) => {
+      console.error('Error archiving meeting:', error);
+      showToast('error', error?.message || tMeetings('actions.archiveError'), {
+        duration: 5000,
+      });
+    },
+  });
 
-    // Unarchive mutation
-    const unarchiveMutation = useMutation({
-        mutationFn: () => unarchiveMeeting(meetingId),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: queryKeys.meetings });
-            queryClient.invalidateQueries({
-                queryKey: queryKeys.meeting(meetingId),
-            });
-            showToast('success', tMeetings('actions.unarchiveSuccess'), { duration: 3000 });
+  // Unarchive mutation
+  const unarchiveMutation = useMutation({
+    mutationFn: () => unarchiveMeeting(meetingId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.meetings });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.meeting(meetingId),
+      });
+      showToast('success', tMeetings('actions.unarchiveSuccess'), {
+        duration: 3000,
+      });
+    },
+    onError: (error: any) => {
+      console.error('Error unarchiving meeting:', error);
+      showToast(
+        'error',
+        error?.message || tMeetings('actions.unarchiveError'),
+        {
+          duration: 5000,
         },
-        onError: (error: any) => {
-            console.error('Error unarchiving meeting:', error);
-            showToast('error', error?.message || tMeetings('actions.unarchiveError'), {
-                duration: 5000,
-            });
-        },
-    });
+      );
+    },
+  });
 
-    // Delete audio file mutation
-    const deleteAudioMutation = useMutation({
-        mutationFn: (audioId: string) => deleteAudioFile(audioId),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['audioFiles', meetingId] });
-            showSuccessToast(tMeetings('actions.deleteSuccess') || 'Audio file deleted successfully');
-        },
-        onError: (error: any) => {
-            showErrorToast(error?.response?.data?.detail || tMeetings('actions.deleteError') || 'Failed to delete audio file');
-        },
-    });
+  // Delete audio file mutation
+  const deleteAudioMutation = useMutation({
+    mutationFn: (audioId: string) => deleteAudioFile(audioId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['audioFiles', meetingId] });
+      queryClient.invalidateQueries({ queryKey: ['meetingFiles', meetingId] });
+      showSuccessToast(
+        tMeetings('actions.deleteAudioSuccess') ||
+          'Audio file deleted successfully',
+      );
+    },
+    onError: (error: any) => {
+      showErrorToast(
+        error?.response?.data?.detail ||
+          tMeetings('actions.deleteAudioError') ||
+          'Failed to delete audio file',
+      );
+    },
+  });
 
-    // Delete transcript mutation
-    const deleteTranscriptMutation = useMutation({
-        mutationFn: (transcriptId: string) => deleteTranscript(transcriptId),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['transcripts', meetingId] });
-            showSuccessToast(tMeetings('actions.deleteSuccess') || 'Transcript deleted successfully');
-        },
-        onError: (error: any) => {
-            showErrorToast(error?.response?.data?.detail || tMeetings('actions.deleteError') || 'Failed to delete transcript');
-        },
-    });
+  // Delete transcript mutation
+  const deleteTranscriptMutation = useMutation({
+    mutationFn: (transcriptId: string) => deleteTranscript(transcriptId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['transcripts', meetingId] });
+      showSuccessToast(
+        tMeetings('actions.deleteSuccess') || 'Transcript deleted successfully',
+      );
+    },
+    onError: (error: any) => {
+      showErrorToast(
+        error?.response?.data?.detail ||
+          tMeetings('actions.deleteError') ||
+          'Failed to delete transcript',
+      );
+    },
+  });
 
-    // Create meeting note mutation
-    const createNoteMutation = useMutation({
-        mutationFn: (customPrompt?: string) =>
-            createMeetingNote({
-                meeting_id: meetingId,
-                custom_prompt: customPrompt || undefined,
-            }),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['meetingNote', meetingId] });
-            showSuccessToast(t('createNoteSuccess'));
-        },
-        onError: (error: any) => {
-            showErrorToast(error?.response?.data?.detail || 'Failed to create note');
-        },
-    });
+  // Create meeting note mutation
+  const createNoteMutation = useMutation({
+    mutationFn: (customPrompt?: string) =>
+      createMeetingNote({
+        meeting_id: meetingId,
+        custom_prompt: customPrompt || undefined,
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['meetingNote', meetingId] });
+      showSuccessToast(t('createNoteSuccess'));
+    },
+    onError: (error: any) => {
+      showErrorToast(error?.response?.data?.detail || 'Failed to create note');
+    },
+  });
 
-    // Update meeting note mutation
-    const updateNoteMutation = useMutation({
-        mutationFn: (noteContent: string) =>
-            updateMeetingNote(meetingId, {
-                content: noteContent,
-            }),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['meetingNote', meetingId] });
-            showSuccessToast(t('updateNoteSuccess'));
-        },
-        onError: (error: any) => {
-            showErrorToast(error?.response?.data?.detail || 'Failed to update note');
-        },
-    });
+  // Update meeting note mutation
+  const updateNoteMutation = useMutation({
+    mutationFn: (noteContent: string) =>
+      updateMeetingNote(meetingId, {
+        content: noteContent,
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['meetingNote', meetingId] });
+      showSuccessToast(t('updateNoteSuccess'));
+    },
+    onError: (error: any) => {
+      showErrorToast(error?.response?.data?.detail || 'Failed to update note');
+    },
+  });
 
-    // Upload audio and transcribe mutation
-    const uploadAudioMutation = useMutation({
-        mutationFn: (file: File) => uploadAndTranscribeAudio(meetingId, file),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['transcripts', meetingId] });
-            showSuccessToast(t('uploadAudioSuccess'));
-            onUploadModalClose?.();
-        },
-        onError: (error: any) => {
-            showErrorToast(error?.response?.data?.detail || 'Failed to upload audio');
-        },
-    });
+  // Upload audio and transcribe mutation
+  const uploadAudioMutation = useMutation({
+    mutationFn: (file: File) => uploadAndTranscribeAudio(meetingId, file),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['transcripts', meetingId] });
+      showSuccessToast(t('uploadAudioSuccess'));
+      onUploadModalClose?.();
+    },
+    onError: (error: any) => {
+      showErrorToast(error?.response?.data?.detail || 'Failed to upload audio');
+    },
+  });
 
-    return {
-        isDeleting,
-        setIsDeleting,
-        deleteMutation,
-        archiveMutation,
-        unarchiveMutation,
-        deleteAudioMutation,
-        deleteTranscriptMutation,
-        createNoteMutation,
-        updateNoteMutation,
-        uploadAudioMutation,
-    };
+  return {
+    isDeleting,
+    setIsDeleting,
+    deleteMutation,
+    archiveMutation,
+    unarchiveMutation,
+    deleteAudioMutation,
+    deleteTranscriptMutation,
+    createNoteMutation,
+    updateNoteMutation,
+    uploadAudioMutation,
+  };
 };

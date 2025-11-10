@@ -24,7 +24,7 @@ import {
   Text,
   makeStyles,
   shorthands,
-  tokens
+  tokens,
 } from '@fluentui/react-components';
 import {
   ArrowUpload24Regular,
@@ -32,7 +32,11 @@ import {
   Dismiss24Regular,
   Document24Regular,
 } from '@fluentui/react-icons';
-import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import React, { useCallback, useRef, useState } from 'react';
 
@@ -178,6 +182,7 @@ export function FileUploadModal({
 }: FileUploadModalProps) {
   const styles = useStyles();
   const t = useTranslations('Files');
+  const tMeetings = useTranslations('Meetings');
   const queryClient = useQueryClient();
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -213,7 +218,7 @@ export function FileUploadModal({
     queryFn: ({ pageParam = 1 }: { pageParam?: number }) =>
       getProjects(
         debouncedProjectQuery ? { name: debouncedProjectQuery } : {},
-        { limit: 50, page: pageParam }
+        { limit: 50, page: pageParam },
       ),
     initialPageParam: 1,
     getNextPageParam: (lastPage: any, pages) => {
@@ -234,18 +239,14 @@ export function FileUploadModal({
     isFetchingNextPage: isFetchingNextMeetingsPage,
     isLoading: isLoadingMeetings,
   } = useInfiniteQuery({
-    queryKey: [
-      'meetings',
-      debouncedMeetingQuery,
-      projectId,
-    ],
+    queryKey: ['meetings', debouncedMeetingQuery, projectId],
     queryFn: ({ pageParam = 1 }: { pageParam?: number }) =>
       getMeetings(
         {
           ...(projectId ? { project_id: projectId } : {}),
           ...(debouncedMeetingQuery ? { title: debouncedMeetingQuery } : {}),
         },
-        { limit: 50, page: pageParam }
+        { limit: 50, page: pageParam },
       ),
     initialPageParam: 1,
     getNextPageParam: (lastPage: any, pages) => {
@@ -284,7 +285,6 @@ export function FileUploadModal({
       fetchNextMeetingsPage();
     }
   };
-
 
   // Upload mutation
   const uploadMutation = useMutation({
@@ -500,16 +500,15 @@ export function FileUploadModal({
 
                 {/* Project Selection with Search */}
                 <div className={styles.filterSection}>
-                  <label className={styles.label}>
-                    {t('selectProject')}
-                  </label>
+                  <label className={styles.label}>{t('selectProject')}</label>
                   <Combobox
                     placeholder={
                       isLoadingProjects ? t('loading') : t('selectProject')
                     }
                     value={
                       projectId && projects.length > 0
-                        ? projects.find((p: any) => p.id === projectId)?.name || ''
+                        ? projects.find((p: any) => p.id === projectId)?.name ||
+                          ''
                         : projectSearchQuery
                     }
                     onInput={(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -524,10 +523,7 @@ export function FileUploadModal({
                         setMeetingId(undefined);
                       }
                     }}
-                    disabled={
-                      !!defaultProjectId ||
-                      uploadMutation.isPending
-                    }
+                    disabled={!!defaultProjectId || uploadMutation.isPending}
                     listbox={{
                       onScroll: handleProjectsListScroll,
                     }}
@@ -538,30 +534,38 @@ export function FileUploadModal({
                       </Option>
                     ))}
                     {isFetchingNextProjectsPage && (
-                      <div style={{ padding: '8px 12px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}>
+                      <div
+                        style={{
+                          padding: '8px 12px',
+                          display: 'flex',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          gap: '8px',
+                        }}
+                      >
                         <Spinner size="small" />
                         <Caption1>{t('loading')}</Caption1>
                       </div>
                     )}
-                    {!isLoadingProjects && projects.length === 0 && debouncedProjectQuery && (
-                      <div style={{ padding: '12px', textAlign: 'center' }}>
-                        <Caption1>{t('noResults')}</Caption1>
-                      </div>
-                    )}
+                    {!isLoadingProjects &&
+                      projects.length === 0 &&
+                      debouncedProjectQuery && (
+                        <div style={{ padding: '12px', textAlign: 'center' }}>
+                          <Caption1>{t('noResults')}</Caption1>
+                        </div>
+                      )}
                   </Combobox>
                 </div>
 
                 {/* Meeting Selection with Search */}
                 <div className={styles.filterSection}>
-                  <label className={styles.label}>
-                    {t('selectMeeting')}
-                  </label>
+                  <label className={styles.label}>{t('selectMeeting')}</label>
                   <Combobox
                     placeholder={t('selectMeeting')}
                     value={
                       meetingId
-                        ? meetings.find((m: any) => m.id === meetingId)?.title ||
-                        t('noMeeting')
+                        ? meetings.find((m: any) => m.id === meetingId)
+                            ?.title || t('noMeeting')
                         : meetingSearchQuery
                     }
                     onInput={(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -582,16 +586,35 @@ export function FileUploadModal({
                       </Option>
                     ))}
                     {isFetchingNextMeetingsPage && (
-                      <div style={{ padding: '8px 12px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}>
+                      <div
+                        style={{
+                          padding: '8px 12px',
+                          display: 'flex',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          gap: '8px',
+                        }}
+                      >
                         <Spinner size="small" />
                         <Caption1>{t('loading')}</Caption1>
                       </div>
                     )}
-                    {!isLoadingMeetings && meetings.length === 0 && debouncedMeetingQuery && (
-                      <div style={{ padding: '12px', textAlign: 'center' }}>
-                        <Caption1>{t('noResults')}</Caption1>
-                      </div>
-                    )}
+                    {!isLoadingMeetings &&
+                      meetings.length === 0 &&
+                      debouncedMeetingQuery && (
+                        <div style={{ padding: '12px', textAlign: 'center' }}>
+                          <Caption1>{t('noResults')}</Caption1>
+                        </div>
+                      )}
+                    {!isLoadingMeetings &&
+                      meetings.length === 0 &&
+                      !debouncedMeetingQuery && (
+                        <div style={{ padding: '12px', textAlign: 'center' }}>
+                          <Caption1>
+                            {tMeetings('noAvailableMeetings')}
+                          </Caption1>
+                        </div>
+                      )}
                   </Combobox>
                 </div>
 
@@ -619,10 +642,7 @@ export function FileUploadModal({
               <Button
                 appearance="primary"
                 onClick={handleUpload}
-                disabled={
-                  !selectedFile ||
-                  uploadMutation.isPending
-                }
+                disabled={!selectedFile || uploadMutation.isPending}
                 icon={
                   uploadMutation.isPending ? undefined : (
                     <ArrowUpload24Regular />
