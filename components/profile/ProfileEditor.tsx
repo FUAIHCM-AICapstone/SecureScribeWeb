@@ -37,11 +37,10 @@ const useStyles = makeStyles({
     ...shorthands.gap('20px'),
     marginBottom: '32px',
     ...shorthands.padding('24px'),
-    background:
-      'linear-gradient(135deg, rgba(17, 94, 163, 0.03) 0%, rgba(91, 155, 213, 0.05) 100%)',
+    backgroundColor: tokens.colorNeutralBackground1,
     ...shorthands.borderRadius('16px'),
-    ...shorthands.border('1px', 'solid', 'rgba(17, 94, 163, 0.15)'),
-    boxShadow: '0 2px 8px rgba(17, 94, 163, 0.08)',
+    ...shorthands.border('1px', 'solid', tokens.colorNeutralStroke2),
+    boxShadow: tokens.shadow4,
     '@media (max-width: 768px)': {
       ...shorthands.padding('16px'),
     },
@@ -65,9 +64,9 @@ const useStyles = makeStyles({
     width: '48px',
     height: '48px',
     ...shorthands.borderRadius('12px'),
-    background: 'linear-gradient(135deg, #115ea3 0%, #5b9bd5 100%)',
-    boxShadow: '0 4px 12px rgba(17, 94, 163, 0.25)',
-    color: '#ffffff',
+    backgroundColor: tokens.colorBrandBackground,
+    boxShadow: tokens.shadow8,
+    color: tokens.colorNeutralForegroundOnBrand,
   },
   avatarWrap: {
     position: 'relative',

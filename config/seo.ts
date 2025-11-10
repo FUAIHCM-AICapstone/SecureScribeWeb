@@ -1,26 +1,35 @@
+// Get branding configuration from environment variables
+function getBrandConfig() {
+  const brandName = process.env.BRAND_NAME || 'SecureScribe123';
+  const brandLogo = process.env.BRAND_LOGO || '/images/logos/logo.png';
+  return { brandName, brandLogo };
+}
+
+const { brandName, brandLogo } = getBrandConfig();
+
 export const seoConfig = {
-  title: 'SecureScribe', // <= 60 ký tự
+  title: brandName, // <= 60 ký tự
   description:
-    'SecureScribe giúp ghi chú, transcript, quản lý task và lịch sử cuộc họp tự động. Tiết kiệm 60% thời gian, bảo mật chuẩn quốc tế, tích hợp Google Meet, Zoom, Webex.', // 155-160 ký tự
+    `${brandName} giúp ghi chú, transcript, quản lý task và lịch sử cuộc họp tự động. Tiết kiệm 60% thời gian, bảo mật chuẩn quốc tế, tích hợp Google Meet, Zoom, Webex.`, // 155-160 ký tự
   url: 'https://SecureScribe/',
   openGraph: {
     type: 'website',
     locale: 'vi_VN',
     url: 'https://SecureScribe/',
-    title: 'SecureScribe',
+    title: brandName,
     description:
-      'SecureScribe giúp ghi chú, transcript, quản lý task và lịch sử cuộc họp tự động. Tiết kiệm 60% thời gian, bảo mật chuẩn quốc tế, tích hợp Google Meet, Zoom, Webex.',
-    site_name: 'SecureScribe',
+      `${brandName} giúp ghi chú, transcript, quản lý task và lịch sử cuộc họp tự động. Tiết kiệm 60% thời gian, bảo mật chuẩn quốc tế, tích hợp Google Meet, Zoom, Webex.`,
+    site_name: brandName,
     images: [
       {
         url: 'https://SecureScribe/images/background-features.jpg',
         width: 1200,
         height: 630,
-        alt: 'SecureScribe - AI Note Taker',
+        alt: `${brandName} - AI Note Taker`,
       },
     ],
   },
-  favicon: '/images/logos/logo.png',
+  favicon: brandLogo,
   canonical: 'https://SecureScribe/',
   keywords: [
     'AI Note Taker',
@@ -31,7 +40,7 @@ export const seoConfig = {
     'export meeting note',
     'tích hợp Google Calendar',
     'bảo mật dữ liệu',
-    'SecureScribe',
+    brandName,
   ],
   schema: {
     faq: true,
@@ -65,7 +74,7 @@ export const seoConfig = {
     },
   ],
   product: {
-    name: 'SecureScribe',
+    name: brandName,
     slogan: 'AI Note Taker cho doanh nghiệp Việt',
     features: [
       'Tự động ghi âm và ghi chú cuộc họp',

@@ -43,9 +43,9 @@ const useStyles = makeStyles({
     marginBottom: '0',
     padding: '24px',
     borderRadius: tokens.borderRadiusXLarge,
-    background: `linear-gradient(135deg, rgba(17, 94, 163, 0.03) 0%, rgba(91, 155, 213, 0.05) 100%)`,
-    border: '1px solid rgba(17, 94, 163, 0.15)',
-    boxShadow: '0 2px 8px rgba(17, 94, 163, 0.08)',
+    backgroundColor: tokens.colorNeutralBackground1,
+    border: `1px solid ${tokens.colorNeutralStroke2}`,
+    boxShadow: tokens.shadow4,
     '@media (max-width: 768px)': {
       padding: '16px',
     },
@@ -69,12 +69,12 @@ const useStyles = makeStyles({
     width: '48px',
     height: '48px',
     ...shorthands.borderRadius('12px'),
-    background: 'linear-gradient(135deg, #115ea3 0%, #5b9bd5 100%)',
-    boxShadow: '0 4px 12px rgba(17, 94, 163, 0.25)',
-    color: '#ffffff',
+    backgroundColor: tokens.colorBrandBackground,
+    boxShadow: tokens.shadow8,
+    color: tokens.colorNeutralForegroundOnBrand,
   },
   introTitle: {
-    color: '#115ea3',
+    color: tokens.colorBrandForeground1,
     fontWeight: 700,
     fontSize: tokens.fontSizeHero900,
   },
@@ -233,12 +233,12 @@ interface DashboardCard {
   description: string;
   icon: React.ReactElement;
   accentColor:
-    | 'brand'
-    | 'success'
-    | 'warning'
-    | 'danger'
-    | 'informative'
-    | 'subtle';
+  | 'brand'
+  | 'success'
+  | 'warning'
+  | 'danger'
+  | 'informative'
+  | 'subtle';
   stats: DashboardStat[];
   primaryAction: DashboardAction;
   secondaryAction: DashboardAction;
@@ -395,9 +395,9 @@ const Dashboard: React.FC = () => {
           const iconClassName = mergeClasses(
             styles.iconContainer,
             styles[
-              `icon${card.accentColor.charAt(0).toUpperCase() + card.accentColor.slice(1)}` as keyof ReturnType<
-                typeof useStyles
-              >
+            `icon${card.accentColor.charAt(0).toUpperCase() + card.accentColor.slice(1)}` as keyof ReturnType<
+              typeof useStyles
+            >
             ],
           );
 
