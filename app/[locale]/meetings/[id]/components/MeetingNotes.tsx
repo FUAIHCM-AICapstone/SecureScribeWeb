@@ -73,7 +73,7 @@ const useStyles = makeStyles({
         WebkitBoxOrient: 'vertical',
     },
     expandedContent: {
-        maxHeight: '500px',
+        maxHeight: '600px',
         overflowY: 'auto',
     },
 });

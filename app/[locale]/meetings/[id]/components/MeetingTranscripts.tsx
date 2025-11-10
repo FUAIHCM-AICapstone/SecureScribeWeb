@@ -87,7 +87,7 @@ const useStyles = makeStyles({
         padding: '12px',
         backgroundColor: tokens.colorNeutralBackground1,
         ...shorthands.borderRadius(tokens.borderRadiusMedium),
-        maxHeight: '300px',
+        maxHeight: '600px',
         overflowY: 'auto',
     },
     transcriptMeta: {

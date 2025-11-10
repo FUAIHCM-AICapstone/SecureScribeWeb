@@ -12,6 +12,7 @@ import store from '@/store/index';
 import '@/styles/globals.css';
 import { Providers } from './providers';
 import { AuthProvider } from '@/context/AuthContext';
+import { WebSocketProvider } from '@/context/WebSocketContext';
 import Header from '../components/layout/Header';
 import Sidebar from '../components/layout/Sidebar';
 import { usePathname, useSearchParams } from 'next/navigation';
@@ -112,27 +113,29 @@ export default function RootLayoutClient({
                 timeZone="Asia/Bangkok"
               >
                 <AuthProvider>
-                  <SidebarProvider>
-                    <AuthOverlay locale={locale} shouldShow={shouldShowAuthOverlay} />
-                    <div
-                      style={{
-                        display: 'flex',
-                        height: '100vh',
-                        flexDirection: 'column',
-                        overflow: 'hidden',
-                      }}
-                    >
-                      {!hideHeader && <Header />}
-                      <div style={{ display: 'flex', flex: 1, minHeight: 0 }}>
-                        {!hideHeader && <Sidebar />}
-                        <main
-                          style={{ flex: 1, overflow: 'auto', minHeight: 0 }}
-                        >
-                          {children}
-                        </main>
+                  <WebSocketProvider>
+                    <SidebarProvider>
+                      <AuthOverlay locale={locale} shouldShow={shouldShowAuthOverlay} />
+                      <div
+                        style={{
+                          display: 'flex',
+                          height: '100vh',
+                          flexDirection: 'column',
+                          overflow: 'hidden',
+                        }}
+                      >
+                        {!hideHeader && <Header />}
+                        <div style={{ display: 'flex', flex: 1, minHeight: 0 }}>
+                          {!hideHeader && <Sidebar />}
+                          <main
+                            style={{ flex: 1, overflow: 'auto', minHeight: 0 }}
+                          >
+                            {children}
+                          </main>
+                        </div>
                       </div>
-                    </div>
-                  </SidebarProvider>
+                    </SidebarProvider>
+                  </WebSocketProvider>
                 </AuthProvider>
               </NextIntlClientProvider>
             </ReactQueryProvider>

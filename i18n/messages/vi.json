@@ -302,6 +302,7 @@
     "selectLanguage": "Chọn ngôn ngữ ({current})"
   },
   "MeetingDetail": {
+    "meetingDetails": "Chi tiết cuộc họp",
     "backToMeetings": "Quay lại",
     "createdAt": "Tạo lúc",
     "delete": "Xóa",

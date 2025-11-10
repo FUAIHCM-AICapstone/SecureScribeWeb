@@ -302,6 +302,7 @@
     "selectLanguage": "Select language ({current})"
   },
   "MeetingDetail": {
+    "meetingDetails": "Meeting Details",
     "backToMeetings": "Back",
     "createdAt": "Created",
     "delete": "Delete",
