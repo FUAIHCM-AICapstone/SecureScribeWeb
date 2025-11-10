@@ -342,7 +342,7 @@ export function NoteModal({
                                     textareaProps={{
                                         disabled: isUpdatingNote,
                                         placeholder: t('enterNoteContent') || 'Enter note content...',
-                                        style: { height: '100%'},
+                                        style: { height: '100%' },
                                     }}
                                 />
                             </div>

@@ -223,91 +223,91 @@ export function MeetingTranscripts({
 
                     {/* Existing transcripts */}
                     {transcripts && transcripts.length > 0 ? (
-                <div>
-                    {transcripts.map((transcript) => {
-                        const { segments, error: parseError } = parseTranscriptContent(transcript.content as string);
-                        if (parseError) {
-                            console.warn(`[MeetingTranscripts] Parse error for transcript ${transcript.id}:`, parseError);
-                        } else {
-                        }
-                        return (
-                            <div key={transcript.id} className={styles.transcriptItem}>
-                                <div className={styles.transcriptHeader}>
-                                    <div style={{ flex: 1 }}>
-                                        <Button
-                                            appearance="subtle"
-                                            icon={
-                                                <ChevronDown20Regular
-                                                    style={{
-                                                        transform:
-                                                            expandedTranscriptId === transcript.id
-                                                                ? 'rotate(180deg)'
-                                                                : 'rotate(0deg)',
-                                                        transition: 'transform 0.2s ease',
+                        <div>
+                            {transcripts.map((transcript) => {
+                                const { segments, error: parseError } = parseTranscriptContent(transcript.content as string);
+                                if (parseError) {
+                                    console.warn(`[MeetingTranscripts] Parse error for transcript ${transcript.id}:`, parseError);
+                                } else {
+                                }
+                                return (
+                                    <div key={transcript.id} className={styles.transcriptItem}>
+                                        <div className={styles.transcriptHeader}>
+                                            <div style={{ flex: 1 }}>
+                                                <Button
+                                                    appearance="subtle"
+                                                    icon={
+                                                        <ChevronDown20Regular
+                                                            style={{
+                                                                transform:
+                                                                    expandedTranscriptId === transcript.id
+                                                                        ? 'rotate(180deg)'
+                                                                        : 'rotate(0deg)',
+                                                                transition: 'transform 0.2s ease',
+                                                            }}
+                                                        />
+                                                    }
+                                                    onClick={() => {
+                                                        setExpandedTranscriptId(
+                                                            expandedTranscriptId === transcript.id ? null : transcript.id
+                                                        );
                                                     }}
+                                                    className={styles.expandButton}
                                                 />
-                                            }
-                                            onClick={() => {
-                                                setExpandedTranscriptId(
-                                                    expandedTranscriptId === transcript.id ? null : transcript.id
-                                                );
-                                            }}
-                                            className={styles.expandButton}
-                                        />
-                                    </div>
-                                    <Button
-                                        appearance="subtle"
-                                        icon={<Delete20Regular />}
-                                        onClick={() => {
-                                            onDeleteTranscript(transcript.id);
-                                        }}
-                                        disabled={isDeleting}
-                                        className={styles.actionButtonSmall}
-                                    />
-                                </div>
-
-                                {expandedTranscriptId === transcript.id ? (
-                                    <div className={styles.transcriptExpanded}>
-                                        {parseError ? (
-                                            <Text>{parseError}</Text>
-                                        ) : segments.length > 0 ? (
-                                            <div>
-                                                {segments.map((segment, idx) => (
-                                                    <SpeakerSegmentView key={idx} segment={segment} />
-                                                ))}
                                             </div>
+                                            <Button
+                                                appearance="subtle"
+                                                icon={<Delete20Regular />}
+                                                onClick={() => {
+                                                    onDeleteTranscript(transcript.id);
+                                                }}
+                                                disabled={isDeleting}
+                                                className={styles.actionButtonSmall}
+                                            />
+                                        </div>
+
+                                        {expandedTranscriptId === transcript.id ? (
+                                            <div className={styles.transcriptExpanded}>
+                                                {parseError ? (
+                                                    <Text>{parseError}</Text>
+                                                ) : segments.length > 0 ? (
+                                                    <div>
+                                                        {segments.map((segment, idx) => (
+                                                            <SpeakerSegmentView key={idx} segment={segment} />
+                                                        ))}
+                                                    </div>
+                                                ) : (
+                                                    <Text>{transcript.content || 'No content available'}</Text>
+                                                )}
+                                            </div>
+                                        ) : segments.length > 0 ? (
+                                            <SpeakerSegmentsPreview segments={segments} />
                                         ) : (
-                                            <Text>{transcript.content || 'No content available'}</Text>
+                                            <div className={styles.transcriptPreview}>
+                                                <Text>
+                                                    {transcript.content
+                                                        ? transcript.content.substring(0, 200) + '...'
+                                                        : 'No content available'}
+                                                </Text>
+                                            </div>
+                                        )}
+
+                                        {transcript.created_at && (
+                                            <div className={styles.transcriptMeta}>
+                                                <span>{t('createdAt')}: {formatDateTime(transcript.created_at, t)}</span>
+                                            </div>
                                         )}
                                     </div>
-                                ) : segments.length > 0 ? (
-                                    <SpeakerSegmentsPreview segments={segments} />
-                                ) : (
-                                    <div className={styles.transcriptPreview}>
-                                        <Text>
-                                            {transcript.content
-                                                ? transcript.content.substring(0, 200) + '...'
-                                                : 'No content available'}
-                                        </Text>
-                                    </div>
-                                )}
-
-                                {transcript.created_at && (
-                                    <div className={styles.transcriptMeta}>
-                                        <span>{t('createdAt')}: {formatDateTime(transcript.created_at, t)}</span>
-                                    </div>
-                                )}
-                            </div>
-                        );
-                    })}
-                </div>
-            ) : (
-                <div className={styles.placeholder}>
-                    <Body1 className={styles.placeholderText}>
-                        {t('noTranscripts')}
-                    </Body1>
-                </div>
-            )}
+                                );
+                            })}
+                        </div>
+                    ) : (
+                        <div className={styles.placeholder}>
+                            <Body1 className={styles.placeholderText}>
+                                {t('noTranscripts')}
+                            </Body1>
+                        </div>
+                    )}
                 </div>
             )}
         </Card>

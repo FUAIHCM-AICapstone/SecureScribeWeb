@@ -279,7 +279,7 @@ export const WebSocketProvider = ({ children }: { children: React.ReactNode }) =
                         const progressData = message.data;
                         const taskTypeKey = progressData?.task_type || 'unknown';
                         const taskTypeDisplay = t(`taskTypes.${taskTypeKey}`, { defaultValue: progressData?.task_type || 'Task' });
-                        
+
                         if (progressData?.status === 'completed') {
                             showToast('success', t('taskMessages.taskCompleted', { taskType: taskTypeDisplay }));
                         } else if (progressData?.status === 'failed' || progressData?.status === 'error') {
