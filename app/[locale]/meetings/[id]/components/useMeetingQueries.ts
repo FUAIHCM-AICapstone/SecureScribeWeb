@@ -7,6 +7,7 @@ import { getMeeting } from '@/services/api/meeting';
 import { getMeetingNote } from '@/services/api/meetingNote';
 import { getTranscriptsByMeeting } from '@/services/api/transcript';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 import React from 'react';
 import type { AudioFileResponse } from 'types/audio_file.type';
 import type { FileResponse } from 'types/file.type';
@@ -15,6 +16,7 @@ import type { MeetingNoteResponse } from 'types/meeting_note.type';
 import type { TranscriptResponse } from 'types/transcript.type';
 
 export const useMeetingQueries = (meetingId: string) => {
+  const t = useTranslations('MeetingDetail');
   const [audioFiles, setAudioFiles] = React.useState<AudioFileResponse[]>([]);
   const [files, setFiles] = React.useState<FileResponse[]>([]);
   const [transcripts, setTranscripts] = React.useState<TranscriptResponse[]>(
@@ -105,7 +107,7 @@ export const useMeetingQueries = (meetingId: string) => {
         // Note might not exist, so we don't show error for 404
         if (error?.response?.status !== 404) {
           const errorMsg =
-            error?.response?.data?.detail || 'Failed to load meeting note';
+            error?.response?.data?.detail || t('failedToLoadNote');
           setNoteError(errorMsg);
         }
         return null;

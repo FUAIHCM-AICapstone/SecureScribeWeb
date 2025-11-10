@@ -4,7 +4,8 @@ import React, { createContext, useContext, useEffect, useRef, useState, useCallb
 import Cookies from 'js-cookie';
 import { useAuth } from './AuthContext';
 import { getWebSocketUrl as buildWebSocketUrl } from '../services/api/notification';
-import { showSuccessToast, showErrorToast, showWarningToast, showInfoToast } from '../hooks/useShowToast';
+import { showToast } from '@/hooks/useShowToast';
+import { useTranslations } from 'next-intl';
 
 interface WebSocketContextType {
     isConnected: boolean;
@@ -57,6 +58,7 @@ export const WebSocketProvider = ({ children }: { children: React.ReactNode }) =
     const isConnectingRef = useRef(false); // Prevent multiple simultaneous connections
     const hasConnectedRef = useRef(false); // Track if we've ever successfully connected
     const { logout } = useAuth();
+    const t = useTranslations('MeetingDetail');
 
     // Browser compatibility check
     useEffect(() => {
@@ -74,7 +76,7 @@ export const WebSocketProvider = ({ children }: { children: React.ReactNode }) =
         if (typeof WebSocket === 'undefined') {
             console.error(`🚫 [${timestamp}] CRITICAL: WebSocket is not supported in this browser!`);
             console.error(`🚫 [${timestamp}] Please use a modern browser that supports WebSocket API.`);
-            showErrorToast('WebSocket not supported in this browser');
+            showToast('error', 'WebSocket not supported in this browser');
             return;
         }
 
@@ -249,7 +251,7 @@ export const WebSocketProvider = ({ children }: { children: React.ReactNode }) =
                 reconnectAttempts.current = 0;
 
                 // Show success toast for connection
-                showSuccessToast('Connected to server');
+                showToast('success', 'Connected to server');
 
                 // Send initial ping to keep connection alive
                 setTimeout(() => {
@@ -275,19 +277,22 @@ export const WebSocketProvider = ({ children }: { children: React.ReactNode }) =
 
                         // Show toast for task progress updates
                         const progressData = message.data;
+                        const taskTypeKey = progressData?.task_type || 'unknown';
+                        const taskTypeDisplay = t(`taskTypes.${taskTypeKey}`, { defaultValue: progressData?.task_type || 'Task' });
+                        
                         if (progressData?.status === 'completed') {
-                            showSuccessToast(`Task completed: ${progressData.task_type || 'Task'}`);
+                            showToast('success', t('taskMessages.taskCompleted', { taskType: taskTypeDisplay }));
                         } else if (progressData?.status === 'failed' || progressData?.status === 'error') {
-                            showErrorToast(`Task failed: ${progressData.task_type || 'Task'}`);
+                            showToast('error', t('taskMessages.taskFailed', { taskType: taskTypeDisplay }));
                         } else if (progressData?.status === 'running' && progressData?.progress === 0) {
-                            showInfoToast(`Task started: ${progressData.task_type || 'Task'}`);
+                            showToast('info', t('taskMessages.taskStarted', { taskType: taskTypeDisplay }));
                         }
                     } else if (message.type === 'notification') {
                         console.log('🔔 Notification received:', message.data);
                         // Show notification as toast
                         const notificationData = message.data;
                         const messageText = notificationData?.payload?.message || notificationData?.message || 'New notification';
-                        showInfoToast(messageText);
+                        showToast('info', messageText);
                     } else if (message.type === 'pong') {
                         console.log('🏓 Pong received from server');
                         // No toast for pong - it's just a keep-alive
@@ -296,10 +301,10 @@ export const WebSocketProvider = ({ children }: { children: React.ReactNode }) =
                         // No toast for capabilities - internal server info
                     } else if (message.type === 'connected') {
                         console.log('🔗 WebSocket connection confirmed');
-                        showSuccessToast('Connected to server');
+                        showToast('success', 'Connected to server');
                     } else if (message.type === 'unauthorized' || message.type === 'error') {
                         console.log('🚫 WebSocket unauthorized or error, logging out...');
-                        showErrorToast('Connection error - please log in again');
+                        showToast('error', 'Connection error - please log in again');
                         logout();
                         return;
                     }
@@ -340,36 +345,36 @@ export const WebSocketProvider = ({ children }: { children: React.ReactNode }) =
                 // Handle specific error codes
                 if (event.code === 4001) {
                     console.log('🚫 WebSocket closed: Unauthorized (4001) - Invalid token, logging out...');
-                    showErrorToast('Session expired - please log in again');
+                    showToast('error', 'Session expired - please log in again');
                     logout();
                     return;
                 } else if (event.code === 4002) {
                     console.log('🚫 WebSocket closed: User not found (4002), logging out...');
-                    showErrorToast('User account not found - please contact support');
+                    showToast('error', 'User account not found - please contact support');
                     logout();
                     return;
                 } else if (event.code === 4003) {
                     console.log('🚫 WebSocket closed: Forbidden (4003), logging out...');
-                    showErrorToast('Access denied - please log in again');
+                    showToast('error', 'Access denied - please log in again');
                     logout();
                     return;
                 } else if (event.code === 1006) {
                     console.log('🚫 WebSocket closed: Abnormal closure (1006) - Connection lost');
-                    showWarningToast('Connection lost - attempting to reconnect');
+                    showToast('warning', 'Connection lost - attempting to reconnect');
                 } else if (event.code === 1008) {
                     console.log('🚫 WebSocket closed: Policy violation (1008)');
-                    showErrorToast('Connection policy violation');
+                    showToast('error', 'Connection policy violation');
                 } else if (event.code === 1011) {
                     console.log('🚫 WebSocket closed: Server error (1011)');
-                    showErrorToast('Server error - connection closed');
+                    showToast('error', 'Server error - connection closed');
                 } else if (event.reason?.includes('unauthorized') || event.reason?.includes('invalid')) {
                     console.log('🚫 WebSocket closed due to authentication issue, logging out...');
-                    showErrorToast('Authentication error - please log in again');
+                    showToast('error', 'Authentication error - please log in again');
                     logout();
                     return;
                 } else if (event.code !== 1000) {
                     // Other non-normal closures
-                    showWarningToast('Connection closed unexpectedly');
+                    showToast('warning', 'Connection closed unexpectedly');
                 }
 
                 // Only attempt to reconnect if not a normal closure and we haven't exceeded max attempts

@@ -361,7 +361,6 @@ export function CreateTaskModal({
 
   const taskMutation = useMutation({
     mutationFn: (payload: TaskCreate | TaskUpdate) => {
-      console.log('Mutate payload:', payload);
       if (isEditMode) {
         if (!taskId) {
           return Promise.reject(new Error('Missing task identifier.'));

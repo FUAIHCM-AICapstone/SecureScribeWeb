@@ -252,7 +252,6 @@ export default function ProfileEditor() {
 
     try {
       const resp = await uploadFile({ file });
-      console.log('Upload response:', resp);
 
       const newUrl = resp.storage_url;
       if (!newUrl) {

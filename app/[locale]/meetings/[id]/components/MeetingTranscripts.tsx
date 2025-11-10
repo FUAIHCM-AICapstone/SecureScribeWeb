@@ -1,9 +1,10 @@
 'use client';
 
-import { Body1, Button, Card, Spinner, Text, makeStyles, shorthands, tokens } from '@fluentui/react-components';
+import { Body1, Button, Card, ProgressBar, Spinner, Text, makeStyles, shorthands, tokens } from '@fluentui/react-components';
 import { ChevronDown20Regular, CloudAdd20Regular, Delete20Regular, Document20Regular } from '@fluentui/react-icons';
 import { useTranslations } from 'next-intl';
 import React from 'react';
+import { useTaskProgress } from '@/context/WebSocketContext';
 import type { TranscriptResponse } from 'types/transcript.type';
 import { formatDateTime } from './meetingDetailUtils';
 import { parseTranscriptContent, formatSpeakerLabel, useSpeakerSegmentStyles, type SpeakerSegment } from './transcriptUtils';
@@ -166,6 +167,12 @@ export function MeetingTranscripts({
     const [expandedTranscriptId, setExpandedTranscriptId] = React.useState<string | null>(null);
     const t = useTranslations('MeetingDetail');
 
+    // Get task progress for audio transcription
+    const { taskProgress } = useTaskProgress();
+    const transcribingTasks = Array.from(taskProgress.values()).filter(
+        (task) => task.task_type === 'audio_asr' && task.status === 'transcribing'
+    );
+
     return (
         <Card className={styles.section}>
             <div className={styles.sectionTitle}>
@@ -190,15 +197,38 @@ export function MeetingTranscripts({
                 <div style={{ color: tokens.colorPaletteRedForeground1, padding: '16px', textAlign: 'center' }}>
                     <Body1>{error}</Body1>
                 </div>
-            ) : transcripts && transcripts.length > 0 ? (
+            ) : (
+                <div>
+                    {/* Transcribing Progress */}
+                    {transcribingTasks.length > 0 && (
+                        <div style={{ marginBottom: '16px', padding: '16px', backgroundColor: tokens.colorNeutralBackground2, borderRadius: tokens.borderRadiusMedium }}>
+                            <Text style={{ fontWeight: 600, marginBottom: '8px' }}>
+                                {t('transcribingInProgress')}
+                            </Text>
+                            {transcribingTasks.map((task) => (
+                                <div key={task.task_id} style={{ marginBottom: '12px' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                                        <Text style={{ fontSize: tokens.fontSizeBase200 }}>
+                                            {task.task_type === 'audio_asr' ? t('audioTranscription') : task.task_type}
+                                        </Text>
+                                        <Text style={{ fontSize: tokens.fontSizeBase200 }}>
+                                            {task.progress}% • {task.estimated_time}
+                                        </Text>
+                                    </div>
+                                    <ProgressBar value={task.progress / 100} />
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
+                    {/* Existing transcripts */}
+                    {transcripts && transcripts.length > 0 ? (
                 <div>
                     {transcripts.map((transcript) => {
-                        console.log(`[MeetingTranscripts] Processing transcript: ${transcript.id}`);
                         const { segments, error: parseError } = parseTranscriptContent(transcript.content as string);
                         if (parseError) {
                             console.warn(`[MeetingTranscripts] Parse error for transcript ${transcript.id}:`, parseError);
                         } else {
-                            console.log(`[MeetingTranscripts] Successfully parsed ${segments.length} segments from transcript ${transcript.id}`);
                         }
                         return (
                             <div key={transcript.id} className={styles.transcriptItem}>
@@ -218,7 +248,6 @@ export function MeetingTranscripts({
                                                 />
                                             }
                                             onClick={() => {
-                                                console.log(`[MeetingTranscripts] Toggle expand for transcript: ${transcript.id}`);
                                                 setExpandedTranscriptId(
                                                     expandedTranscriptId === transcript.id ? null : transcript.id
                                                 );
@@ -230,7 +259,6 @@ export function MeetingTranscripts({
                                         appearance="subtle"
                                         icon={<Delete20Regular />}
                                         onClick={() => {
-                                            console.log(`[MeetingTranscripts] Delete transcript: ${transcript.id}`);
                                             onDeleteTranscript(transcript.id);
                                         }}
                                         disabled={isDeleting}
@@ -278,6 +306,8 @@ export function MeetingTranscripts({
                     <Body1 className={styles.placeholderText}>
                         {t('noTranscripts')}
                     </Body1>
+                </div>
+            )}
                 </div>
             )}
         </Card>

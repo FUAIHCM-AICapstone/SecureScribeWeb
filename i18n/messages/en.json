@@ -302,6 +302,7 @@
     "selectLanguage": "Select language ({current})"
   },
   "MeetingDetail": {
+    "hasMeetingUrl": "Link available",
     "meetingDetails": "Meeting Details",
     "backToMeetings": "Back",
     "createdAt": "Created",
@@ -365,7 +366,24 @@
     "close": "Close",
     "supportedFormats": "Supported formats: MP3, WAV, WEBM, M4A",
     "cancel": "Cancel",
-    "uploading": "Uploading..."
+    "uploading": "Uploading...",
+    "failedToLoadNote": "Failed to load meeting note",
+    "transcribingInProgress": "Transcribing Audio...",
+    "audioTranscription": "Audio Transcription",
+    "deleteAudioFile": "Delete Audio File",
+    "deleteTranscript": "Delete Transcript",
+    "audioFile": "audio file",
+    "transcript": "transcript",
+    "taskTypes": {
+      "file_indexing": "File Indexing",
+      "audio_asr": "Audio Transcription",
+      "chat_processing": "Chat Processing"
+    },
+    "taskMessages": {
+      "taskCompleted": "Task completed: {taskType}",
+      "taskFailed": "Task failed: {taskType}",
+      "taskStarted": "Task started: {taskType}"
+    }
   },
   "MeetingEdit": {
     "cancel": "Cancel",

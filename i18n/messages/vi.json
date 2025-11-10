@@ -302,6 +302,7 @@
     "selectLanguage": "Chọn ngôn ngữ ({current})"
   },
   "MeetingDetail": {
+    "hasMeetingUrl": "Có link cuộc họp",
     "meetingDetails": "Chi tiết cuộc họp",
     "backToMeetings": "Quay lại",
     "createdAt": "Tạo lúc",
@@ -365,7 +366,24 @@
     "processingAudio": "Đang xử lý tệp âm thanh của bạn...",
     "close": "Đóng",
     "cancel": "Hủy",
-    "uploading": "Đang tải lên..."
+    "uploading": "Đang tải lên...",
+    "failedToLoadNote": "Không thể tải ghi chú cuộc họp",
+    "transcribingInProgress": "Đang chuyển đổi âm thanh thành văn bản...",
+    "audioTranscription": "Chuyển đổi âm thanh",
+    "deleteAudioFile": "Xóa tệp âm thanh",
+    "deleteTranscript": "Xóa bản ghi âm",
+    "audioFile": "tệp âm thanh",
+    "transcript": "bản ghi âm",
+    "taskTypes": {
+      "file_indexing": "Đánh chỉ mục tệp",
+      "audio_asr": "Chuyển đổi âm thanh",
+      "chat_processing": "Xử lý trò chuyện"
+    },
+    "taskMessages": {
+      "taskCompleted": "Hoàn thành: {taskType}",
+      "taskFailed": "Thất bại: {taskType}",
+      "taskStarted": "Đã bắt đầu: {taskType}"
+    }
   },
   "MeetingEdit": {
     "cancel": "Hủy",

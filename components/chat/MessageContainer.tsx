@@ -79,8 +79,6 @@ export function MessagesContainer({
   // Auto scroll when messages change
   useEffect(() => {
     scrollToBottom();
-    console.log("check messages", messages);
-
   }, [messages, isTyping]);
 
   return (

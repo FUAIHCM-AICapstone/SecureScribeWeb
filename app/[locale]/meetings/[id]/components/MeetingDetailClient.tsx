@@ -15,6 +15,8 @@ import { ArrowLeft20Regular } from '@fluentui/react-icons';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import React from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { useWebSocket } from '@/context/WebSocketContext';
 import { MeetingHeader } from './MeetingHeader';
 import { MeetingNotes } from './MeetingNotes';
 import { MeetingFiles } from './MeetingFiles';
@@ -90,6 +92,8 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
   const t = useTranslations('MeetingDetail');
   const tMeetings = useTranslations('Meetings');
   const router = useRouter();
+  const queryClient = useQueryClient();
+  const { lastMessage } = useWebSocket();
 
   // Fetch all data using custom hooks
   const {
@@ -127,6 +131,14 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
     setUploadedFile(null);
     setIsUploadingAudio(false);
   });
+
+  // Listen for task completion messages to invalidate queries
+  React.useEffect(() => {
+    if (lastMessage?.type === 'task_progress' && lastMessage.data?.status === 'completed' && lastMessage.data?.task_type === 'audio_asr') {
+      console.log('[MeetingDetailClient] Audio transcription completed, invalidating transcripts query');
+      queryClient.invalidateQueries({ queryKey: ['transcripts', meetingId] });
+    }
+  }, [lastMessage, queryClient, meetingId]);
 
   // UI state
   const [showEditModal, setShowEditModal] = React.useState(false);
@@ -374,11 +386,11 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
         onConfirmDelete={handleConfirmDelete}
         deleteTitle={
           deleteTarget?.type === 'audio'
-            ? 'Delete Audio File'
-            : 'Delete Transcript'
+            ? t('deleteAudioFile')
+            : t('deleteTranscript')
         }
         deleteItemName={
-          deleteTarget?.type === 'audio' ? 'audio file' : 'transcript'
+          deleteTarget?.type === 'audio' ? t('audioFile') : t('transcript')
         }
         showDeleteModal={showDeleteModal}
         isDeleting={isDeleting}

@@ -41,7 +41,6 @@ const showLoadingToast = (message: string) => {
 
   const toastTitle = titles[lang];
 
-  console.log('[showLoadingToast]', { message, lang, title: toastTitle });
 
   // Create loading toast content with Spinner using React.createElement
   const toastContent = React.createElement(
@@ -84,7 +83,6 @@ const hideLoadingToast = () => {
     loadingToastController.dismissToast(currentLoadingToastId);
     loadingToastShown = false;
     currentLoadingToastId = null;
-    console.log('[hideLoadingToast] Loading toast dismissed');
   }
 };
 

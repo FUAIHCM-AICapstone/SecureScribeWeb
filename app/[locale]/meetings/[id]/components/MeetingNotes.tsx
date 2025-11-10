@@ -179,12 +179,10 @@ export function MeetingNotes({
     // Parse markdown when note changes
     React.useEffect(() => {
         if (note?.content) {
-            console.log(`[MeetingNotes] Processing note: ${note.id}`);
             const parsed = parseMarkdownNote(note.content as string);
             if (parsed.error) {
                 console.warn(`[MeetingNotes] Parse error for note ${note.id}:`, parsed.error);
             } else {
-                console.log(`[MeetingNotes] Successfully parsed ${parsed.sections.length} sections from note ${note.id}`);
             }
             setParsedNote(parsed);
         }
@@ -262,7 +260,6 @@ export function MeetingNotes({
                             <Button
                                 appearance="subtle"
                                 onClick={() => {
-                                    console.log(`[MeetingNotes] Toggle expanded for note: ${note.id}`);
                                     setIsExpanded(!isExpanded);
                                 }}
                                 className={styles.expandButton}
