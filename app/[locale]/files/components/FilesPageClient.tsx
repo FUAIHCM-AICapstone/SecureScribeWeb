@@ -168,19 +168,19 @@ export function FilesPageClient() {
           mime.includes('word') ||
           mime === 'application/msword' ||
           mime ===
-          'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
           mime === 'text/plain' || // .txt files
           mime.startsWith('image/') || // images as documents
           mime.includes('sheet') || // spreadsheets as documents
           mime.includes('excel') ||
           mime === 'application/vnd.ms-excel' ||
           mime ===
-          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
           mime.includes('presentation') || // presentations as documents
           mime.includes('powerpoint') ||
           mime === 'application/vnd.ms-powerpoint' ||
           mime ===
-          'application/vnd.openxmlformats-officedocument.presentationml.presentation' ||
+            'application/vnd.openxmlformats-officedocument.presentationml.presentation' ||
           mime === 'text/csv'
         );
       default:
@@ -344,7 +344,7 @@ export function FilesPageClient() {
         ) : viewMode === 'grid' ? (
           <FilesGrid files={files} />
         ) : (
-          <FilesList files={files} />
+          <FilesList files={files} projects={projects} meetings={meetings} />
         )}
       </div>
 
