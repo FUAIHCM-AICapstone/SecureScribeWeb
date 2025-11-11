@@ -23,10 +23,14 @@ const queryClient = new QueryClient({
 export const queryKeys = {
   projects: ['projects'] as const,
   project: (id: string) => ['projects', id] as const,
-  projectMeetings: (id: string, page: number) => ['projects', id, 'meetings', page] as const,
-  projectFiles: (id: string, page: number) => ['projects', id, 'files', page] as const,
-  searchProjectMeetings: (id: string, search: string, page: number) => ['projects', id, 'meetings', 'search', search, page] as const,
-  searchProjectFiles: (id: string, search: string, page: number) => ['projects', id, 'files', 'search', search, page] as const,
+  projectMeetings: (id: string, page: number) =>
+    ['projects', id, 'meetings', page] as const,
+  projectFiles: (id: string, page: number) =>
+    ['projects', id, 'files', page] as const,
+  searchProjectMeetings: (id: string, search: string, page: number) =>
+    ['projects', id, 'meetings', 'search', search, page] as const,
+  searchProjectFiles: (id: string, search: string, page: number) =>
+    ['projects', id, 'files', 'search', search, page] as const,
 
   meetings: ['meetings'] as const,
   personalMeetings: ['meetings', 'personal'] as const,
@@ -36,7 +40,8 @@ export const queryKeys = {
   tasks: ['tasks'] as const,
   myTasks: ['tasks', 'my'] as const,
   task: (id: string) => ['tasks', id] as const,
-  projectTasks: (id: string, page: number) => ['projects', id, 'tasks', page] as const,
+  projectTasks: (id: string, page: number) =>
+    ['projects', id, 'tasks', page] as const,
 
   files: ['files'] as const,
   file: (id: string) => ['files', id] as const,
@@ -58,6 +63,15 @@ export const queryKeys = {
   conversation: (id: string) => ['chat', 'conversations', id] as const,
   conversationMessages: (id: string) =>
     ['chat', 'conversations', id, 'messages'] as const,
+
+  // Dashboard queries
+  dashboard: ['dashboard'] as const,
+  dashboardTasks: ['dashboard', 'tasks'] as const,
+  dashboardProjects: ['dashboard', 'projects'] as const,
+  dashboardMeetings: ['dashboard', 'meetings'] as const,
+  dashboardFiles: ['dashboard', 'files'] as const,
+  dashboardTranscripts: ['dashboard', 'transcripts'] as const,
+  dashboardNotes: ['dashboard', 'notes'] as const,
 };
 
 export default queryClient;

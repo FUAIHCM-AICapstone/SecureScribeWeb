@@ -95,46 +95,72 @@
         "description": "Kiểm tra các cuộc họp sắp tới, truy cập ghi chú, bảng ghi và tài liệu hỗ trợ mà không cần rời khỏi bảng điều khiển.",
         "primaryAction": "Kiểm tra cuộc họp",
         "secondaryAction": "Cuộc họp mới",
-        "title": "Cuộc họp của tôi",
-        "updatedAt": "5:40 SA"
+        "title": "Cuộc họp của tôi"
       },
       "myTasks": {
         "description": "Quản lý công việc cá nhân, theo dõi trạng thái và đáp ứng thời hạn. Tạo nhiệm vụ mới hoặc cập nhật tiến độ nhanh chóng.",
         "primaryAction": "Kiểm tra nhiệm vụ",
         "secondaryAction": "Nhiệm vụ mới",
-        "title": "Nhiệm vụ của tôi",
-        "updatedAt": "5:40 SA"
+        "title": "Nhiệm vụ của tôi"
       },
       "quickActions": {
         "description": "Khởi chạy các hành động thường xuyên ngay lập tức: tạo cuộc họp, tải tệp và giao nhiệm vụ mà không cần chuyển tab.",
         "primaryAction": "Kiểm tra hành động",
         "secondaryAction": "Tạo hành động",
-        "title": "Hành động nhanh",
-        "updatedAt": "5:40 SA"
+        "title": "Hành động nhanh"
       },
       "recentNotes": {
         "description": "Xem lại các ghi chú được chỉnh sửa hoặc chia sẻ gần đây, xem ai đã cập nhật chúng và quay lại công việc cộng tác.",
         "primaryAction": "Kiểm tra ghi chú",
         "secondaryAction": "Ghi chú mới",
-        "title": "Ghi chú gần đây",
-        "updatedAt": "5:40 SA"
+        "title": "Ghi chú gần đây"
       },
       "recentTranscripts": {
         "description": "Nhanh chóng mở các bảng ghi mới nhất với tham chiếu âm thanh và tìm kiếm toàn văn để giữ ngữ cảnh tiện lợi.",
         "primaryAction": "Kiểm tra bảng ghi",
         "secondaryAction": "Tải âm thanh",
-        "title": "Bảng ghi gần đây",
-        "updatedAt": "5:40 SA"
+        "title": "Bảng ghi gần đây"
       },
       "teamProject": {
         "description": "Xem lại các dự án bạn tham gia. Xem thành viên, tiến độ, tài liệu liên quan hoặc khởi động sáng kiến mới.",
         "primaryAction": "Cập nhật dự án",
         "secondaryAction": "Dự án mới",
-        "title": "Dự án nhóm",
-        "updatedAt": "5:40 SA"
+        "title": "Dự án nhóm"
       }
     },
     "description": "Theo dõi nhiệm vụ cá nhân, sáng kiến nhóm và kiến thức được chia sẻ mà không cần rời khỏi không gian làm việc này.",
+    "stats": {
+      "active": "Đang hoạt động",
+      "archived": "Đã lưu trữ",
+      "avgMembers": "Trung bình thành viên",
+      "completed": "Hoàn thành",
+      "completionRate": "Tỷ lệ hoàn thành",
+      "dueThisWeek": "Hạn tuần này",
+      "dueToday": "Hạn hôm nay",
+      "editedThisWeek": "Chỉnh sửa tuần này",
+      "favorites": "Yêu thích",
+      "filesThisWeek": "Tệp tuần này",
+      "inProgress": "Đang thực hiện",
+      "lastMonth": "Tháng trước",
+      "lastWeek": "Tuần trước",
+      "members": "Thành viên",
+      "meetingsCreated": "Cuộc họp tạo",
+      "new": "Mới",
+      "nextWeek": "Tuần tới",
+      "overdue": "Quá hạn",
+      "pending": "Đang chờ",
+      "private": "Riêng tư",
+      "recent": "Gần đây",
+      "recentActivity": "Hoạt động gần đây",
+      "shared": "Chia sẻ",
+      "tasksCreated": "Nhiệm vụ tạo",
+      "thisWeek": "Tuần này",
+      "todo": "Cần làm",
+      "today": "Hôm nay",
+      "total": "Tổng số",
+      "withNotes": "Có ghi chú",
+      "withTranscripts": "Có bảng ghi"
+    },
     "title": "Bảng điều khiển"
   },
   "Files": {

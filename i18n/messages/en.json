@@ -95,46 +95,72 @@
         "description": "Check upcoming meetings, access notes, transcripts, and supporting materials without leaving the dashboard.",
         "primaryAction": "Check Meetings",
         "secondaryAction": "New Meeting",
-        "title": "My Meetings",
-        "updatedAt": "5:40 AM"
+        "title": "My Meetings"
       },
       "myTasks": {
         "description": "Manage personal work, monitor status, and meet deadlines. Create a new task or quickly update progress.",
         "primaryAction": "Check Task",
         "secondaryAction": "New Task",
-        "title": "My Tasks",
-        "updatedAt": "5:40 AM"
+        "title": "My Tasks"
       },
       "quickActions": {
         "description": "Launch frequent actions instantly: create meetings, upload files, and assign tasks without switching tabs.",
         "primaryAction": "Check Actions",
         "secondaryAction": "Create Action",
-        "title": "Quick Actions",
-        "updatedAt": "5:40 AM"
+        "title": "Quick Actions"
       },
       "recentNotes": {
         "description": "Review recently edited or shared notes, see who updated them, and jump back into collaborative work.",
         "primaryAction": "Check Notes",
         "secondaryAction": "New Note",
-        "title": "Recent Notes",
-        "updatedAt": "5:40 AM"
+        "title": "Recent Notes"
       },
       "recentTranscripts": {
         "description": "Quickly open the latest transcripts with audio references and full-content search to keep context handy.",
         "primaryAction": "Check Scripts",
         "secondaryAction": "Upload Audio",
-        "title": "Recent Transcripts",
-        "updatedAt": "5:40 AM"
+        "title": "Recent Transcripts"
       },
       "teamProject": {
         "description": "Review the projects you participate in. See members, progress, related documents, or launch new initiatives.",
         "primaryAction": "Update Project",
         "secondaryAction": "New Project",
-        "title": "Team Project",
-        "updatedAt": "5:40 AM"
+        "title": "Team Project"
       }
     },
     "description": "Stay on top of personal tasks, team initiatives, and shared knowledge without leaving this workspace.",
+    "stats": {
+      "active": "Active",
+      "archived": "Archived",
+      "avgMembers": "Avg Members",
+      "completed": "Completed",
+      "completionRate": "Completion Rate",
+      "dueThisWeek": "Due This Week",
+      "dueToday": "Due Today",
+      "editedThisWeek": "Edited This Week",
+      "favorites": "Favorites",
+      "filesThisWeek": "Files This Week",
+      "inProgress": "In Progress",
+      "lastMonth": "Last Month",
+      "lastWeek": "Last Week",
+      "members": "Members",
+      "meetingsCreated": "Meetings Created",
+      "new": "New",
+      "nextWeek": "Next Week",
+      "overdue": "Overdue",
+      "pending": "Pending",
+      "private": "Private",
+      "recent": "Recent",
+      "recentActivity": "Recent Activity",
+      "shared": "Shared",
+      "tasksCreated": "Tasks Created",
+      "thisWeek": "This Week",
+      "todo": "To Do",
+      "today": "Today",
+      "total": "Total",
+      "withNotes": "With Notes",
+      "withTranscripts": "With Transcripts"
+    },
     "title": "Dashboard"
   },
   "Files": {
