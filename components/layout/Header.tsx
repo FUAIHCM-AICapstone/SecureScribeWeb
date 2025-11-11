@@ -38,6 +38,7 @@ import Image from 'next/image';
 import React, { useState, useEffect } from 'react';
 import LanguageSwitcher from './LanguageSwitcher';
 import ThemeToggle from './ThemeToggle';
+import { TestNotificationButton } from './TestNotificationButton';
 import { useSidebar } from '@/context/SidebarContext';
 import { useAuth } from '@/context/AuthContext';
 import {
@@ -667,6 +668,7 @@ export default function Header() {
           </Menu>
 
           <Divider vertical style={{ height: 28 }} />
+          <TestNotificationButton />
           <LanguageSwitcher />
           <ThemeToggle />
         </div>

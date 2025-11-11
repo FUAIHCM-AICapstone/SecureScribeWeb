@@ -21,6 +21,7 @@ import { Toaster, useToastController } from '@fluentui/react-toast';
 import { SidebarProvider } from '../context/SidebarContext';
 import ClientOnlyLayout from '@/components/layout/ClientOnly';
 import { AuthOverlay } from '@/components/layout/AuthOverlay';
+import { useFCM } from '@/hooks/useFCM';
 
 export default function RootLayoutClient({
   children,
@@ -37,6 +38,16 @@ export default function RootLayoutClient({
   const hideHeader = pathAfterLocale.startsWith('auth');
   const isAuthRoute = pathAfterLocale.startsWith('auth');
   const [shouldShowAuthOverlay, setShouldShowAuthOverlay] = useState(false);
+
+  // Initialize FCM for push notifications
+  const { isSupported } = useFCM();
+
+  // Log FCM support status for debugging
+  useEffect(() => {
+    if (!isSupported) {
+      console.log('FCM notifications not supported in this browser');
+    }
+  }, [isSupported]);
 
   // Initialize FluentUI toast controller
   const toastController = useToastController();

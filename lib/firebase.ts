@@ -2,6 +2,8 @@
 // Firebase initialization module
 // Inline config based on components/auth/script.js; will be moved to env later.
 
+import { getFCMVapidKey } from './utils/runtimeConfig';
+
 import { initializeApp, type FirebaseApp } from "firebase/app";
 import {
     getAuth,
@@ -9,10 +11,12 @@ import {
     type Auth,
     onAuthStateChanged,
 } from "firebase/auth";
+import { getMessaging, type Messaging, getToken, onMessage } from "firebase/messaging";
 
 let app: FirebaseApp | undefined;
 let auth: Auth | undefined;
 let googleProvider: GoogleAuthProvider | undefined;
+let messaging: Messaging | undefined;
 
 // Guard: only initialize in browser to avoid SSR issues
 if (typeof window !== "undefined") {
@@ -29,11 +33,13 @@ if (typeof window !== "undefined") {
     app = initializeApp(firebaseConfig);
     auth = getAuth(app);
     googleProvider = new GoogleAuthProvider();
+    messaging = getMessaging(app);
     // default scopes: openid, email, profile
 }
 
-export { app, auth, googleProvider, onAuthStateChanged };
+export { app, auth, googleProvider, messaging, onAuthStateChanged, getToken, onMessage };
+export { getFCMVapidKey as getVapidKey };
 
 export function isFirebaseReady(): boolean {
-    return typeof window !== "undefined" && !!app && !!auth;
+    return typeof window !== "undefined" && !!app && !!auth && !!messaging;
 }
