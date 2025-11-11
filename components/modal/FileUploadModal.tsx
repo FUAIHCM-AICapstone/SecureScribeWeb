@@ -165,6 +165,13 @@ const useStyles = makeStyles({
     ...shorthands.gap('12px'),
     marginTop: '8px',
   },
+  actions: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    ...shorthands.gap(tokens.spacingHorizontalS),
+    padding: tokens.spacingVerticalM,
+    borderTop: `1px solid ${tokens.colorNeutralStroke1}`,
+  },
 });
 
 interface FileUploadModalProps {
@@ -631,7 +638,7 @@ export function FileUploadModal({
           </DialogContent>
 
           {!uploadSuccess && (
-            <DialogActions>
+            <DialogActions className={styles.actions}>
               <Button
                 appearance="secondary"
                 onClick={handleClose}
