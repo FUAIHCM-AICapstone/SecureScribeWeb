@@ -79,7 +79,7 @@ export function useWebSocketConnection() {
                 hasConnectedRef.current = true;
                 reconnectAttempts.current = 0;
                 connectionOpenTimeRef.current = Date.now();
-                immediateCloseAttemptsRef.current = 0; 
+                immediateCloseAttemptsRef.current = 0;
                 // Send initial ping to keep connection alive
                 setTimeout(() => {
                     if (ws.readyState === WebSocket.OPEN) {

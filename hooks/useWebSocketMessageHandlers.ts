@@ -118,14 +118,14 @@ export function useWebSocketMessageHandlers(
             const messageEvent = event as MessageEvent;
             try {
                 const message = JSON.parse(messageEvent.data);
-                
+
                 // Colorful console log for debugging - log raw message
                 console.log('%c🔵 WebSocket Message Received:', 'color: #3b82f6; font-weight: bold; font-size: 12px;', {
                     raw: messageEvent.data,
                     parsed: message,
                     timestamp: new Date().toISOString()
                 });
-                
+
                 setLastMessage(message);
 
                 // Route to type-specific handlers
