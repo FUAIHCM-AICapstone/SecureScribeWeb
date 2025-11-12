@@ -17,7 +17,90 @@ interface ToastOptions {
   id?: string | number;
   onDismiss?: () => void;
   onAutoClose?: () => void;
+  playSound?: boolean;
 }
+
+// Function to play loud notification sound using Web Audio API
+const playLoudNotificationSound = (power = 1.3) => {
+  const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+
+  const createOsc = (type: OscillatorType, freq: number) => {
+    const o = ctx.createOscillator();
+    o.type = type;
+    o.frequency.value = freq;
+    return o;
+  };
+
+  const gain = ctx.createGain();
+  gain.connect(ctx.destination);
+
+  const distort = ctx.createWaveShaper();
+  const curve = new Float32Array(44100);
+  for (let i = 0; i < curve.length; i++) {
+    const x = (i / curve.length) * 2 - 1;
+    curve[i] = x < 0 ? -(Math.pow(Math.abs(x), 0.4)) : Math.pow(x, 0.4);
+  }
+  distort.curve = curve;
+  distort.connect(gain);
+
+  const compressor = ctx.createDynamicsCompressor();
+  compressor.threshold.value = -40;
+  compressor.ratio.value = 15;
+  compressor.attack.value = 0.001;
+  compressor.release.value = 0.12;
+  compressor.connect(distort);
+
+  // High-tech pluck click
+  (() => {
+    const o = createOsc("triangle", 2200);
+    const g = ctx.createGain();
+    o.connect(g);
+    g.connect(compressor);
+
+    const now = ctx.currentTime;
+    g.gain.setValueAtTime(0.8 * power, now);
+    g.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+
+    o.start(now);
+    o.stop(now + 0.08);
+  })();
+
+  // Sweep chirp
+  (() => {
+    const o = createOsc("sawtooth", 900);
+    const g = ctx.createGain();
+    o.connect(g);
+    g.connect(compressor);
+
+    const now = ctx.currentTime + 0.03;
+    o.frequency.setValueAtTime(900, now);
+    o.frequency.exponentialRampToValueAtTime(2400, now + 0.22);
+
+    g.gain.setValueAtTime(0.55 * power, now);
+    g.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+
+    o.start(now);
+    o.stop(now + 0.22);
+  })();
+
+  // Sub punch
+  (() => {
+    const o = createOsc("sine", 120);
+    const g = ctx.createGain();
+    o.connect(g);
+    g.connect(compressor);
+
+    const now = ctx.currentTime + 0.05;
+    o.frequency.setValueAtTime(160, now);
+    o.frequency.exponentialRampToValueAtTime(70, now + 0.18);
+
+    g.gain.setValueAtTime(0.9 * power, now);
+    g.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+
+    o.start(now);
+    o.stop(now + 0.18);
+  })();
+};
 
 // Global toast controller instance
 let toastController: ReturnType<typeof useToastController> | null = null;
@@ -41,10 +124,20 @@ const showToast = (
     action,
     description,
     onDismiss,
-    onAutoClose
+    onAutoClose,
+    playSound = false
   } = options;
 
-  console.log('[showToast]', { type, message, description, duration, action });
+  console.log('[showToast]', { type, message, description, duration, action, playSound });
+
+  // Play sound if requested
+  if (playSound) {
+    try {
+      playLoudNotificationSound();
+    } catch (error) {
+      console.warn('Could not play notification sound:', error);
+    }
+  }
 
   // Detect language from path: /vi/... or /en/...
   let lang: 'vi' | 'en' = 'en';
@@ -135,6 +228,10 @@ const showInfoToast = (message: string, options?: Omit<ToastOptions, 'duration'>
   return showToast('info', message, options);
 };
 
+const showNotificationToast = (message: string, options?: Omit<ToastOptions, 'duration' | 'playSound'> & { duration?: number }) => {
+  return showToast('info', message, { playSound: true, ...options });
+};
+
 // Promise-based toast helper
 const showPromiseToast = <T>(
   promise: Promise<T>,
@@ -198,6 +295,7 @@ export {
   showErrorToast,
   showWarningToast,
   showInfoToast,
+  showNotificationToast,
   showPromiseToast,
   dismissToast,
   dismissAllToasts,

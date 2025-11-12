@@ -20,7 +20,7 @@ messaging.onBackgroundMessage(function (payload) {
   console.log('Received background message ', payload);
 
   // Get brand logo from runtime config
-  const brandLogo = self.__ENV__?.BRAND_LOGO || '/favicon.ico';
+  const brandLogo = self.__ENV__?.BRAND_LOGO;
 
   // Show notification with loud sound
   const notificationTitle = payload.notification?.title || 'New Message';

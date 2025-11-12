@@ -42,6 +42,7 @@ export const queryKeys = {
   file: (id: string) => ['files', id] as const,
 
   user: ['user'] as const,
+  users: ['users'] as const,
   userStats: ['user', 'stats'] as const,
 
   notifications: ['notifications'] as const,

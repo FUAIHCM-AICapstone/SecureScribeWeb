@@ -291,12 +291,28 @@
     "markedAsUnread": "Đã đánh dấu chưa đọc",
     "menu": "Menu",
     "noNotifications": "Không có thông báo",
+    "notificationSettings": "Cài đặt thông báo",
+    "browserPermission": "Quyền trình duyệt",
+    "fcmToken": "Token FCM",
+    "permissionGranted": "Đã cấp",
+    "permissionDenied": "Đã từ chối",
+    "permissionDefault": "Mặc định",
+    "tokenRegistered": "Đã đăng ký",
+    "tokenNotRegistered": "Chưa đăng ký",
+    "enableNotifications": "Bật thông báo",
+    "enablingNotifications": "Đang bật...",
     "notifications": "Thông báo",
     "schedule": "Lên lịch họp",
     "searchPlaceholder": "Tìm kiếm",
     "taskAssigned": "Nhiệm vụ được giao cho bạn",
     "upload": "Tải tệp",
     "view": "Xem"
+  },
+  "notifications": {
+    "user_joined_project": "{{user_name}} vừa tham gia vào project {{project_name}}",
+    "added_to_project": "Bạn vừa được {{added_by_name}} thêm vào project {{project_name}}",
+    "user_removed_project": "{{user_name}} {{is_self_removal ? 'đã rời khỏi' : 'đã bị loại khỏi'}} project {{project_name}}",
+    "removed_from_project": "Bạn đã bị loại khỏi project {{project_name}} bởi {{removed_by_name}}"
   },
   "LanguageSwitcher": {
     "selectLanguage": "Chọn ngôn ngữ ({current})"

@@ -40,7 +40,13 @@ export default function RootLayoutClient({
   const [shouldShowAuthOverlay, setShouldShowAuthOverlay] = useState(false);
 
   // Initialize FCM for push notifications
-  const { isSupported } = useFCM();
+  const {
+    permission: notificationPermission,
+    token: fcmToken,
+    isLoading: fcmLoading,
+    requestNotificationPermission,
+    isSupported
+  } = useFCM();
 
   // Log FCM support status for debugging
   useEffect(() => {
@@ -100,19 +106,6 @@ export default function RootLayoutClient({
 
   return (
     <>
-      <head>
-        {/* Preload CSS để tránh FART */}
-        <link
-          rel="preload"
-          href="https://fonts.googleapis.com/css2?family=Sofia&display=swap"
-          as="style"
-        />
-        <link
-          rel="preload"
-          href="https://fonts.googleapis.com/css2?family=Afacad:ital,wght@0,400..700;1,400..700&family=Sofia&display=swap"
-          as="style"
-        />
-      </head>
       <ClientOnlyLayout>
         <Providers>
           <Toaster position="top-end" />
@@ -135,7 +128,12 @@ export default function RootLayoutClient({
                           overflow: 'hidden',
                         }}
                       >
-                        {!hideHeader && <Header />}
+                        {!hideHeader && <Header
+                          notificationPermission={notificationPermission}
+                          fcmToken={fcmToken}
+                          fcmLoading={fcmLoading}
+                          requestNotificationPermission={requestNotificationPermission}
+                        />}
                         <div style={{ display: 'flex', flex: 1, minHeight: 0 }}>
                           {!hideHeader && <Sidebar />}
                           <main

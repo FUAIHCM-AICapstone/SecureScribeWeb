@@ -113,6 +113,7 @@ const LoginViaEmailForm: React.FC<{ onSwitchMode?: (mode: "signup" | "forgot") =
                         type="email"
                         placeholder={t('email_placeholder')}
                         contentBefore={<PersonRegular />}
+                        autoComplete="email"
                         {...register("email", {
                             required: t('email_required', { defaultValue: 'Email is required' }),
                             pattern: {
@@ -135,6 +136,7 @@ const LoginViaEmailForm: React.FC<{ onSwitchMode?: (mode: "signup" | "forgot") =
                         type="password"
                         placeholder={t('password_placeholder')}
                         contentBefore={<PasswordRegular />}
+                        autoComplete="current-password"
                         {...register("password", {
                             required: t('password_required', { defaultValue: 'Password is required' }),
                             minLength: {

@@ -4,7 +4,6 @@
 import axiosInstance from './axiosInstance';
 import { ApiWrapper, QueryBuilder, UuidValidator } from './utilities';
 import type { User, UserUpdate, UserCreate, BulkUserCreate, BulkUserUpdate } from 'types/user.type';
-import type { DeviceFCMUpdate } from 'types/notification.type';
 
 /**
  * Get all users with pagination and filtering
@@ -117,17 +116,6 @@ export const getMe = async (): Promise<User> => {
 export const updateMe = async (updates: UserUpdate): Promise<User> => {
   return ApiWrapper.execute(() =>
     axiosInstance.put('/me', updates)
-  );
-};
-
-/**
- * Update FCM token for device
- */
-export const updateFCMToken = async (
-  fcmData: DeviceFCMUpdate
-): Promise<{ device_id: string }> => {
-  return ApiWrapper.execute(() =>
-    axiosInstance.post('/users/me/devices/fcm-token', fcmData)
   );
 };
 

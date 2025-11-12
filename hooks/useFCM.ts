@@ -3,90 +3,8 @@
 import { useEffect, useState, useCallback } from 'react';
 import { messaging, getToken, onMessage, getVapidKey, isFirebaseReady } from '@/lib/firebase';
 import { updateFCMToken } from '@/services/api/notification';
-import { showToast } from '@/hooks/useShowToast';
+import { showToast, showNotificationToast } from '@/hooks/useShowToast';
 import { getBrandConfig } from '@/lib/utils/runtimeConfig';
-
-// Function to play loud notification sound using Web Audio API
-const playLoudNotificationSound = (power = 1.3) => {
-    const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
-
-    const createOsc = (type: OscillatorType, freq: number) => {
-        const o = ctx.createOscillator();
-        o.type = type;
-        o.frequency.value = freq;
-        return o;
-    };
-
-    const gain = ctx.createGain();
-    gain.connect(ctx.destination);
-
-    const distort = ctx.createWaveShaper();
-    const curve = new Float32Array(44100);
-    for (let i = 0; i < curve.length; i++) {
-        const x = (i / curve.length) * 2 - 1;
-        curve[i] = x < 0 ? -(Math.pow(Math.abs(x), 0.4)) : Math.pow(x, 0.4);
-    }
-    distort.curve = curve;
-    distort.connect(gain);
-
-    const compressor = ctx.createDynamicsCompressor();
-    compressor.threshold.value = -40;
-    compressor.ratio.value = 15;
-    compressor.attack.value = 0.001;
-    compressor.release.value = 0.12;
-    compressor.connect(distort);
-
-    // High-tech pluck click
-    (() => {
-        const o = createOsc("triangle", 2200);
-        const g = ctx.createGain();
-        o.connect(g);
-        g.connect(compressor);
-
-        const now = ctx.currentTime;
-        g.gain.setValueAtTime(0.8 * power, now);
-        g.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
-
-        o.start(now);
-        o.stop(now + 0.08);
-    })();
-
-    // Sweep chirp
-    (() => {
-        const o = createOsc("sawtooth", 900);
-        const g = ctx.createGain();
-        o.connect(g);
-        g.connect(compressor);
-
-        const now = ctx.currentTime + 0.03;
-        o.frequency.setValueAtTime(900, now);
-        o.frequency.exponentialRampToValueAtTime(2400, now + 0.22);
-
-        g.gain.setValueAtTime(0.55 * power, now);
-        g.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
-
-        o.start(now);
-        o.stop(now + 0.22);
-    })();
-
-    // Sub punch
-    (() => {
-        const o = createOsc("sine", 120);
-        const g = ctx.createGain();
-        o.connect(g);
-        g.connect(compressor);
-
-        const now = ctx.currentTime + 0.05;
-        o.frequency.setValueAtTime(160, now);
-        o.frequency.exponentialRampToValueAtTime(70, now + 0.18);
-
-        g.gain.setValueAtTime(0.9 * power, now);
-        g.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
-
-        o.start(now);
-        o.stop(now + 0.18);
-    })();
-};
 
 interface FCMState {
     token: string | null;
@@ -201,6 +119,13 @@ export const useFCM = () => {
 
     // Send FCM token to backend
     const sendTokenToBackend = useCallback(async (token: string) => {
+        // Check if user is authenticated before sending token
+        const accessToken = localStorage.getItem('access_token');
+        if (!accessToken) {
+            console.log('User not authenticated, skipping FCM token registration');
+            return;
+        }
+
         try {
             const deviceName = navigator.userAgent;
             const deviceType = 'web';
@@ -303,13 +228,6 @@ export const useFCM = () => {
             if (Notification.permission === 'granted') {
                 const notification = new Notification(notificationTitle, notificationOptions);
 
-                // Play additional loud sound using Web Audio API for maximum volume
-                try {
-                    playLoudNotificationSound();
-                } catch (error) {
-                    console.warn('Could not play additional notification sound:', error);
-                }
-
                 // Handle notification click (equivalent to 'view' action)
                 notification.onclick = () => {
                     console.log('Foreground notification clicked');
@@ -338,8 +256,8 @@ export const useFCM = () => {
                 }, 10000);
             }
 
-            // Also show in-app toast
-            showToast('info', `${notificationTitle}: ${notificationOptions.body}`);
+            // Also show in-app toast with sound
+            showNotificationToast(`${notificationTitle}: ${notificationOptions.body}`);
         });
 
         return () => unsubscribe();
@@ -349,6 +267,34 @@ export const useFCM = () => {
     useEffect(() => {
         initializeFCM();
     }, [initializeFCM]);
+
+    // Watch for authentication changes and send FCM token when user logs in
+    useEffect(() => {
+        const checkAuthAndSendToken = async () => {
+            const accessToken = localStorage.getItem('access_token');
+            if (accessToken && state.token && Notification.permission === 'granted') {
+                console.log('User authenticated, sending FCM token to backend');
+                await sendTokenToBackend(state.token);
+            }
+        };
+
+        // Check immediately
+        checkAuthAndSendToken();
+
+        // Set up storage event listener for authentication changes
+        const handleStorageChange = (e: StorageEvent) => {
+            if (e.key === 'access_token' && e.newValue) {
+                console.log('Access token added, checking FCM token registration');
+                checkAuthAndSendToken();
+            }
+        };
+
+        window.addEventListener('storage', handleStorageChange);
+
+        return () => {
+            window.removeEventListener('storage', handleStorageChange);
+        };
+    }, [state.token, sendTokenToBackend]);
 
     return {
         ...state,

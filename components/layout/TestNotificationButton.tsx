@@ -54,11 +54,7 @@ export const TestNotificationButton: React.FC = () => {
 
             console.log('Sending test notification:', notificationData);
 
-            const result = await sendNotifications(notificationData);
-            console.log('Test notification sent successfully:', result);
-
-            // Note: FCM notification will be handled automatically by the service worker
-            // No need to show toast as the push notification will appear
+            await sendNotifications(notificationData);
 
         } catch (error) {
             console.error('Failed to send test notification:', error);
