@@ -38,6 +38,7 @@ import Image from 'next/image';
 import React, { useState, useEffect } from 'react';
 import LanguageSwitcher from './LanguageSwitcher';
 import ThemeToggle from './ThemeToggle';
+import { TestNotificationButton } from './TestNotificationButton';
 import { useSidebar } from '@/context/SidebarContext';
 import { useAuth } from '@/context/AuthContext';
 import {
@@ -191,7 +192,17 @@ const useStyles = makeStyles({
 
 // Removed legacy inline search types in favor of reusable SearchBoxWithResults
 
-export default function Header() {
+export default function Header({
+  // notificationPermission,
+  // fcmToken,
+  // fcmLoading,
+  // requestNotificationPermission,
+}: {
+  notificationPermission: NotificationPermission;
+  fcmToken: string | null;
+  fcmLoading: boolean;
+  requestNotificationPermission: () => Promise<boolean>;
+}) {
   const styles = useStyles();
   const pathname = usePathname();
   const locale = useLocale();
@@ -667,6 +678,7 @@ export default function Header() {
           </Menu>
 
           <Divider vertical style={{ height: 28 }} />
+          <TestNotificationButton />
           <LanguageSwitcher />
           <ThemeToggle />
         </div>
@@ -680,6 +692,54 @@ export default function Header() {
           <DrawerHeaderTitle>{t('notifications')}</DrawerHeaderTitle>
         </DrawerHeader>
         <DrawerBody>
+          {/* Notification Settings - Compact Design */}
+          {/* <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--colorNeutralStroke2)' }}>
+            <div style={{ fontSize: '13px', fontWeight: 600, marginBottom: '8px' }}>
+              {t('notificationSettings')}
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: '11px', color: 'var(--colorNeutralForeground3)' }}>
+                  {t('browserPermission')}:
+                </span>
+                <Badge
+                  appearance="filled"
+                  color={
+                    notificationPermission === 'granted' ? 'success' :
+                      notificationPermission === 'denied' ? 'danger' : 'warning'
+                  }
+                  size="small"
+                >
+                  {notificationPermission === 'granted' ? t('permissionGranted') :
+                    notificationPermission === 'denied' ? t('permissionDenied') : t('permissionDefault')}
+                </Badge>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: '11px', color: 'var(--colorNeutralForeground3)' }}>
+                  {t('fcmToken')}:
+                </span>
+                <Badge
+                  appearance="filled"
+                  color={fcmToken ? 'success' : 'warning'}
+                  size="small"
+                >
+                  {fcmToken ? t('tokenRegistered') : t('tokenNotRegistered')}
+                </Badge>
+              </div>
+              {notificationPermission !== 'granted' && (
+                <Button
+                  appearance="primary"
+                  size="small"
+                  onClick={requestNotificationPermission}
+                  disabled={fcmLoading}
+                  style={{ alignSelf: 'flex-start', marginTop: '4px', fontSize: '11px', padding: '4px 8px' }}
+                >
+                  {fcmLoading ? t('enablingNotifications') : t('enableNotifications')}
+                </Button>
+              )}
+            </div>
+          </div> */}
+
           <div className={styles.drawerList}>
             {notificationsLoading ? (
               <div style={{ textAlign: 'center', padding: '20px' }}>

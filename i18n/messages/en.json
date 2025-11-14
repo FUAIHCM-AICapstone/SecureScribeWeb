@@ -291,6 +291,16 @@
     "markedAsUnread": "Marked as unread",
     "menu": "Menu",
     "noNotifications": "No notifications",
+    "notificationSettings": "Notification Settings",
+    "browserPermission": "Browser Permission",
+    "fcmToken": "FCM Token",
+    "permissionGranted": "Granted",
+    "permissionDenied": "Denied",
+    "permissionDefault": "Default",
+    "tokenRegistered": "Registered",
+    "tokenNotRegistered": "Not Registered",
+    "enableNotifications": "Enable Notifications",
+    "enablingNotifications": "Enabling...",
     "notifications": "Notifications",
     "schedule": "Schedule a meeting",
     "searchPlaceholder": "Search",
@@ -298,10 +308,18 @@
     "upload": "Upload file",
     "view": "View"
   },
+  "notifications": {
+    "user_joined_project": "{{user_name}} joined project {{project_name}}",
+    "added_to_project": "You were added to project {{project_name}} by {{added_by_name}}",
+    "user_removed_project": "{{user_name}} {{is_self_removal ? 'left' : 'was removed from'}} project {{project_name}}",
+    "removed_from_project": "You were removed from project {{project_name}} by {{removed_by_name}}"
+  },
   "LanguageSwitcher": {
     "selectLanguage": "Select language ({current})"
   },
   "MeetingDetail": {
+    "hasMeetingUrl": "Link available",
+    "meetingDetails": "Meeting Details",
     "backToMeetings": "Back",
     "createdAt": "Created",
     "delete": "Delete",
@@ -364,7 +382,27 @@
     "close": "Close",
     "supportedFormats": "Supported formats: MP3, WAV, WEBM, M4A",
     "cancel": "Cancel",
-    "uploading": "Uploading..."
+    "uploading": "Uploading...",
+    "failedToLoadNote": "Failed to load meeting note",
+    "failedToLoadAudioFiles": "Failed to load audio files",
+    "failedToLoadFiles": "Failed to load files",
+    "failedToLoadTranscripts": "Failed to load transcripts",
+    "transcribingInProgress": "Transcribing Audio...",
+    "audioTranscription": "Audio Transcription",
+    "deleteAudioFile": "Delete Audio File",
+    "deleteTranscript": "Delete Transcript",
+    "audioFile": "audio file",
+    "transcript": "transcript",
+    "taskTypes": {
+      "file_indexing": "File Indexing",
+      "audio_asr": "Audio Transcription",
+      "chat_processing": "Chat Processing"
+    },
+    "taskMessages": {
+      "taskCompleted": "Task completed: {taskType}",
+      "taskFailed": "Task failed: {taskType}",
+      "taskStarted": "Task started: {taskType}"
+    }
   },
   "MeetingEdit": {
     "cancel": "Cancel",

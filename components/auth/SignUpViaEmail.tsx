@@ -115,6 +115,7 @@ const SignUpViaEmail: React.FC<{ onSwitchMode?: (mode: "login") => void }> = ({ 
                         type="email"
                         placeholder={t('email_placeholder')}
                         contentBefore={<PersonRegular />}
+                        autoComplete="email"
                         {...register("email", {
                             required: t('email_required', { defaultValue: 'Email is required' }),
                             pattern: {
@@ -137,6 +138,7 @@ const SignUpViaEmail: React.FC<{ onSwitchMode?: (mode: "login") => void }> = ({ 
                         type="password"
                         placeholder={t('password_placeholder')}
                         contentBefore={<PasswordRegular />}
+                        autoComplete="new-password"
                         {...register("password", {
                             required: t('password_required', { defaultValue: 'Password is required' }),
                             minLength: {
@@ -159,6 +161,7 @@ const SignUpViaEmail: React.FC<{ onSwitchMode?: (mode: "login") => void }> = ({ 
                         type="password"
                         placeholder={t('confirm_password_placeholder', { defaultValue: 'Confirm your password' })}
                         contentBefore={<CheckmarkRegular />}
+                        autoComplete="new-password"
                         {...register("confirm", {
                             required: t('confirm_required', { defaultValue: 'Password confirmation is required' }),
                             validate: (value, formValues) =>

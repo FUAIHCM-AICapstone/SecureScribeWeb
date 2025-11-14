@@ -2,6 +2,7 @@
 // Based on backend endpoints from app/api/endpoints/notificaiton.py
 
 import axiosInstance from './axiosInstance';
+import { getApiEndpoint } from '../../lib/utils/runtimeConfig';
 import { ApiWrapper, QueryBuilder, UuidValidator } from './utilities';
 import type {
     NotificationCreate,
@@ -157,12 +158,12 @@ export const getReadNotifications = async (
 
 // WebSocket URL builder
 export const getWebSocketUrl = (token?: string): string => {
-    const baseUrl = (globalThis as any).process?.env?.NEXT_PUBLIC_API_BASE_URL || 'https://securescribe.wc504.io.vn/be/api';
+    const baseUrl = getApiEndpoint();
     const apiVersion = 'v1';
     const wsProtocol = baseUrl.startsWith('https') ? 'wss' : 'ws';
     const wsBase = baseUrl.replace(/^https?/, wsProtocol);
 
-    let url = `${wsBase}/api/${apiVersion}/notifications/ws`;
+    let url = `${wsBase}/${apiVersion}/notifications/ws`;
 
     if (token) {
         url += `?authorization=Bearer%20${encodeURIComponent(token)}`;

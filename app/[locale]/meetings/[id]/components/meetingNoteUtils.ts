@@ -42,7 +42,6 @@ export function parseMarkdownNote(content: string): ParsedMeetingNote {
     }
 
     try {
-        console.log('[Meeting Note Parser] Starting parse, content length:', content.length);
 
         const sections: MarkdownSection[] = [];
         const metadata: ParsedMeetingNote['metadata'] = {};
@@ -50,7 +49,6 @@ export function parseMarkdownNote(content: string): ParsedMeetingNote {
         // Normalize escaped newlines to actual newlines
         // Handle both \\n and actual newlines
         const normalizedContent = content.replace(/\\n/g, '\n');
-        console.log('[Meeting Note Parser] After normalization, content length:', normalizedContent.length);
 
         // Split by lines, preserving empty lines for paragraph breaks
         const lines = normalizedContent.split('\n');
@@ -74,7 +72,6 @@ export function parseMarkdownNote(content: string): ParsedMeetingNote {
                     content: heading,
                     level: 1,
                 });
-                console.log('[Meeting Note Parser] Parsed H1:', heading);
                 i++;
                 continue;
             }
@@ -87,7 +84,6 @@ export function parseMarkdownNote(content: string): ParsedMeetingNote {
                     content: heading,
                     level: 2,
                 });
-                console.log('[Meeting Note Parser] Parsed H2:', heading);
                 i++;
                 continue;
             }
@@ -100,7 +96,6 @@ export function parseMarkdownNote(content: string): ParsedMeetingNote {
                     content: heading,
                     level: 3,
                 });
-                console.log('[Meeting Note Parser] Parsed H3:', heading);
                 i++;
                 continue;
             }
@@ -128,7 +123,6 @@ export function parseMarkdownNote(content: string): ParsedMeetingNote {
                         children: parsed,
                     });
 
-                    console.log('[Meeting Note Parser] Parsed list item:', itemContent.substring(0, 50));
                     i++;
                 }
 
@@ -150,7 +144,6 @@ export function parseMarkdownNote(content: string): ParsedMeetingNote {
                     content: line,
                     children: parsed,
                 });
-                console.log('[Meeting Note Parser] Parsed paragraph:', line.substring(0, 50));
                 i++;
                 continue;
             }
@@ -158,7 +151,6 @@ export function parseMarkdownNote(content: string): ParsedMeetingNote {
             i++;
         }
 
-        console.log('[Meeting Note Parser] Parse complete - Total sections:', sections.length);
         return { sections, metadata };
     } catch (err) {
         console.error('[Meeting Note Parser] Parse error:', err);

@@ -125,7 +125,6 @@ export function FileActionsMenu({ file, onRenameSuccess, onDeleteSuccess, onMove
               onClick={(e) => {
                 e.stopPropagation();
                 // TODO: Implement view details
-                console.log('View details:', file.id);
               }}
             >
               {t('actions.view')}

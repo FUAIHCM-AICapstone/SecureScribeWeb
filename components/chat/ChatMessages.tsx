@@ -110,19 +110,6 @@ export function ChatMessage({
     }
   }, []);
 
-  useEffect(() => {
-    console.log("check message in chat messages", message);
-  }, [message]);
-
-  // Enhanced debug logging
-  if (message.message_type === 'agent') {
-    console.log('[ChatMessage] Assistant message analysis:', {
-      messageId: message.id,
-      contentSnippet: message.content.substring(0, 100) + '...',
-      messageTimestamp: message.created_at
-    })
-  }
-
   // Helper function to format timestamp for display
   const formatTimestamp = (timestamp: string): string => {
     return new Date(timestamp).toLocaleTimeString();

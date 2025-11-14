@@ -7,6 +7,7 @@ import { getMeeting } from '@/services/api/meeting';
 import { getMeetingNote } from '@/services/api/meetingNote';
 import { getTranscriptsByMeeting } from '@/services/api/transcript';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 import React from 'react';
 import type { AudioFileResponse } from 'types/audio_file.type';
 import type { FileResponse } from 'types/file.type';
@@ -15,6 +16,7 @@ import type { MeetingNoteResponse } from 'types/meeting_note.type';
 import type { TranscriptResponse } from 'types/transcript.type';
 
 export const useMeetingQueries = (meetingId: string) => {
+  const t = useTranslations('MeetingDetail');
   const [audioFiles, setAudioFiles] = React.useState<AudioFileResponse[]>([]);
   const [files, setFiles] = React.useState<FileResponse[]>([]);
   const [transcripts, setTranscripts] = React.useState<TranscriptResponse[]>(
@@ -46,7 +48,7 @@ export const useMeetingQueries = (meetingId: string) => {
         return files;
       } catch (error: any) {
         const errorMsg =
-          error?.response?.data?.detail || 'Failed to load audio files';
+          error?.response?.data?.detail || t('failedToLoadAudioFiles');
         setAudioError(errorMsg);
         throw error;
       }
@@ -65,7 +67,7 @@ export const useMeetingQueries = (meetingId: string) => {
         return response.data;
       } catch (error: any) {
         const errorMsg =
-          error?.response?.data?.detail || 'Failed to load files';
+          error?.response?.data?.detail || t('failedToLoadFiles');
         setFilesError(errorMsg);
         throw error;
       }
@@ -84,7 +86,7 @@ export const useMeetingQueries = (meetingId: string) => {
         return transcriptList;
       } catch (error: any) {
         const errorMsg =
-          error?.response?.data?.detail || 'Failed to load transcripts';
+          error?.response?.data?.detail || t('failedToLoadTranscripts');
         setTranscriptError(errorMsg);
         throw error;
       }
@@ -103,9 +105,9 @@ export const useMeetingQueries = (meetingId: string) => {
         return note;
       } catch (error: any) {
         // Note might not exist, so we don't show error for 404
-        if (error?.response?.status !== 404) {
+        if (error?.message !== 'Not Found') {
           const errorMsg =
-            error?.response?.data?.detail || 'Failed to load meeting note';
+            error?.message || t('failedToLoadNote');
           setNoteError(errorMsg);
         }
         return null;

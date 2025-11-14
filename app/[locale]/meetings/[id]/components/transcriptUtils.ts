@@ -33,7 +33,6 @@ export function parseTranscriptContent(content: string): ParseResult {
     }
 
     try {
-        console.log('[Transcript Parser] Starting parse, content length:', content.length);
 
         // Pattern: SPEAKER_XX [start - end]: content
         // Matches both single and multiple segments (newline-separated or end-of-string)
@@ -49,10 +48,8 @@ export function parseTranscriptContent(content: string): ParseResult {
                 content: match[4].trim(),
             };
             segments.push(segment);
-            console.log(`[Transcript Parser] Parsed segment - Speaker: ${segment.speaker}, Duration: ${segment.startTime} - ${segment.endTime}, Content length: ${segment.content.length}`);
         }
 
-        console.log(`[Transcript Parser] Parse complete - Total segments: ${segments.length}`);
         return { segments };
     } catch (err) {
         console.error('[Transcript Parser] Parse error:', err);

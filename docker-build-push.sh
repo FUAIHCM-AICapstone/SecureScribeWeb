@@ -16,7 +16,7 @@ TAGNAME=${1:-frontend}
 
 # Docker credentials (can also be set as environment variables)
 DOCKER_USERNAME="${DOCKER_USERNAME:-luongnguyenminhan}"
-DOCKER_PASSWORD="${DOCKER_PASSWORD:-Abc@xxxxx}"
+DOCKER_PASSWORD="${DOCKER_PASSWORD:-Abc@12345}"
 
 # Docker image details
 DOCKER_REGISTRY="luongnguyenminhan"

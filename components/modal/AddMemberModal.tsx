@@ -96,6 +96,13 @@ const useStyles = makeStyles({
     textAlign: 'center',
     color: tokens.colorNeutralForeground3,
   },
+  actions: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    ...shorthands.gap(tokens.spacingHorizontalS),
+    padding: tokens.spacingVerticalM,
+    borderTop: `1px solid ${tokens.colorNeutralStroke1}`,
+  },
 });
 
 interface AddMemberModalProps {
@@ -329,7 +336,7 @@ export function AddMemberModal({
             </div>
           </DialogContent>
 
-          <DialogActions>
+          <DialogActions className={styles.actions}>
             <Button
               appearance="secondary"
               onClick={handleClose}

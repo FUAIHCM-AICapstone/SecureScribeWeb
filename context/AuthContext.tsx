@@ -256,6 +256,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const logout = useCallback(async () => {
         try {
+            // Disconnect WebSocket before clearing tokens
+            // Use window global to avoid hook dependency issues
+            if (typeof window !== 'undefined' && (window as any).__wsForceDisconnect) {
+                try {
+                    (window as any).__wsForceDisconnect();
+                    console.log('%c🔴 WebSocket force disconnected during logout', 'color: #ef4444; font-weight: bold;');
+                } catch (wsError) {
+                    console.log('Could not force disconnect WebSocket:', wsError);
+                }
+            }
+
             clearTokens();
             setUser(null);
         } finally {

@@ -12,6 +12,7 @@ import store from '@/store/index';
 import '@/styles/globals.css';
 import { Providers } from './providers';
 import { AuthProvider } from '@/context/AuthContext';
+import { WebSocketProvider } from '@/context/WebSocketContext';
 import Header from '../components/layout/Header';
 import Sidebar from '../components/layout/Sidebar';
 import { usePathname, useSearchParams } from 'next/navigation';
@@ -20,6 +21,7 @@ import { Toaster, useToastController } from '@fluentui/react-toast';
 import { SidebarProvider } from '../context/SidebarContext';
 import ClientOnlyLayout from '@/components/layout/ClientOnly';
 import { AuthOverlay } from '@/components/layout/AuthOverlay';
+import { useFCM } from '@/hooks/useFCM';
 
 export default function RootLayoutClient({
   children,
@@ -36,6 +38,22 @@ export default function RootLayoutClient({
   const hideHeader = pathAfterLocale.startsWith('auth');
   const isAuthRoute = pathAfterLocale.startsWith('auth');
   const [shouldShowAuthOverlay, setShouldShowAuthOverlay] = useState(false);
+
+  // Initialize FCM for push notifications
+  const {
+    permission: notificationPermission,
+    token: fcmToken,
+    isLoading: fcmLoading,
+    requestNotificationPermission,
+    isSupported
+  } = useFCM();
+
+  // Log FCM support status for debugging
+  useEffect(() => {
+    if (!isSupported) {
+      console.log('FCM notifications not supported in this browser');
+    }
+  }, [isSupported]);
 
   // Initialize FluentUI toast controller
   const toastController = useToastController();
@@ -88,19 +106,6 @@ export default function RootLayoutClient({
 
   return (
     <>
-      <head>
-        {/* Preload CSS để tránh FART */}
-        <link
-          rel="preload"
-          href="https://fonts.googleapis.com/css2?family=Sofia&display=swap"
-          as="style"
-        />
-        <link
-          rel="preload"
-          href="https://fonts.googleapis.com/css2?family=Afacad:ital,wght@0,400..700;1,400..700&family=Sofia&display=swap"
-          as="style"
-        />
-      </head>
       <ClientOnlyLayout>
         <Providers>
           <Toaster position="top-end" />
@@ -112,27 +117,34 @@ export default function RootLayoutClient({
                 timeZone="Asia/Bangkok"
               >
                 <AuthProvider>
-                  <SidebarProvider>
-                    <AuthOverlay locale={locale} shouldShow={shouldShowAuthOverlay} />
-                    <div
-                      style={{
-                        display: 'flex',
-                        height: '100vh',
-                        flexDirection: 'column',
-                        overflow: 'hidden',
-                      }}
-                    >
-                      {!hideHeader && <Header />}
-                      <div style={{ display: 'flex', flex: 1, minHeight: 0 }}>
-                        {!hideHeader && <Sidebar />}
-                        <main
-                          style={{ flex: 1, overflow: 'auto', minHeight: 0 }}
-                        >
-                          {children}
-                        </main>
+                  <WebSocketProvider>
+                    <SidebarProvider>
+                      <AuthOverlay locale={locale} shouldShow={shouldShowAuthOverlay} />
+                      <div
+                        style={{
+                          display: 'flex',
+                          height: '100vh',
+                          flexDirection: 'column',
+                          overflow: 'hidden',
+                        }}
+                      >
+                        {!hideHeader && <Header
+                          notificationPermission={notificationPermission}
+                          fcmToken={fcmToken}
+                          fcmLoading={fcmLoading}
+                          requestNotificationPermission={requestNotificationPermission}
+                        />}
+                        <div style={{ display: 'flex', flex: 1, minHeight: 0 }}>
+                          {!hideHeader && <Sidebar />}
+                          <main
+                            style={{ flex: 1, overflow: 'auto', minHeight: 0 }}
+                          >
+                            {children}
+                          </main>
+                        </div>
                       </div>
-                    </div>
-                  </SidebarProvider>
+                    </SidebarProvider>
+                  </WebSocketProvider>
                 </AuthProvider>
               </NextIntlClientProvider>
             </ReactQueryProvider>

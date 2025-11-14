@@ -3,6 +3,7 @@ export interface RuntimeConfig {
     API_ENDPOINT: string;
     BRAND_NAME: string;
     BRAND_LOGO: string;
+    FCM_VAPID_KEY?: string;
 }
 
 let configCache: RuntimeConfig | null = null;
@@ -54,6 +55,12 @@ export function getBrandConfig(): { name: string; logo: string } {
         name: config.BRAND_NAME,
         logo: config.BRAND_LOGO
     };
+}
+
+// Helper function to get FCM VAPID key
+export function getFCMVapidKey(): string | null {
+    const config = loadRuntimeConfig();
+    return config.FCM_VAPID_KEY || null;
 }
 
 // Type declaration for window.__ENV__
