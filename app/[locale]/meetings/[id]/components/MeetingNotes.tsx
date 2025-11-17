@@ -1,7 +1,7 @@
 'use client';
 
-import { Body1, Button, Card, Spinner, Text, makeStyles, shorthands, tokens } from '@fluentui/react-components';
-import { Document20Regular, Edit20Regular } from '@fluentui/react-icons';
+import { Body1, Button, Card, Spinner, Text, makeStyles, shorthands, tokens, ProgressBar } from '@fluentui/react-components';
+import { Document20Regular, Edit20Regular, ClipboardTaskListLtrRegular } from '@fluentui/react-icons';
 import { useTranslations } from 'next-intl';
 import React from 'react';
 import type { MeetingNoteResponse } from 'types/meeting_note.type';
@@ -76,6 +76,22 @@ const useStyles = makeStyles({
         maxHeight: '600px',
         overflowY: 'auto',
     },
+    progressContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        ...shorthands.gap('12px'),
+        ...shorthands.padding('20px'),
+        backgroundColor: tokens.colorNeutralBackground2,
+        ...shorthands.borderRadius(tokens.borderRadiusMedium),
+        marginBottom: '16px',
+    },
+    progressText: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        fontSize: tokens.fontSizeBase200,
+        color: tokens.colorNeutralForeground2,
+    },
 });
 
 interface MeetingNotesProps {
@@ -84,8 +100,14 @@ interface MeetingNotesProps {
     error: string | null;
     onCreateNote: () => void;
     onEditNote: () => void;
+    onShowTasks?: () => void;
     isCreating: boolean;
     isUpdating: boolean;
+    analysisProgress?: {
+        progress: number;
+        status: string;
+        task_id: string;
+    } | null;
 }
 
 // Component to render a single markdown section
@@ -167,14 +189,19 @@ export function MeetingNotes({
     error,
     onCreateNote,
     onEditNote,
+    onShowTasks,
     isCreating,
     isUpdating,
+    analysisProgress,
 }: MeetingNotesProps) {
     const styles = useStyles();
     const t = useTranslations('MeetingDetail');
     const [isExpanded, setIsExpanded] = React.useState(false);
     const [parsedNote, setParsedNote] = React.useState<ReturnType<typeof parseMarkdownNote> | null>(null);
     const [headingSize, setHeadingSize] = React.useState<'small' | 'medium' | 'large'>('small');
+
+    // Check if analysis is in progress
+    const isAnalyzing = analysisProgress && analysisProgress.status === 'processing';
 
     // Parse markdown when note changes
     React.useEffect(() => {
@@ -214,26 +241,61 @@ export function MeetingNotes({
                         <option value="medium">Medium</option>
                         <option value="large">Large</option>
                     </select>
-                    {note ? (
+                    {onShowTasks && (
                         <Button
-                            appearance="primary"
-                            icon={<Edit20Regular />}
-                            onClick={onEditNote}
-                            disabled={isUpdating}
+                            appearance="outline"
+                            icon={<ClipboardTaskListLtrRegular />}
+                            onClick={onShowTasks}
                         >
-                            {t('edit')}
+                            {t('tasks')}
                         </Button>
+                    )}
+                    {note ? (
+                        <>
+                            <Button
+                                appearance="secondary"
+                                icon={<Edit20Regular />}
+                                onClick={onEditNote}
+                                disabled={isUpdating || !!isAnalyzing}
+                            >
+                                {t('edit')}
+                            </Button>
+                            <Button
+                                appearance="primary"
+                                onClick={onCreateNote}
+                                disabled={isCreating || !!isAnalyzing}
+                            >
+                                {t('regenerateNote')}
+                            </Button>
+                        </>
                     ) : (
                         <Button
                             appearance="primary"
                             onClick={onCreateNote}
-                            disabled={isCreating}
+                            disabled={isCreating || !!isAnalyzing}
                         >
                             {t('createNote')}
                         </Button>
                     )}
                 </div>
             </div>
+            {/* Show analysis progress if in progress */}
+            {isAnalyzing && (
+                <div className={styles.progressContainer}>
+                    <div className={styles.progressText}>
+                        <Text weight="semibold">
+                            {t('taskMessages.taskStarted', { taskType: t('taskTypes.meeting_analysis') })}
+                        </Text>
+                        <Text>{analysisProgress?.progress || 0}%</Text>
+                    </div>
+                    <ProgressBar
+                        value={analysisProgress?.progress || 0}
+                        max={100}
+                        thickness="large"
+                        color="brand"
+                    />
+                </div>
+            )}
             {isLoading ? (
                 <div style={{ display: 'flex', justifyContent: 'center', padding: '24px' }}>
                     <Spinner size="small" />

@@ -95,6 +95,13 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
   const queryClient = useQueryClient();
   const { lastMessage } = useWebSocket();
 
+  // Track meeting_analysis task progress
+  const [analysisProgress, setAnalysisProgress] = React.useState<{
+    progress: number;
+    status: string;
+    task_id: string;
+  } | null>(null);
+
   // Fetch all data using custom hooks
   const {
     meeting,
@@ -134,9 +141,36 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
 
   // Listen for task completion messages to invalidate queries
   React.useEffect(() => {
-    if (lastMessage?.type === 'task_progress' && lastMessage.data?.status === 'completed' && lastMessage.data?.task_type === 'audio_asr') {
-      console.log('[MeetingDetailClient] Audio transcription completed, invalidating transcripts query');
-      queryClient.invalidateQueries({ queryKey: ['transcripts', meetingId] });
+    if (lastMessage?.type === 'task_progress') {
+      const { task_type, status } = lastMessage.data || {};
+
+      // Handle audio transcription completion
+      if (status === 'completed' && task_type === 'audio_asr') {
+        console.log('[MeetingDetailClient] Audio transcription completed, invalidating transcripts query');
+        queryClient.invalidateQueries({ queryKey: ['transcripts', meetingId] });
+      }
+
+      // Handle meeting_analysis progress and completion
+      if (task_type === 'meeting_analysis') {
+        const progressData = lastMessage.data;
+        console.log('[MeetingDetailClient] Meeting analysis progress:', progressData);
+
+        setAnalysisProgress({
+          progress: progressData.progress || 0,
+          status: progressData.status || 'processing',
+          task_id: progressData.task_id || '',
+        });
+
+        // When analysis completes, invalidate meeting note and tasks queries
+        if (status === 'completed') {
+          console.log('[MeetingDetailClient] Meeting analysis completed, refetching note and tasks');
+          queryClient.invalidateQueries({ queryKey: ['meetingNote', meetingId] });
+          queryClient.invalidateQueries({ queryKey: ['tasks', { meeting_id: meetingId }] });
+
+          // Clear progress state after a short delay
+          setTimeout(() => setAnalysisProgress(null), 2000);
+        }
+      }
     }
   }, [lastMessage, queryClient, meetingId]);
 
@@ -157,6 +191,7 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
   const [noteContent, setNoteContent] = React.useState('');
   const [isUploadingAudio, setIsUploadingAudio] = React.useState(false);
   const [uploadedFile, setUploadedFile] = React.useState<File | null>(null);
+  const [showTaskModal, setShowTaskModal] = React.useState(false);
 
   // Handlers
   const handleEdit = () => setShowEditModal(true);
@@ -215,6 +250,8 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
   };
 
   const handleUploadAudio = () => setShowUploadModal(true);
+
+  const handleShowTasks = () => setShowTaskModal(true);
 
   const handleConfirmDelete = () => {
     if (!deleteTarget) return;
@@ -287,8 +324,10 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
             error={noteError}
             onCreateNote={handleCreateNote}
             onEditNote={handleEditNote}
+            onShowTasks={handleShowTasks}
             isCreating={createNoteMutation.isPending}
             isUpdating={updateNoteMutation.isPending}
+            analysisProgress={analysisProgress}
           />
 
           {/* Files Section */}
@@ -398,6 +437,9 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
         onConfirmMeetingDelete={handleDeleteConfirm}
         meetingDeleteTitle={tMeetings('actions.deleteConfirmTitle')}
         meetingDeleteItemName={meeting.title || tMeetings('untitledMeeting')}
+        showTaskModal={showTaskModal}
+        meetingId={meetingId}
+        onTaskModalOpenChange={setShowTaskModal}
       />
     </div>
   );

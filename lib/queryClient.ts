@@ -32,6 +32,8 @@ export const queryKeys = {
   personalMeetings: ['meetings', 'personal'] as const,
   meeting: (id: string) => ['meetings', id] as const,
   meetingFiles: (id: string) => ['meetings', id, 'files'] as const,
+  meetingNote: (id: string) => ['meetings', id, 'note'] as const,
+  meetingTasks: (id: string) => ['tasks', { meeting_id: id }] as const,
 
   tasks: ['tasks'] as const,
   myTasks: ['tasks', 'my'] as const,

@@ -38,6 +38,7 @@ import { useDebounce } from '@/hooks/useDebounce';
 import { showToast } from '@/hooks/useShowToast';
 import { createTask, toIsoUtc, updateTask } from '@/services/api/task';
 import { getProjects } from '@/services/api/project';
+import { getMeetings } from '@/services/api/meeting';
 import { getUsers } from '@/services/api/user';
 import { queryKeys } from '@/lib/queryClient';
 import type {
@@ -47,6 +48,7 @@ import type {
   TaskResponse,
 } from 'types/task.type';
 import type { ProjectResponse } from 'types/project.type';
+import type { MeetingResponse } from 'types/meeting.type';
 import type { User } from 'types/user.type';
 
 const useStyles = makeStyles({
@@ -88,6 +90,7 @@ interface CreateTaskFormValues {
   title: string;
   description?: string;
   selectedProject: string;
+  selectedMeeting: string;
   assignee_id?: string;
   due_date?: Date | null;
   due_time?: string;
@@ -100,6 +103,7 @@ const defaultFormValues: CreateTaskFormValues = {
   title: '',
   description: '',
   selectedProject: '',
+  selectedMeeting: '',
   assignee_id: undefined,
   due_date: null,
   due_time: '',
@@ -115,6 +119,7 @@ interface CreateTaskModalProps {
   taskId?: string;
   initialTask?: TaskResponse;
   defaultProjectId?: string;
+  defaultMeetingId?: string;
   onTaskRefetch?: () => void;
 }
 
@@ -125,6 +130,7 @@ export function CreateTaskModal({
   taskId,
   initialTask,
   defaultProjectId,
+  defaultMeetingId,
   onTaskRefetch,
 }: CreateTaskModalProps) {
   const styles = useStyles();
@@ -172,6 +178,7 @@ export function CreateTaskModal({
         title: initialTask.title ?? '',
         description: initialTask.description ?? '',
         selectedProject: initialTask.projects?.[0]?.id ?? '',
+        selectedMeeting: initialTask.meeting_id ?? '',
         assignee_id: initialTask.assignee_id ?? undefined,
         due_date: safeDueDate,
         due_time: safeDueDate ? formatDateToTimeString(safeDueDate) : '',
@@ -182,16 +189,21 @@ export function CreateTaskModal({
       return;
     }
 
-    // Use defaultProjectId if provided
+    // Use defaultProjectId and defaultMeetingId if provided
     reset({
       ...defaultFormValues,
       selectedProject: defaultProjectId ?? defaultFormValues.selectedProject,
+      selectedMeeting: defaultMeetingId ?? defaultFormValues.selectedMeeting,
     });
-  }, [open, reset, initialTask, isEditMode, defaultProjectId]);
+  }, [open, reset, initialTask, isEditMode, defaultProjectId, defaultMeetingId]);
 
   // Project search state
   const [projectSearchQuery, setProjectSearchQuery] = useState('');
   const debouncedProjectQuery = useDebounce(projectSearchQuery, 300);
+
+  // Meeting search state
+  const [meetingSearchQuery, setMeetingSearchQuery] = useState('');
+  const debouncedMeetingQuery = useDebounce(meetingSearchQuery, 300);
 
   // Infinite query for projects with search
   const {
@@ -236,16 +248,62 @@ export function CreateTaskModal({
     }
   };
 
+  // Infinite query for meetings with search
+  const {
+    data: meetingsData,
+    isLoading: isLoadingMeetings,
+    fetchNextPage: fetchNextMeetingsPage,
+    hasNextPage: hasNextMeetingsPage,
+    isFetchingNextPage: isFetchingNextMeetingsPage,
+  } = useInfiniteQuery({
+    queryKey: [
+      ...queryKeys.meetings,
+      'task-create',
+      'infinite',
+      debouncedMeetingQuery,
+    ],
+    queryFn: ({ pageParam = 1 }) =>
+      getMeetings(
+        debouncedMeetingQuery ? { title: debouncedMeetingQuery } : {},
+        { limit: 20, page: pageParam },
+      ),
+    getNextPageParam: (lastPage) => {
+      if (lastPage.pagination && lastPage.pagination.has_next) {
+        return lastPage.pagination.page + 1;
+      }
+      return undefined;
+    },
+    initialPageParam: 1,
+    enabled: open,
+  });
+
+  const meetings: MeetingResponse[] = useMemo(() => {
+    if (!meetingsData?.pages) return [];
+    return meetingsData.pages.flatMap((page) => page.data || []);
+  }, [meetingsData]);
+
+  const handleMeetingsListScroll = (event: React.UIEvent<HTMLDivElement>) => {
+    const target = event.target as HTMLDivElement;
+    const isNearBottom =
+      target.scrollHeight - target.scrollTop <= target.clientHeight * 1.5;
+    if (isNearBottom && hasNextMeetingsPage && !isFetchingNextMeetingsPage) {
+      fetchNextMeetingsPage();
+    }
+  };
+
   // User search state
   const [userSearchQuery, setUserSearchQuery] = useState('');
   const debouncedUserQuery = useDebounce(userSearchQuery, 400);
 
   // Determine project ID for user filtering
-  // In create mode: use defaultProjectId (selected project)
+  // In create mode: use defaultProjectId (selected project) or defaultMeetingId (meeting's project)
   // In edit mode: use task's project ID
+  const selectedMeeting = watch('selectedMeeting');
+  const selectedProject = watch('selectedProject');
+
   const projectIdForUsers = isEditMode
     ? initialTask?.projects?.[0]?.id
-    : defaultProjectId;
+    : selectedProject || (selectedMeeting ? meetings.find(m => m.id === selectedMeeting)?.projects?.[0]?.id : defaultProjectId);
 
   // Infinite query for users with search
   const {
@@ -401,8 +459,10 @@ export function CreateTaskModal({
 
   const onSubmit = (values: CreateTaskFormValues) => {
     const projectId = values.selectedProject?.trim();
+    const meetingId = values.selectedMeeting?.trim();
 
-    if (!projectId) {
+    // Require either project OR meeting
+    if (!projectId && !meetingId) {
       setError('selectedProject', {
         type: 'manual',
         message: tModal('projectsRequired'),
@@ -435,7 +495,8 @@ export function CreateTaskModal({
       title: trimmedTitle,
       description: values.description?.trim() || undefined,
       assignee_id: values.assignee_id || undefined,
-      project_ids: [projectId],
+      meeting_id: meetingId || undefined,
+      project_ids: projectId ? [projectId] : [],
       due_date: toIsoWithTime(values.due_date, values.due_time),
       reminder_at: toIsoWithTime(values.reminder_at, values.reminder_time),
       status: values.status === 'todo' ? undefined : values.status,
@@ -514,21 +575,16 @@ export function CreateTaskModal({
                 />
               </Field>
 
+              {/* Project Selection */}
               {!defaultProjectId && !isEditMode ? (
                 <Field
                   label={tModal('projectsLabel')}
                   validationMessage={errors.selectedProject?.message}
-                  required
                 >
                   <Controller
                     name="selectedProject"
                     control={control}
                     defaultValue={defaultFormValues.selectedProject}
-                    rules={{
-                      validate: (value) =>
-                        (typeof value === 'string' && value.trim() !== '') ||
-                        tModal('projectsRequired'),
-                    }}
                     render={({ field }) => {
                       const selectedProjectName = field.value
                         ? projects.find((p) => p.id === field.value)?.name
@@ -552,6 +608,7 @@ export function CreateTaskModal({
                             onScroll: handleProjectsListScroll,
                           }}
                         >
+                          <Option value="">No project</Option>
                           {projects.map((project) => (
                             <Option key={project.id} value={project.id}>
                               {project.name}
@@ -584,13 +641,6 @@ export function CreateTaskModal({
                       );
                     }}
                   />
-                  {!isLoadingProjects &&
-                    projects.length === 0 &&
-                    !debouncedProjectQuery && (
-                      <span className={styles.helper}>
-                        {tModal('noProjects')}
-                      </span>
-                    )}
                 </Field>
               ) : (
                 <Field label={tModal('projectsLabel')}>
@@ -604,8 +654,90 @@ export function CreateTaskModal({
                     }}
                   >
                     {isEditMode
-                      ? initialTask?.projects?.[0]?.name || initialTask?.projects?.[0]?.id
-                      : projects.find((p) => p.id === defaultProjectId)?.name || defaultProjectId}
+                      ? initialTask?.projects?.[0]?.name || initialTask?.projects?.[0]?.id || 'No project'
+                      : projects.find((p) => p.id === defaultProjectId)?.name || defaultProjectId || 'No project'}
+                  </div>
+                </Field>
+              )}
+
+              {/* Meeting Selection */}
+              {!defaultMeetingId && !isEditMode ? (
+                <Field label={tModal('meetingsLabel')}>
+                  <Controller
+                    name="selectedMeeting"
+                    control={control}
+                    defaultValue={defaultFormValues.selectedMeeting}
+                    render={({ field }) => {
+                      const selectedMeetingTitle = field.value
+                        ? meetings.find((m) => m.id === field.value)?.title
+                        : '';
+                      return (
+                        <Combobox
+                          placeholder={
+                            isLoadingMeetings
+                              ? 'Loading...'
+                              : tModal('meetingsPlaceholder')
+                          }
+                          value={selectedMeetingTitle || meetingSearchQuery}
+                          onInput={(e: React.ChangeEvent<HTMLInputElement>) => {
+                            setMeetingSearchQuery(e.target.value);
+                          }}
+                          onOptionSelect={(_: any, data: any) => {
+                            field.onChange(data.optionValue || '');
+                            setMeetingSearchQuery('');
+                          }}
+                          listbox={{
+                            onScroll: handleMeetingsListScroll,
+                          }}
+                        >
+                          <Option value="">No meeting</Option>
+                          {meetings.map((meeting) => (
+                            <Option key={meeting.id} value={meeting.id}>
+                              {meeting.title || `Meeting ${meeting.id}`}
+                            </Option>
+                          ))}
+                          {isFetchingNextMeetingsPage && (
+                            <div
+                              style={{
+                                padding: '8px 12px',
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                gap: '8px',
+                              }}
+                            >
+                              <Spinner size="small" />
+                              <Caption1>Loading...</Caption1>
+                            </div>
+                          )}
+                          {!isLoadingMeetings &&
+                            meetings.length === 0 &&
+                            debouncedMeetingQuery && (
+                              <div
+                                style={{ padding: '12px', textAlign: 'center' }}
+                              >
+                                <Caption1>{tModal('noMeetings')}</Caption1>
+                              </div>
+                            )}
+                        </Combobox>
+                      );
+                    }}
+                  />
+                </Field>
+              ) : (
+                <Field label={tModal('meetingsLabel')}>
+                  <div
+                    style={{
+                      padding: '8px 12px',
+                      backgroundColor: tokens.colorNeutralBackground3,
+                      borderRadius: tokens.borderRadiusSmall,
+                      border: `1px solid ${tokens.colorNeutralStroke2}`,
+                      color: tokens.colorNeutralForeground2,
+                    }}
+                  >
+                    {isEditMode
+                      ? initialTask?.meeting_id || 'No meeting'
+                      : meetings.find((m) => m.id === defaultMeetingId)?.title || defaultMeetingId || 'No meeting'}
                   </div>
                 </Field>
               )}

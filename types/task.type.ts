@@ -55,6 +55,7 @@ export interface TaskFilter {
     status?: TaskStatus;
     creator_id?: string;
     assignee_id?: string;
+    meeting_id?: string;
     due_date_gte?: string;
     due_date_lte?: string;
     created_at_gte?: string;

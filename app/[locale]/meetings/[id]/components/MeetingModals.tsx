@@ -3,6 +3,7 @@
 import { DeleteConfirmationModal } from '@/components/modal/DeleteConfirmationModal';
 import { NoteModal } from '@/components/modal/NoteModal';
 import { AudioUploadModal } from '@/components/modal/AudioUploadModal';
+import { MeetingTasksModal } from '@/components/modal/MeetingTasksModal';
 
 interface MeetingModalsProps {
     // Note Modal
@@ -42,6 +43,11 @@ interface MeetingModalsProps {
     onConfirmMeetingDelete: () => void;
     meetingDeleteTitle: string;
     meetingDeleteItemName: string;
+
+    // Task Modal
+    showTaskModal: boolean;
+    meetingId: string;
+    onTaskModalOpenChange: (open: boolean) => void;
 }
 
 export function MeetingModals({
@@ -82,6 +88,11 @@ export function MeetingModals({
     onConfirmMeetingDelete,
     meetingDeleteTitle,
     meetingDeleteItemName,
+
+    // Task Modal
+    showTaskModal,
+    meetingId,
+    onTaskModalOpenChange,
 }: MeetingModalsProps) {
     return (
         <>
@@ -129,6 +140,13 @@ export function MeetingModals({
                 isDeleting={isDeleting}
                 title={meetingDeleteTitle}
                 itemName={meetingDeleteItemName}
+            />
+
+            {/* Task Modal */}
+            <MeetingTasksModal
+                isOpen={showTaskModal}
+                meetingId={meetingId}
+                onOpenChange={onTaskModalOpenChange}
             />
         </>
     );

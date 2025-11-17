@@ -360,6 +360,8 @@
     "showMore": "Xem thêm",
     "showLess": "Thu gọn",
     "createNote": "Tạo ghi chú AI",
+    "tasks": "Nhiệm vụ",
+    "regenerateNote": "Tái tạo ghi chú cuộc họp",
     "noTranscripts": "Chưa có bản ghi âm",
     "uploadAudio": "Tải audio lên",
     "uploadAudioSuccess": "Tải audio lên thành công",
@@ -396,7 +398,8 @@
     "taskTypes": {
       "file_indexing": "Đánh chỉ mục tệp",
       "audio_asr": "Chuyển đổi âm thanh",
-      "chat_processing": "Xử lý trò chuyện"
+      "chat_processing": "Xử lý trò chuyện",
+      "meeting_analysis": "Phân tích cuộc họp"
     },
     "taskMessages": {
       "taskCompleted": "Hoàn thành: {taskType}",
@@ -821,11 +824,15 @@
       "dueDateLabel": "Hạn hoàn thành",
       "dueDatePlaceholder": "Chọn hạn hoàn thành",
       "dueTimePlaceholder": "Chọn thời gian",
+      "meetingsLabel": "Cuộc họp",
+      "meetingsPlaceholder": "Chọn cuộc họp",
+      "meetingsRequired": "Cần chọn dự án hoặc cuộc họp.",
       "noProjects": "Chưa có dự án nào. Vui lòng tạo dự án trước.",
+      "noMeetings": "Chưa có cuộc họp nào.",
       "noUsers": "Không tìm thấy người dùng nào",
       "projectsLabel": "Dự án",
       "projectsPlaceholder": "Chọn dự án",
-      "projectsRequired": "Vui lòng chọn ít nhất một dự án.",
+      "projectsRequired": "Cần chọn dự án hoặc cuộc họp.",
       "reminderLabel": "Nhắc nhở",
       "reminderPlaceholder": "Chọn thời điểm nhắc nhở",
       "reminderTimePlaceholder": "Chọn thời gian",
@@ -847,6 +854,9 @@
       "deleteSuccess": "Đã xóa nhiệm vụ thành công"
     },
     "detailsModal": {
+      "meetingSection": "Cuộc họp liên quan",
+      "noMeeting": "Không có cuộc họp",
+      "untitledMeeting": "Cuộc họp không có tiêu đề",
       "peopleSection": "Người liên quan",
       "reminderLabel": "Nhắc nhở"
     },
@@ -892,6 +902,7 @@
     },
     "tasksCount": "{count} {count, plural, =1 {nhiệm vụ} other {nhiệm vụ}}",
     "title": "Nhiệm vụ",
+    "meetingTasksTitle": "Nhiệm vụ cuộc họp",
     "unassigned": "Chưa giao",
     "untitledTask": "Nhiệm vụ chưa có tên",
     "updateTaskError": "Cập nhật nhiệm vụ thất bại. Vui lòng thử lại.",

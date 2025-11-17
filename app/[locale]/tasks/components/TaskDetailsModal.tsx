@@ -2,6 +2,10 @@
 
 import { queryKeys } from '@/lib/queryClient';
 import { getTask } from '@/services/api/task';
+import { getMeeting } from '@/services/api/meeting';
+import { useRouter } from '@/i18n/navigation';
+import { MeetingRow } from '@/app/[locale]/meetings/components/MeetingRow';
+import { ProjectRow } from '@/app/[locale]/projects/components/ProjectRow';
 import {
   Avatar,
   Badge,
@@ -22,7 +26,6 @@ import {
 import {
   CalendarClock20Regular,
   Edit20Regular,
-  Link20Regular,
 } from '@fluentui/react-icons';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
@@ -31,11 +34,16 @@ import { useMemo } from 'react';
 import type { TaskResponse } from 'types/task.type';
 
 const useStyles = makeStyles({
+  dialog: {
+    minWidth: '70%',
+    '@media (max-width: 768px)': {
+      minWidth: '100%',
+    },
+  },
   content: {
     display: 'flex',
     flexDirection: 'column',
     ...shorthands.gap(tokens.spacingVerticalL),
-    maxWidth: '680px',
     width: '100%',
   },
   header: {
@@ -50,7 +58,7 @@ const useStyles = makeStyles({
     ...shorthands.gap(tokens.spacingHorizontalM),
   },
   title: {
-    fontSize: '1.75rem',
+    fontSize: tokens.fontSizeBase300,
     fontWeight: tokens.fontWeightSemibold,
     color: tokens.colorNeutralForeground1,
   },
@@ -79,19 +87,10 @@ const useStyles = makeStyles({
     lineHeight: 1.7,
     whiteSpace: 'pre-wrap',
   },
-  projects: {
+  projectsList: {
     display: 'flex',
-    flexWrap: 'wrap',
-    ...shorthands.gap(tokens.spacingHorizontalS),
-  },
-  projectPill: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    ...shorthands.gap(tokens.spacingHorizontalXXS),
-    ...shorthands.padding('6px', tokens.spacingHorizontalS),
-    backgroundColor: 'rgba(17, 94, 163, 0.08)',
-    color: '#115ea3',
-    ...shorthands.borderRadius(tokens.borderRadiusXLarge),
+    flexDirection: 'column',
+    ...shorthands.gap(tokens.spacingVerticalS),
   },
   metaCard: {
     display: 'flex',
@@ -174,12 +173,20 @@ export function TaskDetailsModal({
 }: TaskDetailsModalProps) {
   const styles = useStyles();
   const t = useTranslations('Tasks');
+  const router = useRouter();
 
   const { data, isLoading, isError, refetch, isFetching } = useQuery({
     queryKey: queryKeys.task(taskId),
     queryFn: () => getTask(taskId),
     enabled: open && Boolean(taskId),
     initialData: initialTask,
+  });
+
+  // Query meeting details if task has a meeting_id
+  const { data: meetingData, isLoading: isMeetingLoading } = useQuery({
+    queryKey: queryKeys.meeting(data?.meeting_id || ''),
+    queryFn: () => getMeeting(data!.meeting_id!),
+    enabled: open && Boolean(data?.meeting_id),
   });
 
   const statusBadge = useMemo(() => {
@@ -238,7 +245,7 @@ export function TaskDetailsModal({
         }
       }}
     >
-      <DialogSurface>
+      <DialogSurface className={styles.dialog}>
         <DialogBody>
           <DialogTitle> </DialogTitle>
           <DialogContent className={styles.content}>
@@ -282,21 +289,62 @@ export function TaskDetailsModal({
                   <Text className={styles.sectionLabel}>
                     {t('createTaskModal.projectsLabel')}
                   </Text>
-                  <div className={styles.projects}>
-                    {data.projects && data.projects.length > 0 ? (
-                      data.projects.map((project) => (
-                        <span key={project.id} className={styles.projectPill}>
-                          <Link20Regular />
-                          {project.name}
-                        </span>
-                      ))
+                  {data.projects && data.projects.length > 0 ? (
+                    <div className={styles.projectsList}>
+                      {data.projects.map((project) => (
+                        <div
+                          key={project.id}
+                          onClick={() => router.push(`/projects/${project.id}`)}
+                          role="button"
+                          tabIndex={0}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              e.preventDefault();
+                              router.push(`/projects/${project.id}`);
+                            }
+                          }}
+                        >
+                          <ProjectRow project={project} />
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <Text className={styles.emptyValue}>
+                      {t('createTaskModal.noProjects')}
+                    </Text>
+                  )}
+                </div>
+
+                {data.meeting_id && (
+                  <div className={styles.section}>
+                    <Text className={styles.sectionLabel}>
+                      {t('detailsModal.meetingSection')}
+                    </Text>
+                    {isMeetingLoading ? (
+                      <div style={{ display: 'flex', justifyContent: 'center', padding: '16px' }}>
+                        <Spinner size="small" />
+                      </div>
+                    ) : meetingData ? (
+                      <div
+                        onClick={() => router.push(`/meetings/${meetingData.id}`)}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            router.push(`/meetings/${meetingData.id}`);
+                          }
+                        }}
+                      >
+                        <MeetingRow meeting={meetingData} />
+                      </div>
                     ) : (
                       <Text className={styles.emptyValue}>
-                        {t('createTaskModal.noProjects')}
+                        {t('detailsModal.noMeeting')}
                       </Text>
                     )}
                   </div>
-                </div>
+                )}
 
                 <div className={styles.section}>
                   <Text className={styles.sectionLabel}>

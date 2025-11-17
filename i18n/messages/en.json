@@ -337,6 +337,7 @@
     "member": "Member",
     "members": "Members",
     "next": "Next",
+    "tasks": "Tasks",
     "noDescription": "No description provided",
     "noFiles": "No files uploaded",
     "noProjects": "No projects linked",
@@ -360,6 +361,7 @@
     "viewProject": "View Project",
     "noNotes": "No meeting notes yet",
     "createNote": "Create AI Note",
+    "regenerateNote": "Regenerate Meeting Note",
     "noTranscripts": "No transcripts yet",
     "uploadAudio": "Upload Audio",
     "uploadAudioSuccess": "Audio uploaded successfully",
@@ -396,7 +398,8 @@
     "taskTypes": {
       "file_indexing": "File Indexing",
       "audio_asr": "Audio Transcription",
-      "chat_processing": "Chat Processing"
+      "chat_processing": "Chat Processing",
+      "meeting_analysis": "Meeting Analysis"
     },
     "taskMessages": {
       "taskCompleted": "Task completed: {taskType}",
@@ -821,11 +824,15 @@
       "dueDateLabel": "Due date",
       "dueDatePlaceholder": "Select due date",
       "dueTimePlaceholder": "Select time",
+      "meetingsLabel": "Meeting",
+      "meetingsPlaceholder": "Select meeting",
+      "meetingsRequired": "Either a project or meeting is required.",
       "noProjects": "No projects available. Please create a project first.",
+      "noMeetings": "No meetings available.",
       "noUsers": "No users found",
-      "projectsLabel": "Projects",
-      "projectsPlaceholder": "Select projects",
-      "projectsRequired": "Please select at least one project.",
+      "projectsLabel": "Project",
+      "projectsPlaceholder": "Select project",
+      "projectsRequired": "Either a project or meeting is required.",
       "reminderLabel": "Reminder",
       "reminderPlaceholder": "Select reminder time",
       "reminderTimePlaceholder": "Select time",
@@ -847,6 +854,9 @@
       "deleteSuccess": "Task deleted successfully"
     },
     "detailsModal": {
+      "meetingSection": "Related Meeting",
+      "noMeeting": "No meeting associated",
+      "untitledMeeting": "Untitled Meeting",
       "peopleSection": "People involved",
       "reminderLabel": "Reminder"
     },
@@ -892,6 +902,7 @@
     },
     "tasksCount": "{count} {count, plural, =1 {task} other {tasks}}",
     "title": "Tasks",
+    "meetingTasksTitle": "Meeting Tasks",
     "unassigned": "Unassigned",
     "untitledTask": "Untitled Task",
     "updateTaskError": "Failed to update task. Please try again.",
