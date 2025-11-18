@@ -305,6 +305,13 @@
     "schedule": "Lên lịch họp",
     "searchPlaceholder": "Tìm kiếm",
     "taskAssigned": "Nhiệm vụ được giao cho bạn",
+    "assignedBy": "bởi",
+    "markAllAsRead": "Đánh dấu đã đọc",
+    "deleteHistory": "Xóa lịch sử",
+    "confirmDeleteHistory": "Bạn có chắc chắn muốn xóa tất cả thông báo? Hành động này không thể hoàn tác.",
+    "deleteSuccess": "Đã xóa tất cả thông báo thành công",
+    "cancel": "Hủy",
+    "delete": "Xóa",
     "upload": "Tải tệp",
     "view": "Xem"
   },

@@ -10,6 +10,13 @@ import {
   Badge,
   Button,
   CounterBadge,
+  Dialog,
+  DialogTrigger,
+  DialogSurface,
+  DialogTitle,
+  DialogBody,
+  DialogActions,
+  DialogContent,
   Divider,
   Drawer,
   DrawerBody,
@@ -45,6 +52,7 @@ import {
   getNotifications,
   markNotificationAsRead,
   markNotificationAsUnread,
+  deleteNotification,
 } from '@/services/api/notification';
 import type { NotificationResponse } from 'types/notification.type';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -192,17 +200,19 @@ const useStyles = makeStyles({
 
 // Removed legacy inline search types in favor of reusable SearchBoxWithResults
 
-export default function Header({
-  // notificationPermission,
-  // fcmToken,
-  // fcmLoading,
-  // requestNotificationPermission,
-}: {
-  notificationPermission: NotificationPermission;
-  fcmToken: string | null;
-  fcmLoading: boolean;
-  requestNotificationPermission: () => Promise<boolean>;
-}) {
+export default function Header(
+  {
+    // notificationPermission,
+    // fcmToken,
+    // fcmLoading,
+    // requestNotificationPermission,
+  }: {
+    notificationPermission: NotificationPermission;
+    fcmToken: string | null;
+    fcmLoading: boolean;
+    requestNotificationPermission: () => Promise<boolean>;
+  },
+) {
   const styles = useStyles();
   const pathname = usePathname();
   const locale = useLocale();
@@ -215,6 +225,7 @@ export default function Header({
   const [isSchedulerOpen, setIsSchedulerOpen] = useState(false);
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [isNotiOpen, setIsNotiOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const queryClient = useQueryClient();
 
   // Brand configuration from runtime config
@@ -306,6 +317,48 @@ export default function Header({
     toggleReadMutation.mutate({ id, isRead: target.is_read });
   };
 
+  // Mark all notifications as read mutation
+  const markAllAsReadMutation = useMutation({
+    mutationFn: async () => {
+      const unreadNotifications = notifications.filter((n) => !n.is_read);
+      await Promise.all(
+        unreadNotifications.map((n) => markNotificationAsRead(n.id)),
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.notifications });
+      showToast('success', t('markAllAsRead'));
+      setIsNotiOpen(false);
+    },
+    onError: (error: any) => {
+      showToast('error', error.message || 'Failed to mark all as read');
+    },
+  });
+
+  const markAllAsReadHandler = () => {
+    markAllAsReadMutation.mutate();
+  };
+
+  // Delete all notifications mutation
+  const deleteAllNotificationsMutation = useMutation({
+    mutationFn: async () => {
+      await Promise.all(notifications.map((n) => deleteNotification(n.id)));
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.notifications });
+      showToast('success', t('deleteSuccess'));
+      setIsNotiOpen(false);
+      setIsDeleteDialogOpen(false);
+    },
+    onError: (error: any) => {
+      showToast('error', error.message || 'Failed to delete notifications');
+    },
+  });
+
+  const deleteAllHandler = () => {
+    deleteAllNotificationsMutation.mutate();
+  };
+
   // Helper function to extract display information from notification
   const getNotificationDisplay = (notification: NotificationResponse) => {
     const { type, payload } = notification;
@@ -322,7 +375,7 @@ export default function Header({
 
         // Add assigned by information if available (could be user name or ID)
         if (payload.assigned_by) {
-          message += ` by ${payload.assigned_by}`;
+          message += ` ${t('assignedBy')} ${payload.assigned_by}`;
         }
       }
       // Handle other types of notifications
@@ -545,12 +598,7 @@ export default function Header({
             if (e.key === 'Enter' || e.key === ' ') onClickBrand();
           }}
         >
-          <Image
-            src={brandLogo}
-            alt={brandName}
-            width={28}
-            height={28}
-          />
+          <Image src={brandLogo} alt={brandName} width={28} height={28} />
           <strong className={styles.brandText}>{brandName}</strong>
         </div>
 
@@ -600,7 +648,10 @@ export default function Header({
               size="medium"
               icon={<CalendarAdd24Regular />}
               onClick={onSchedule}
-              className={mergeClasses(styles.scheduleButton, styles.actionButton)}
+              className={mergeClasses(
+                styles.scheduleButton,
+                styles.actionButton,
+              )}
             >
               <span className={styles.buttonText}>{t('schedule')}</span>
             </Button>
@@ -807,6 +858,47 @@ export default function Header({
           </div>
         </DrawerBody>
         <DrawerFooter>
+          {unreadCount > 0 ? (
+            <Button
+              appearance="secondary"
+              onClick={markAllAsReadHandler}
+              disabled={markAllAsReadMutation.isPending}
+            >
+              {t('markAllAsRead')}
+            </Button>
+          ) : notifications.length > 0 ? (
+            <Dialog
+              open={isDeleteDialogOpen}
+              onOpenChange={(_, data) => setIsDeleteDialogOpen(data.open)}
+            >
+              <DialogTrigger disableButtonEnhancement>
+                <Button
+                  appearance="secondary"
+                  disabled={deleteAllNotificationsMutation.isPending}
+                >
+                  {t('deleteHistory')}
+                </Button>
+              </DialogTrigger>
+              <DialogSurface>
+                <DialogBody>
+                  <DialogTitle>{t('deleteHistory')}</DialogTitle>
+                  <DialogContent>{t('confirmDeleteHistory')}</DialogContent>
+                  <DialogActions>
+                    <DialogTrigger disableButtonEnhancement>
+                      <Button appearance="secondary">{t('cancel')}</Button>
+                    </DialogTrigger>
+                    <Button
+                      appearance="primary"
+                      onClick={deleteAllHandler}
+                      disabled={deleteAllNotificationsMutation.isPending}
+                    >
+                      {t('delete')}
+                    </Button>
+                  </DialogActions>
+                </DialogBody>
+              </DialogSurface>
+            </Dialog>
+          ) : null}
           <Button appearance="secondary" onClick={() => setIsNotiOpen(false)}>
             {t('close')}
           </Button>

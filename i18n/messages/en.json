@@ -305,6 +305,13 @@
     "schedule": "Schedule a meeting",
     "searchPlaceholder": "Search",
     "taskAssigned": "Task assigned to you",
+    "assignedBy": "by",
+    "markAllAsRead": "Mark all as read",
+    "deleteHistory": "Delete history",
+    "confirmDeleteHistory": "Are you sure you want to delete all notifications? This action cannot be undone.",
+    "deleteSuccess": "All notifications deleted successfully",
+    "cancel": "Cancel",
+    "delete": "Delete",
     "upload": "Upload file",
     "view": "View"
   },
