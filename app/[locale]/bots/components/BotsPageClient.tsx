@@ -20,7 +20,6 @@ import { queryKeys } from '@/lib/queryClient';
 import { RecordingButton } from '@/components/modal/RecordingButton';
 import { RecordingStatus } from '@/components/modal/RecordingStatus';
 import { AudioFilesPanel } from '@/components/modal/AudioFilesPanel';
-import { BotJoinTaskResponse } from 'types/meetingBot.type';
 
 const useStyles = makeStyles({
     container: {
@@ -207,15 +206,7 @@ export function BotsPageClient() {
         }));
     };
 
-    const handleRecordingStatusChange = (
-        meetingId: string,
-        status: BotJoinTaskResponse
-    ) => {
-        // Update recording state based on status
-        if (status.status === 'completed' || status.status === 'failed') {
-            // Keep the state for display purposes
-        }
-    };
+
 
     const handleCloseRecording = (meetingId: string) => {
         setRecordingStates((prev) => {
@@ -339,9 +330,6 @@ export function BotsPageClient() {
                                 {recordingStates[meeting.id] && (
                                     <RecordingStatus
                                         taskId={recordingStates[meeting.id].taskId}
-                                        onStatusChange={(status) =>
-                                            handleRecordingStatusChange(meeting.id, status)
-                                        }
                                         onClose={() => handleCloseRecording(meeting.id)}
                                     />
                                 )}

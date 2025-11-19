@@ -952,6 +952,7 @@
     "tryDifferentSearch": "Try a different search term",
     "errorTitle": "Failed to load meetings",
     "errorLoadingMeetings": "Failed to load meetings. Please try again.",
-    "retry": "Retry"
+    "retry": "Retry",
+    "recordingWillAppearHere": "Audio files will appear here once the recording is processed"
   }
 }

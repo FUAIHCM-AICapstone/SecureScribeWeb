@@ -952,6 +952,7 @@
     "tryDifferentSearch": "Thử một từ khóa tìm kiếm khác",
     "errorTitle": "Không thể tải cuộc họp",
     "errorLoadingMeetings": "Không thể tải cuộc họp. Vui lòng thử lại.",
-    "retry": "Thử lại"
+    "retry": "Thử lại",
+    "recordingWillAppearHere": "Các tệp âm thanh sẽ xuất hiện ở đây sau khi bản ghi âm được xử lý"
   }
 }
