@@ -13,7 +13,6 @@ import {
     Dismiss24Regular,
 } from '@fluentui/react-icons';
 import { useTranslations } from 'next-intl';
-import { showToast } from '@/hooks/useShowToast';
 
 const useStyles = makeStyles({
     container: {
@@ -61,7 +60,6 @@ interface RecordingStatusProps {
 }
 
 export function RecordingStatus({
-    taskId,
     onClose,
 }: RecordingStatusProps) {
     const styles = useStyles();

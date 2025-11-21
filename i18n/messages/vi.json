@@ -274,7 +274,8 @@
       "profile": "Hồ sơ",
       "projects": "Dự án",
       "tasks": "Nhiệm vụ",
-      "terms-of-service": "Điều khoản dịch vụ"
+      "terms-of-service": "Điều khoản dịch vụ",
+      "bots": "Bot"
     },
     "edit": "Sửa",
     "failedToLoadNotifications": "Không thể tải thông báo",
@@ -436,6 +437,8 @@
       "archive": "Lưu trữ",
       "archiveError": "Không thể lưu trữ cuộc họp",
       "archiveSuccess": "Đã lưu trữ cuộc họp thành công",
+      "botJoinError": "Không thể kích hoạt ghi âm bot",
+      "botJoinTriggered": "Ghi âm bot đã được kích hoạt thành công",
       "cancel": "Hủy",
       "delete": "Xóa",
       "deleteAudioError": "Không thể xóa tệp âm thanh",
@@ -447,6 +450,7 @@
       "deleting": "Đang xóa...",
       "edit": "Chỉnh sửa",
       "label": "Hành động",
+      "recordBot": "Ghi âm Bot",
       "share": "Chia sẻ",
       "unarchive": "Bỏ lưu trữ",
       "unarchiveError": "Không thể bỏ lưu trữ cuộc họp",
@@ -952,7 +956,23 @@
     "tryDifferentSearch": "Thử một từ khóa tìm kiếm khác",
     "errorTitle": "Không thể tải cuộc họp",
     "errorLoadingMeetings": "Không thể tải cuộc họp. Vui lòng thử lại.",
-    "retry": "Thử lại",
-    "recordingWillAppearHere": "Các tệp âm thanh sẽ xuất hiện ở đây sau khi bản ghi âm được xử lý"
+    "recordingWillAppearHere": "Các tệp âm thanh sẽ xuất hiện ở đây sau khi bản ghi âm được xử lý",
+    "retryBot": "Thử lại",
+    "viewLogs": "Xem Nhật ký",
+    "deleteBot": "Xóa",
+    "botDetails": "Chi tiết Bot",
+    "botLogs": "Nhật ký Bot",
+    "noLogs": "Không có nhật ký nào",
+    "close": "Đóng",
+    "totalBots": "{count} bot ghi âm",
+    "gridView": "Chế độ lưới",
+    "listView": "Chế độ danh sách",
+    "search": "Tìm kiếm",
+    "failedToUpdateStatus": "Không thể cập nhật trạng thái",
+    "botStatusUpdated": "Trạng thái bot được cập nhật thành công",
+    "failedToDelete": "Không thể xóa bot",
+    "botDeleted": "Bot đã được xóa thành công",
+    "confirmDelete": "Bạn có chắc chắn muốn xóa bot ghi âm này?",
+    "searching": "Đang tìm kiếm..."
   }
 }

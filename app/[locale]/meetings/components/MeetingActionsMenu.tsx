@@ -23,12 +23,14 @@ import {
   Share20Regular,
   Archive20Regular,
   ArchiveArrowBack20Regular,
+  Record20Regular,
 } from '@fluentui/react-icons';
 import {
   deleteMeeting,
   archiveMeeting,
   unarchiveMeeting,
 } from 'services/api/meeting';
+import { meetingBotApi } from '@/services/api/meetingBot';
 import { showToast } from 'hooks/useShowToast';
 import { DeleteConfirmationModal } from 'components/modal/DeleteConfirmationModal';
 import MeetingEditModal from 'components/modal/MeetingEditModal';
@@ -54,6 +56,7 @@ interface MeetingActionsMenuProps {
   onUnarchiveSuccess?: () => void;
   onShareSuccess?: () => void;
   onDeleteSuccess?: () => void;
+  onBotJoinSuccess?: () => void;
 }
 
 export function MeetingActionsMenu({
@@ -63,6 +66,7 @@ export function MeetingActionsMenu({
   onUnarchiveSuccess,
   onShareSuccess,
   onDeleteSuccess,
+  onBotJoinSuccess,
 }: MeetingActionsMenuProps) {
   const t = useTranslations('Meetings');
   const router = useRouter();
@@ -148,6 +152,29 @@ export function MeetingActionsMenu({
     },
   });
 
+  // Trigger bot join mutation
+  const triggerBotJoinMutation = useMutation({
+    mutationFn: () => meetingBotApi.triggerBotJoin(meeting.id),
+    onSuccess: () => {
+      showToast('success', t('actions.botJoinTriggered'), { duration: 3000 });
+      queryClient.invalidateQueries({ queryKey: queryKeys.meetings });
+
+      if (onBotJoinSuccess) {
+        onBotJoinSuccess();
+      }
+    },
+    onError: (error: any) => {
+      console.error('Error triggering bot join:', error);
+      showToast(
+        'error',
+        error?.message || t('actions.botJoinError'),
+        {
+          duration: 5000,
+        },
+      );
+    },
+  });
+
   const handleDelete = () => {
     deleteMutation.mutate();
   };
@@ -181,6 +208,11 @@ export function MeetingActionsMenu({
     setShowDeleteDialog(true);
   };
 
+  const handleTriggerBotJoin = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    triggerBotJoinMutation.mutate();
+  };
+
   // Check if meeting is archived (based on status)
   const isArchived = meeting.status === 'archived';
 
@@ -206,6 +238,13 @@ export function MeetingActionsMenu({
             </MenuItem>
             <MenuItem icon={<Share20Regular />} onClick={handleShare}>
               {t('actions.share')}
+            </MenuItem>
+            <MenuItem
+              icon={<Record20Regular />}
+              onClick={handleTriggerBotJoin}
+              disabled={triggerBotJoinMutation.isPending}
+            >
+              {t('actions.recordBot')}
             </MenuItem>
             {isArchived ? (
               <MenuItem

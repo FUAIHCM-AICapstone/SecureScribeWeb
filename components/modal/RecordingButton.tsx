@@ -40,7 +40,7 @@ export function RecordingButton({
             showToast('success', t('recordingStarted'), {
                 duration: 4000,
             });
-            onRecordingStarted?.(response.task_id, response.bot_id);
+            onRecordingStarted?.(response.data.task_id, response.data.bot_id);
         },
         onError: (error: any) => {
             const errorMessage = error?.response?.data?.message || t('recordingFailed');

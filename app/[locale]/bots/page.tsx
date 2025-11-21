@@ -12,8 +12,8 @@ export default async function BotsPage() {
 
     // Prefetch meetings data for the bots page
     await queryClient.prefetchQuery({
-        queryKey: [...queryKeys.meetings, {}, { page: 1, limit: 20 }],
-        queryFn: () => getMeetings({}, { page: 1, limit: 20 }),
+        queryKey: [...queryKeys.meetings, {}, { page: 1, limit: 1000 }],
+        queryFn: () => getMeetings({}, { page: 1, limit: 1000 }),
         staleTime: 5 * 60 * 1000,
     });
 

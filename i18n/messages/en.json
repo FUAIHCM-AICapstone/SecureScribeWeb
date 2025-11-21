@@ -274,7 +274,8 @@
       "profile": "Profile",
       "projects": "Projects",
       "tasks": "Tasks",
-      "terms-of-service": "Terms of Service"
+      "terms-of-service": "Terms of Service",
+      "bots": "Bots"
     },
     "edit": "Edit",
     "failedToLoadNotifications": "Failed to load notifications",
@@ -436,6 +437,8 @@
       "archive": "Archive",
       "archiveError": "Failed to archive meeting",
       "archiveSuccess": "Meeting archived successfully",
+      "botJoinError": "Failed to trigger bot recording",
+      "botJoinTriggered": "Bot recording triggered successfully",
       "cancel": "Cancel",
       "delete": "Delete",
       "deleteAudioError": "Failed to delete audio file",
@@ -447,6 +450,7 @@
       "deleting": "Deleting...",
       "edit": "Edit Meeting",
       "label": "Meeting actions",
+      "recordBot": "Record Bot",
       "share": "Share",
       "unarchive": "Unarchive",
       "unarchiveError": "Failed to unarchive meeting",
@@ -952,7 +956,23 @@
     "tryDifferentSearch": "Try a different search term",
     "errorTitle": "Failed to load meetings",
     "errorLoadingMeetings": "Failed to load meetings. Please try again.",
-    "retry": "Retry",
-    "recordingWillAppearHere": "Audio files will appear here once the recording is processed"
+    "recordingWillAppearHere": "Audio files will appear here once the recording is processed",
+    "retryBot": "Retry",
+    "viewLogs": "View Logs",
+    "deleteBot": "Delete",
+    "botDetails": "Bot Details",
+    "botLogs": "Bot Logs",
+    "noLogs": "No logs available",
+    "close": "Close",
+    "totalBots": "{count} recordings",
+    "gridView": "Grid view",
+    "listView": "List view",
+    "search": "Search",
+    "failedToUpdateStatus": "Failed to update status",
+    "botStatusUpdated": "Bot status updated successfully",
+    "failedToDelete": "Failed to delete bot",
+    "botDeleted": "Bot deleted successfully",
+    "confirmDelete": "Are you sure you want to delete this recording?",
+    "searching": "Searching..."
   }
 }

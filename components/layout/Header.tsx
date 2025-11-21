@@ -598,7 +598,8 @@ export default function Header(
             if (e.key === 'Enter' || e.key === ' ') onClickBrand();
           }}
         >
-          <Image src={brandLogo} alt={brandName} width={28} height={28} />
+          <Image src={brandLogo} alt={brandName} 
+          width={28} height={28} />
           <strong className={styles.brandText}>{brandName}</strong>
         </div>
 

@@ -43,6 +43,11 @@ export const queryKeys = {
   files: ['files'] as const,
   file: (id: string) => ['files', id] as const,
 
+  // Bot queries
+  bots: ['bots'] as const,
+  bot: (id: string) => ['bots', id] as const,
+  botLogs: (id: string) => ['bots', id, 'logs'] as const,
+
   user: ['user'] as const,
   users: ['users'] as const,
   userStats: ['user', 'stats'] as const,

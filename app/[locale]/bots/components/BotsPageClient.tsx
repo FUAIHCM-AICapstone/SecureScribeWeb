@@ -1,346 +1,385 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
-import {
-    Button,
-    Card,
-    Spinner,
-    Text,
-    makeStyles,
-    tokens,
-    shorthands,
-    Input,
-    Field,
-} from '@fluentui/react-components';
-import { Search24Regular, Record24Regular } from '@fluentui/react-icons';
-import { useQuery } from '@tanstack/react-query';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { getMeetings } from '@/services/api/meeting';
-import { queryKeys } from '@/lib/queryClient';
-import { RecordingButton } from '@/components/modal/RecordingButton';
-import { RecordingStatus } from '@/components/modal/RecordingStatus';
-import { AudioFilesPanel } from '@/components/modal/AudioFilesPanel';
+import {
+  Button,
+  Text,
+  makeStyles,
+  tokens,
+  shorthands,
+  Toast,
+  ToastTitle,
+  ToastBody,
+  useToastController,
+} from '@fluentui/react-components';
+import { ArrowLeft20Regular, ArrowRight20Regular } from '@fluentui/react-icons';
+import { meetingBotApi } from '@/services/api/meetingBot';
+import { showLoadingToast } from '@/components/loading/LoadingToast';
+import { BotsHeader } from './BotsHeader';
+import { BotsGrid } from './BotsGrid';
+import { BotsList } from './BotsList';
+import { EmptyBotsState } from './EmptyBotsState';
+import { BotCardSkeleton } from './BotCardSkeleton';
+import { BotLogsModal } from './BotLogsModal';
+import { BotDetailsModal } from './BotDetailsModal';
 
 const useStyles = makeStyles({
-    container: {
-        width: '100%',
-        maxWidth: '1400px',
-        margin: '0 auto',
-        ...shorthands.padding('40px', '32px', '24px'),
-        '@media (max-width: 768px)': {
-            ...shorthands.padding('24px', '16px', '16px'),
-        },
+  container: {
+    width: '100%',
+    maxWidth: '1600px',
+    margin: '0 auto',
+    ...shorthands.padding('40px', '32px', '24px'),
+    '@media (max-width: 768px)': {
+      ...shorthands.padding('24px', '16px', '16px'),
     },
-    header: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        marginBottom: '32px',
-        '@media (max-width: 768px)': {
-            flexDirection: 'column',
-            alignItems: 'flex-start',
-            gap: tokens.spacingVerticalL,
-        },
+  },
+  content: {
+    marginBottom: '32px',
+  },
+  errorContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    ...shorthands.padding('64px', '24px'),
+    minHeight: '400px',
+    textAlign: 'center',
+    ...shorthands.gap('16px'),
+  },
+  errorTitle: {
+    fontSize: '20px',
+    fontWeight: 600,
+    color: tokens.colorPaletteRedForeground1,
+  },
+  errorMessage: {
+    color: tokens.colorNeutralForeground2,
+    maxWidth: '500px',
+  },
+  skeletonGrid: {
+    display: 'grid',
+    ...shorthands.gap(tokens.spacingHorizontalL),
+    gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+    '@media (min-width: 1200px)': {
+      gridTemplateColumns: 'repeat(3, 1fr)',
+      ...shorthands.gap(tokens.spacingHorizontalXL),
     },
-    title: {
-        fontSize: '28px',
-        fontWeight: 700,
-        display: 'flex',
-        alignItems: 'center',
-        gap: tokens.spacingHorizontalM,
+    '@media (min-width: 768px) and (max-width: 1199px)': {
+      gridTemplateColumns: 'repeat(2, 1fr)',
     },
-    searchContainer: {
-        display: 'flex',
-        gap: tokens.spacingHorizontalM,
-        width: '100%',
-        maxWidth: '400px',
-        '@media (max-width: 768px)': {
-            maxWidth: '100%',
-        },
-    },
-    content: {
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))',
-        gap: tokens.spacingHorizontalXL,
-        marginBottom: '32px',
-        '@media (max-width: 768px)': {
-            gridTemplateColumns: '1fr',
-            gap: tokens.spacingHorizontalL,
-        },
-    },
-    meetingCard: {
-        display: 'flex',
-        flexDirection: 'column',
-        gap: tokens.spacingVerticalM,
-        ...shorthands.padding(tokens.spacingVerticalL),
-        backgroundColor: tokens.colorNeutralBackground1,
-        ...shorthands.border('1px', 'solid', tokens.colorNeutralStroke2),
-        ...shorthands.borderRadius(tokens.borderRadiusXLarge),
-        boxShadow: tokens.shadow4,
-        transition: 'all 0.2s ease',
-        cursor: 'pointer',
-    },
-    meetingTitle: {
-        fontSize: '16px',
-        fontWeight: 600,
-        color: tokens.colorNeutralForeground1,
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        whiteSpace: 'nowrap',
-    },
-    meetingUrl: {
-        fontSize: '12px',
-        color: tokens.colorNeutralForeground2,
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        whiteSpace: 'nowrap',
-    },
-    meetingTime: {
-        fontSize: '12px',
-        color: tokens.colorNeutralForeground3,
-    },
-    recordingSection: {
-        display: 'flex',
-        flexDirection: 'column',
-        gap: tokens.spacingVerticalM,
-        ...shorthands.padding(tokens.spacingVerticalM),
-        backgroundColor: tokens.colorNeutralBackground2,
-        ...shorthands.borderRadius(tokens.borderRadiusMedium),
-    },
-    emptyState: {
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        ...shorthands.padding('64px', '24px'),
-        minHeight: '400px',
-        textAlign: 'center',
-        gap: tokens.spacingVerticalL,
-    },
-    emptyIcon: {
-        fontSize: '48px',
-        color: tokens.colorNeutralForeground2,
-    },
-    emptyTitle: {
-        fontSize: '20px',
-        fontWeight: 600,
-        color: tokens.colorNeutralForeground1,
-    },
-    emptyMessage: {
-        fontSize: '14px',
-        color: tokens.colorNeutralForeground2,
-        maxWidth: '400px',
-    },
-    loadingContainer: {
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        ...shorthands.padding('64px', '24px'),
-        minHeight: '400px',
-        gap: tokens.spacingVerticalM,
-    },
-    errorContainer: {
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        ...shorthands.padding('64px', '24px'),
-        minHeight: '400px',
-        textAlign: 'center',
-        gap: tokens.spacingVerticalL,
-    },
-    errorTitle: {
-        fontSize: '20px',
-        fontWeight: 600,
-        color: tokens.colorPaletteRedForeground1,
-    },
-    errorMessage: {
-        fontSize: '14px',
-        color: tokens.colorNeutralForeground2,
-        maxWidth: '400px',
-    },
+  },
+  pagination: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    ...shorthands.gap('16px'),
+    ...shorthands.padding('24px', '0'),
+  },
+  pageInfo: {
+    minWidth: '120px',
+    textAlign: 'center',
+    color: tokens.colorNeutralForeground2,
+  },
+  loadingIndicator: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    ...shorthands.gap('12px'),
+    ...shorthands.padding('16px'),
+    backgroundColor: tokens.colorNeutralBackground1,
+    ...shorthands.borderRadius(tokens.borderRadiusMedium),
+    ...shorthands.border('1px', 'solid', tokens.colorNeutralStroke2),
+    marginBottom: '16px',
+  },
+  loadingText: {
+    color: tokens.colorNeutralForeground2,
+    fontSize: '14px',
+  },
 });
 
-interface MeetingWithRecording {
-    id: string;
-    title: string;
-    url?: string;
-    start_time: string;
-    recordingTaskId?: string;
-    recordingBotId?: string;
-}
-
 export function BotsPageClient() {
-    const styles = useStyles();
-    const t = useTranslations('Bots');
-    const [searchQuery, setSearchQuery] = useState('');
-    const [recordingStates, setRecordingStates] = useState<
-        Record<string, { taskId: string; botId: string }>
-    >({});
+  const styles = useStyles();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const t = useTranslations('Bots');
+  const { dispatchToast } = useToastController('bot-toaster');
 
-    // Fetch meetings
-    const { data: meetingsData, isLoading, isError, error, refetch } = useQuery({
-        queryKey: [...queryKeys.meetings, {}, { page: 1, limit: 50 }],
-        queryFn: () => getMeetings({}, { page: 1, limit: 50 }),
-        staleTime: 2 * 60 * 1000,
-    });
+  // Initialize state from URL params
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>(
+    (searchParams.get('view') as 'grid' | 'list') || 'grid',
+  );
+  const [searchQuery, setSearchQuery] = useState(
+    searchParams.get('search') || '',
+  );
+  const [currentPage, setCurrentPage] = useState(
+    parseInt(searchParams.get('page') || '1', 10),
+  );
+  const [selectedBotId, setSelectedBotId] = useState<string | null>(null);
+  const [isLogsModalOpen, setIsLogsModalOpen] = useState(false);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
 
-    const meetings = meetingsData?.data || [];
+  const limit = viewMode === 'grid' ? 12 : 20;
 
-    // Filter meetings based on search query
-    const filteredMeetings = useMemo(() => {
-        return meetings.filter((meeting: any) =>
-            meeting.title.toLowerCase().includes(searchQuery.toLowerCase())
-        );
-    }, [meetings, searchQuery]);
+  // Fetch bots with React Query
+  const { data: botsData, isLoading: isBotsLoading, isError, error, refetch } = useQuery({
+    queryKey: ['bots', { search: searchQuery, page: currentPage, limit }],
+    queryFn: async () => {
+      return meetingBotApi.getBots(
+        { status: undefined },
+        { page: currentPage, limit }
+      );
+    },
+    staleTime: 2 * 60 * 1000, // 2 minutes (consistent with queryClient config)
+    gcTime: 10 * 60 * 1000, // 10 minutes
+    placeholderData: keepPreviousData, // Keep previous data while fetching
+    refetchOnWindowFocus: false, // Don't refetch on window focus
+  });
 
-    const handleRecordingStarted = (
-        meetingId: string,
-        taskId: string,
-        botId: string
-    ) => {
-        setRecordingStates((prev) => ({
-            ...prev,
-            [meetingId]: { taskId, botId },
-        }));
-    };
+  // Update URL when filters change
+  const updateURL = useCallback(
+    (updates: Record<string, string | undefined>) => {
+      const params = new URLSearchParams(searchParams.toString());
+      Object.entries(updates).forEach(([key, value]) => {
+        if (value) {
+          params.set(key, value);
+        } else {
+          params.delete(key);
+        }
+      });
+      router.push(`?${params.toString()}`, { scroll: false });
+    },
+    [router, searchParams],
+  );
 
+  // Handlers
+  const handleViewModeChange = useCallback(
+    (mode: 'grid' | 'list') => {
+      setViewMode(mode);
+      setCurrentPage(1);
+      updateURL({ view: mode, page: '1' });
+    },
+    [updateURL],
+  );
 
+  const handleSearchChange = useCallback(
+    (query: string) => {
+      setSearchQuery(query);
+      setCurrentPage(1);
+      updateURL({ search: query || undefined, page: '1' });
+    },
+    [updateURL],
+  );
 
-    const handleCloseRecording = (meetingId: string) => {
-        setRecordingStates((prev) => {
-            const newState = { ...prev };
-            delete newState[meetingId];
-            return newState;
+  const handlePageChange = useCallback(
+    (page: number) => {
+      setCurrentPage(page);
+      updateURL({ page: String(page) });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    },
+    [updateURL],
+  );
+
+  const handleStatusChange = useCallback(
+    async (botId: string, status: string) => {
+      try {
+        await meetingBotApi.updateBotStatus(botId, {
+          status: status as any,
         });
-    };
-
-    const formatDate = (dateString: string) => {
-        return new Date(dateString).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-        });
-    };
-
-    if (isLoading) {
-        return (
-            <div className={styles.container}>
-                <div className={styles.header}>
-                    <div className={styles.title}>
-                        <Record24Regular />
-                        <span>{t('meetingRecordings')}</span>
-                    </div>
-                </div>
-                <div className={styles.loadingContainer}>
-                    <Spinner size="extra-large" />
-                    <Text>{t('loading')}</Text>
-                </div>
-            </div>
+        dispatchToast(
+          <Toast>
+            <ToastTitle>{t('botStatusUpdated')}</ToastTitle>
+          </Toast>,
+          { intent: 'success' }
         );
-    }
-
-    if (isError) {
-        return (
-            <div className={styles.container}>
-                <div className={styles.header}>
-                    <div className={styles.title}>
-                        <Record24Regular />
-                        <span>{t('meetingRecordings')}</span>
-                    </div>
-                </div>
-                <div className={styles.errorContainer}>
-                    <Text className={styles.errorTitle}>{t('errorTitle')}</Text>
-                    <Text className={styles.errorMessage}>
-                        {error instanceof Error ? error.message : t('errorLoadingMeetings')}
-                    </Text>
-                    <Button appearance="primary" onClick={() => refetch()}>
-                        {t('retry')}
-                    </Button>
-                </div>
-            </div>
+        refetch();
+      } catch (err) {
+        dispatchToast(
+          <Toast>
+            <ToastTitle>{t('failedToUpdateStatus')}</ToastTitle>
+            <ToastBody>{err instanceof Error ? err.message : 'Unknown error'}</ToastBody>
+          </Toast>,
+          { intent: 'error' }
         );
-    }
+      }
+    },
+    [dispatchToast, t, refetch],
+  );
 
-    return (
-        <div className={styles.container}>
-            {/* Header */}
-            <div className={styles.header}>
-                <div className={styles.title}>
-                    <Record24Regular />
-                    <span>{t('meetingRecordings')}</span>
-                </div>
-                <div className={styles.searchContainer}>
-                    <Field>
-                        <Input
-                            placeholder={t('searchMeetings')}
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            contentBefore={<Search24Regular />}
-                            appearance="outline"
-                        />
-                    </Field>
-                </div>
-            </div>
+  const handleDelete = useCallback(
+    async (botId: string) => {
+      if (!confirm(t('confirmDelete'))) return;
+      try {
+        await meetingBotApi.deleteMeetingBot(botId);
+        dispatchToast(
+          <Toast>
+            <ToastTitle>{t('botDeleted')}</ToastTitle>
+          </Toast>,
+          { intent: 'success' }
+        );
+        refetch();
+      } catch (err) {
+        dispatchToast(
+          <Toast>
+            <ToastTitle>{t('failedToDelete')}</ToastTitle>
+            <ToastBody>{err instanceof Error ? err.message : 'Unknown error'}</ToastBody>
+          </Toast>,
+          { intent: 'error' }
+        );
+      }
+    },
+    [dispatchToast, t, refetch],
+  );
 
-            {/* Content */}
-            {filteredMeetings.length === 0 ? (
-                <div className={styles.emptyState}>
-                    <div className={styles.emptyIcon}>
-                        <Record24Regular />
-                    </div>
-                    <Text className={styles.emptyTitle}>
-                        {searchQuery ? t('noSearchResults') : t('noMeetings')}
-                    </Text>
-                    <Text className={styles.emptyMessage}>
-                        {searchQuery
-                            ? t('tryDifferentSearch')
-                            : t('createMeetingToRecord')}
-                    </Text>
-                </div>
-            ) : (
-                <div className={styles.content}>
-                    {filteredMeetings.map((meeting: any) => (
-                        <Card key={meeting.id} className={styles.meetingCard}>
-                            {/* Meeting Info */}
-                            <div>
-                                <Text className={styles.meetingTitle}>{meeting.title}</Text>
-                                {meeting.url && (
-                                    <Text className={styles.meetingUrl}>{meeting.url}</Text>
-                                )}
-                                <Text className={styles.meetingTime}>
-                                    {formatDate(meeting.start_time)}
-                                </Text>
-                            </div>
+  const handleViewLogs = useCallback(
+    (botId: string) => {
+      setSelectedBotId(botId);
+      setIsLogsModalOpen(true);
+    },
+    [],
+  );
 
-                            {/* Recording Section */}
-                            <div className={styles.recordingSection}>
-                                <RecordingButton
-                                    meetingId={meeting.id}
-                                    isAuthorized={true}
-                                    onRecordingStarted={(taskId, botId) =>
-                                        handleRecordingStarted(meeting.id, taskId, botId)
-                                    }
-                                />
+  useEffect(() => {
+    const interval = setInterval(() => {
+      refetch();
+    }, 30000);
 
-                                {/* Recording Status */}
-                                {recordingStates[meeting.id] && (
-                                    <RecordingStatus
-                                        taskId={recordingStates[meeting.id].taskId}
-                                        onClose={() => handleCloseRecording(meeting.id)}
-                                    />
-                                )}
-                            </div>
+    return () => clearInterval(interval);
+  }, [refetch]);
 
-                            {/* Audio Files */}
-                            <AudioFilesPanel meetingId={meeting.id} />
-                        </Card>
-                    ))}
-                </div>
-            )}
-        </div>
+  // Determine if filters are active
+  const hasActiveFilters = Boolean(searchQuery);
+
+  // Loading states
+  const isInitialLoading = isBotsLoading && !botsData;
+
+  // Extract data and pagination info
+  const bots = useMemo(() => botsData?.data || [], [botsData]);
+  const pagination = useMemo(() => botsData?.pagination, [botsData]);
+  const totalCount = useMemo(() => pagination?.total || 0, [pagination]);
+  const totalPages = useMemo(() => pagination?.total_pages || 1, [pagination]);
+  const hasNext = useMemo(() => pagination?.has_next || false, [pagination]);
+  const hasPrev = useMemo(() => pagination?.has_prev || false, [pagination]);
+
+  // Filter bots based on search query
+  const filteredBots = useMemo(() => {
+    if (!searchQuery) return bots;
+    return bots.filter((bot: any) =>
+      (bot.meeting?.title || '').toLowerCase().includes(searchQuery.toLowerCase())
     );
+  }, [bots, searchQuery]);
+
+  // Initial loading state - show header + skeleton
+  if (isInitialLoading) {
+    return (
+      <div className={styles.container}>
+        <BotsHeader
+          viewMode={viewMode}
+          onViewModeChange={handleViewModeChange}
+          searchQuery={searchQuery}
+          onSearchChange={handleSearchChange}
+          totalCount={0}
+        />
+        <div className={styles.skeletonGrid}>
+          {Array.from({ length: viewMode === 'grid' ? 12 : 8 }).map((_, i) => (
+            <BotCardSkeleton key={i} />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (isError) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.errorContainer}>
+          <Text className={styles.errorTitle}>{t('errorTitle')}</Text>
+          <Text className={styles.errorMessage}>
+            {error instanceof Error
+              ? error.message
+              : t('errorLoadingBots')}
+          </Text>
+          <Button appearance="primary" onClick={() => refetch()}>
+            {t('retry')}
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={styles.container}>
+      {showLoadingToast(t('searching'))}
+
+      <BotsHeader
+        viewMode={viewMode}
+        onViewModeChange={handleViewModeChange}
+        searchQuery={searchQuery}
+        onSearchChange={handleSearchChange}
+        totalCount={totalCount}
+      />
+
+      <div className={styles.content}>
+        {filteredBots.length === 0 ? (
+          <EmptyBotsState isFiltered={hasActiveFilters} />
+        ) : viewMode === 'grid' ? (
+          <BotsGrid
+            bots={filteredBots}
+            onStatusChange={handleStatusChange}
+            onDelete={handleDelete}
+            onViewLogs={handleViewLogs}
+          />
+        ) : (
+          <BotsList
+            bots={filteredBots}
+            onStatusChange={handleStatusChange}
+            onDelete={handleDelete}
+            onViewLogs={handleViewLogs}
+          />
+        )}
+      </div>
+
+      {filteredBots.length > 0 && totalPages > 1 && (
+        <div className={styles.pagination}>
+          <Button
+            appearance="secondary"
+            icon={<ArrowLeft20Regular />}
+            disabled={!hasPrev}
+            onClick={() => handlePageChange(currentPage - 1)}
+          >
+            {t('previous')}
+          </Button>
+          <Text className={styles.pageInfo}>
+            {t('pageInfo', { current: currentPage, total: totalPages })}
+          </Text>
+          <Button
+            appearance="secondary"
+            icon={<ArrowRight20Regular />}
+            iconPosition="after"
+            disabled={!hasNext}
+            onClick={() => handlePageChange(currentPage + 1)}
+          >
+            {t('next')}
+          </Button>
+        </div>
+      )}
+
+      {selectedBotId && (
+        <>
+          <BotLogsModal
+            botId={selectedBotId}
+            open={isLogsModalOpen}
+            onOpenChange={setIsLogsModalOpen}
+          />
+          <BotDetailsModal
+            botId={selectedBotId}
+            open={isDetailsModalOpen}
+            onOpenChange={setIsDetailsModalOpen}
+          />
+        </>
+      )}
+    </div>
+  );
 }
