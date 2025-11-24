@@ -366,7 +366,7 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
           <Card className={styles.section}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
               <Text style={{ fontWeight: 700, fontSize: tokens.fontSizeBase400 }}>
-                {t('files')} (Table)
+                {t('files')} (Context)
               </Text>
               <Button
                 appearance="primary"

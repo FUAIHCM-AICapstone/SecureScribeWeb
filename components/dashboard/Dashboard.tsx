@@ -31,6 +31,7 @@ import {
 import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import React, { useEffect, useState } from 'react';
 
 import { DashboardSkeleton } from './DashboardSkeleton';
@@ -39,6 +40,7 @@ import { StatsGrid } from './StatsGrid';
 import { StatCard } from './StatCard';
 import { ContentGrid } from './ContentGrid';
 import { ContentSection } from './ContentSection';
+import { ChartSection } from './ChartSection';
 
 const useStyles = makeStyles({
   root: {
@@ -109,6 +111,7 @@ const useStyles = makeStyles({
 const Dashboard: React.FC = () => {
   const styles = useStyles();
   const router = useRouter();
+  const t = useTranslations('Dashboard');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<DashboardResponse | null>(null);
@@ -123,7 +126,7 @@ const Dashboard: React.FC = () => {
       setData(response);
     } catch (err: any) {
       console.error('Failed to fetch dashboard stats:', err);
-      setError(err.message || 'Không thể tải dữ liệu thống kê');
+      setError(err.message || t('errorLoadingStats'));
     } finally {
       setLoading(false);
     }
@@ -178,9 +181,9 @@ const Dashboard: React.FC = () => {
       <div className={styles.root}>
         <MessageBar intent="error">
           <MessageBarBody>
-            <MessageBarTitle>Lỗi</MessageBarTitle>
+            <MessageBarTitle>{t('errorTitle')}</MessageBarTitle>
             {error}
-            <Button onClick={fetchData} style={{ marginTop: '8px' }}>Thử lại</Button>
+            <Button onClick={fetchData} style={{ marginTop: '8px' }}>{t('retry')}</Button>
           </MessageBarBody>
         </MessageBar>
       </div>
@@ -202,14 +205,13 @@ const Dashboard: React.FC = () => {
             icon={<CheckboxChecked24Regular />}
             iconColor={{ bg: tokens.colorBrandBackground2, color: tokens.colorBrandForeground1 }}
             value={data.tasks.total_assigned}
-            label="Nhiệm vụ được giao"
+            label={t('tasksAssigned')}
             metaIcon={<CheckmarkCircle24Regular fontSize={16} />}
-            metaText={`${data.tasks.completion_rate}% hoàn thành`}
-            progress={{ value: data.tasks.completion_rate, color: 'brand' }}
+            metaText={`${data.tasks.completion_rate}% ${t('completed')}`}
             extraContent={
               data.tasks.overdue_count > 0 && (
                 <span style={{ color: tokens.colorPaletteRedForeground1, fontSize: '12px', fontWeight: 600 }}>
-                  {data.tasks.overdue_count} quá hạn
+                  {data.tasks.overdue_count} {t('overdue')}
                 </span>
               )
             }
@@ -218,34 +220,35 @@ const Dashboard: React.FC = () => {
             icon={<VideoClip24Regular />}
             iconColor={{ bg: tokens.colorPaletteGreenBackground2, color: tokens.colorPaletteGreenForeground1 }}
             value={data.meetings.total_count}
-            label="Cuộc họp tham gia"
+            label={t('meetingsJoined')}
             metaIcon={<Timer24Regular fontSize={16} />}
-            metaText={`${data.meetings.total_duration_minutes} phút tổng cộng`}
-            progress={{ value: 75, color: 'success' }} // Dummy progress for visual balance
+            metaText={`${data.meetings.total_duration_minutes} ${t('totalMinutes')}`}
           />
           <StatCard
             icon={<PeopleTeam24Regular />}
             iconColor={{ bg: tokens.colorPaletteYellowBackground2, color: tokens.colorPaletteYellowForeground1 }}
             value={data.projects.total_active}
-            label="Dự án đang hoạt động"
-            metaText={`${data.projects.role_admin_count} quản trị viên • ${data.projects.role_member_count} thành viên`}
-            progress={{ value: 60, color: 'warning' }} // Dummy progress
+            label={t('activeProjects')}
+            metaText={`${data.projects.role_admin_count} ${t('adminsMembers')} ${data.projects.role_member_count}`}
           />
           <StatCard
             icon={<DocumentText24Regular />}
             iconColor={{ bg: tokens.colorPaletteRedBackground2, color: tokens.colorPaletteRedForeground1 }}
             value={data.storage.total_files}
-            label="Tài liệu đã tải lên"
-            metaText={`${data.storage.total_size_mb} MB sử dụng`}
-            progress={{ value: (data.storage.total_size_mb / 1024) * 100, color: 'error' }} // Assuming 1GB limit
+            label={t('filesUploaded')}
+            metaText={`${data.storage.total_size_mb} ${t('mbUsed')}`}
           />
         </StatsGrid>
+      )}
+
+      {data && data.chart_data && data.chart_data.length > 0 && (
+        <ChartSection title={t('taskActivity')} data={data.chart_data} />
       )}
 
       {data && (
         <ContentGrid>
           <ContentSection
-            title="Cuộc họp sắp tới"
+            title={t('upcomingMeetings')}
             onViewAll={() => router.push('/meetings')}
             isEmpty={data.quick_access.upcoming_meetings.length === 0}
           >
@@ -266,7 +269,7 @@ const Dashboard: React.FC = () => {
                   <CalendarLtr24Regular />
                 </div>
                 <div className={styles.itemContent}>
-                  <div className={styles.itemTitle}>{meeting.title || 'Cuộc họp không tên'}</div>
+                  <div className={styles.itemTitle}>{meeting.title || t('untitledMeeting')}</div>
                   <div className={styles.itemSubtitle}>
                     <Clock24Regular fontSize={16} />
                     {formatDate(meeting.start_time)}
@@ -277,10 +280,10 @@ const Dashboard: React.FC = () => {
           </ContentSection>
 
           <ContentSection
-            title="Nhiệm vụ ưu tiên"
+            title={t('priorityTasks')}
             onViewAll={() => router.push('/tasks')}
             isEmpty={data.quick_access.priority_tasks.length === 0}
-            emptyMessage="Không có nhiệm vụ cần xử lý gấp"
+            emptyMessage={t('noUrgentTasks')}
           >
             {data.quick_access.priority_tasks.map((task: any) => {
               const statusStyle = getStatusColor(task.status);
@@ -304,7 +307,7 @@ const Dashboard: React.FC = () => {
                     <div className={styles.itemTitle}>{task.title}</div>
                     <div className={styles.itemSubtitle}>
                       {task.project_name && <span>{task.project_name} • </span>}
-                      Hạn: {formatDate(task.due_date)}
+                      {t('due')}: {formatDate(task.due_date)}
                     </div>
                   </div>
                   <div className={styles.statusBadge} style={{ backgroundColor: statusStyle.bg, color: statusStyle.color }}>
@@ -316,10 +319,10 @@ const Dashboard: React.FC = () => {
           </ContentSection>
 
           <ContentSection
-            title="Dự án gần đây"
+            title={t('recentProjects')}
             onViewAll={() => router.push('/projects')}
             isEmpty={data.quick_access.active_projects.length === 0}
-            emptyMessage="Chưa tham gia dự án nào"
+            emptyMessage={t('noProjectsJoined')}
           >
             {data.quick_access.active_projects.map((project: any) => (
               <div
@@ -340,7 +343,7 @@ const Dashboard: React.FC = () => {
                 <div className={styles.itemContent}>
                   <div className={styles.itemTitle}>{project.name}</div>
                   <div className={styles.itemSubtitle}>
-                    {project.member_count} thành viên • {project.role === 'admin' ? 'Quản trị viên' : 'Thành viên'}
+                    {project.member_count} {t('members')} • {project.role === 'admin' ? t('admin') : t('member')}
                   </div>
                 </div>
               </div>

@@ -5,6 +5,7 @@ import {
 } from '@fluentui/react-components';
 import { ArrowRight24Regular } from '@fluentui/react-icons';
 import { motion } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 import React from 'react';
 
 const useStyles = makeStyles({
@@ -60,9 +61,10 @@ export const ContentSection: React.FC<ContentSectionProps> = ({
   onViewAll,
   children,
   isEmpty,
-  emptyMessage = 'Không có dữ liệu',
+  emptyMessage,
 }) => {
   const styles = useStyles();
+  const t = useTranslations('Dashboard');
 
   return (
     <motion.div
@@ -76,7 +78,7 @@ export const ContentSection: React.FC<ContentSectionProps> = ({
       </div>
       <div className={styles.list}>
         {isEmpty ? (
-          <div className={styles.emptyState}>{emptyMessage}</div>
+          <div className={styles.emptyState}>{emptyMessage || t('noData')}</div>
         ) : (
           children
         )}

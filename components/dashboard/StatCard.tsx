@@ -1,7 +1,6 @@
 import {
   makeStyles,
   tokens,
-  ProgressBar,
 } from '@fluentui/react-components';
 import { motion } from 'framer-motion';
 import React from 'react';
@@ -47,9 +46,6 @@ const useStyles = makeStyles({
     alignItems: 'center',
     gap: '4px',
   },
-  progressBar: {
-    marginTop: '4px',
-  }
 });
 
 interface StatCardProps {
@@ -74,7 +70,6 @@ export const StatCard: React.FC<StatCardProps> = ({
   label,
   metaIcon,
   metaText,
-  progress,
   extraContent
 }) => {
   const styles = useStyles();
@@ -105,17 +100,6 @@ export const StatCard: React.FC<StatCardProps> = ({
         </div>
         <div className={styles.label}>{label}</div>
       </div>
-
-      {progress && (
-        <ProgressBar
-          className={styles.progressBar}
-          value={progress.value}
-          max={progress.max || 100}
-          color={progress.color}
-          thickness="medium"
-        />
-      )}
-
       <div className={styles.meta}>
         {metaIcon}
         {metaText}

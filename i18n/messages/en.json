@@ -135,7 +135,30 @@
       }
     },
     "description": "Stay on top of personal tasks, team initiatives, and shared knowledge without leaving this workspace.",
-    "title": "Dashboard"
+    "title": "Dashboard",
+    "errorLoadingStats": "Cannot load statistics data",
+    "errorTitle": "Error",
+    "retry": "Try again",
+    "tasksAssigned": "Tasks assigned",
+    "completed": "completed",
+    "overdue": "overdue",
+    "meetingsJoined": "Meetings joined",
+    "totalMinutes": "minutes total",
+    "activeProjects": "Active projects",
+    "adminsMembers": "admins • members",
+    "filesUploaded": "Files uploaded",
+    "mbUsed": "MB used",
+    "upcomingMeetings": "Upcoming meetings",
+    "untitledMeeting": "Untitled meeting",
+    "priorityTasks": "Priority tasks",
+    "noUrgentTasks": "No urgent tasks to handle",
+    "due": "Due",
+    "recentProjects": "Recent projects",
+    "noProjectsJoined": "No projects joined yet",
+    "members": "members",
+    "admin": "Admin",
+    "member": "Member",
+    "noData": "No data"
   },
   "Files": {
     "actions": {
@@ -326,6 +349,7 @@
     "selectLanguage": "Select language ({current})"
   },
   "MeetingDetail": {
+    "uploadFile": "Upload File",
     "hasMeetingUrl": "Link available",
     "meetingDetails": "Meeting Details",
     "backToMeetings": "Back",
@@ -926,6 +950,108 @@
   },
   "ThemeToggle": {
     "toggleTheme": "Toggle theme"
+  },
+  "api": {
+    "common": {
+      "networkError": "Network Error - No response received",
+      "unknownError": "Unknown Error",
+      "noData": "API returned no data",
+      "operationSuccessful": "Operation completed successfully",
+      "operationFailed": "Operation failed",
+      "invalidRequest": "Invalid request",
+      "internalServerError": "Internal server error",
+      "resourceAlreadyExists": "Resource already exists",
+      "validationError": "Validation error"
+    },
+    "audio": {
+      "notFound": "Audio file not found",
+      "uploadFailed": "Audio file upload failed",
+      "deleteSuccess": "Audio file deleted successfully"
+    },
+    "transcript": {
+      "createSuccess": "Transcript created successfully",
+      "notFound": "Transcript not found",
+      "retrieveSuccess": "Transcript retrieved successfully",
+      "updateSuccess": "Transcript updated successfully",
+      "deleteSuccess": "Transcript deleted successfully"
+    },
+    "task": {
+      "notFound": "Task not found",
+      "retrieveSuccess": "Task retrieved successfully",
+      "deleteSuccess": "Task deleted successfully"
+    },
+    "project": {
+      "notFound": "Project not found",
+      "retrieveSuccess": "Project retrieved successfully",
+      "listRetrieveSuccess": "Projects retrieved successfully",
+      "memberAddSuccess": "User added to project successfully",
+      "memberAddFailed": "Failed to add user to project",
+      "memberRemoveSuccess": "User removed from project successfully",
+      "leftSuccess": "Successfully left project",
+      "memberNotFound": "User not found in project",
+      "cannotRemoveAllAdmins": "Cannot remove all admins from project",
+      "cannotLeaveLastAdmin": "Cannot leave project as the last admin",
+      "roleUpdateSuccess": "User role updated successfully",
+      "statsRetrieveSuccess": "Project statistics retrieved successfully",
+      "notMember": "You are not a member of this project",
+      "roleNotFound": "Current role not found",
+      "roleAlreadySet": "You already have the requested role",
+      "roleChangeRequested": "Role change request submitted successfully",
+      "cannotChangeLastAdminRole": "Cannot change role of the last admin",
+      "invalidUuidFormat": "Invalid created_by UUID format"
+    },
+    "meeting": {
+      "retrieveSuccess": "Meeting retrieved successfully",
+      "listRetrieveSuccess": "Meetings retrieved successfully",
+      "deleteSuccess": "Meeting deleted successfully",
+      "addToProjectSuccess": "Meeting added to project successfully",
+      "removeFromProjectSuccess": "Meeting removed from project successfully",
+      "audioFilesRetrieveSuccess": "Audio files retrieved successfully",
+      "addToProjectFailed": "Failed to add meeting to project",
+      "removeFromProjectFailed": "Failed to remove meeting from project",
+      "updateFailed": "Failed to update meeting",
+      "audioUploadFailed": "Failed to upload audio",
+      "fileTooLarge": "File too large (max 100MB)",
+      "unsupportedAudioType": "Unsupported audio type"
+    },
+    "meetingNote": {
+      "notFound": "Meeting note not found",
+      "retrieveSuccess": "Meeting note retrieved successfully",
+      "deleteSuccess": "Meeting note deleted successfully"
+    },
+    "bot": {
+      "createSuccess": "Meeting bot created successfully",
+      "notFound": "Meeting bot not found",
+      "retrieveSuccess": "Meeting bot retrieved successfully",
+      "listRetrieveSuccess": "Meeting bots retrieved successfully",
+      "updateSuccess": "Meeting bot updated successfully",
+      "deleteSuccess": "Meeting bot deleted successfully",
+      "logCreateSuccess": "Bot log created successfully",
+      "logListRetrieveSuccess": "Bot logs retrieved successfully",
+      "joinTriggeredSuccess": "Bot join triggered successfully",
+      "webhookProcessedSuccess": "Webhook processed successfully",
+      "webhookQueuedForRetry": "Webhook received, queued for retry",
+      "webhookReceived": "Webhook received",
+      "joinFailed": "Failed to queue bot join task"
+    },
+    "user": {
+      "createSuccess": "User created successfully",
+      "notFound": "User not found",
+      "retrieveSuccess": "User retrieved successfully",
+      "deleteSuccess": "User deleted successfully"
+    },
+    "auth": {
+      "accessDenied": "Access denied",
+      "adminAccessRequired": "Admin access required",
+      "invalidCredentials": "Invalid credentials",
+      "authorizationHeaderRequired": "Authorization header required",
+      "invalidBearerTokenFormat": "Invalid bearer token format"
+    },
+    "file": {
+      "notFound": "File not found",
+      "retrieveSuccess": "File retrieved successfully",
+      "deleteSuccess": "File deleted successfully"
+    }
   },
   "Bots": {
     "meetingRecordings": "Meeting Recordings",

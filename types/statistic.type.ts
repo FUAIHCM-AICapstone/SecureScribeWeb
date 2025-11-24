@@ -91,4 +91,5 @@ export interface DashboardResponse {
     projects: ProjectStats;
     storage: StorageStats;
     quick_access: QuickAccessData;
+    chart_data: ChartDataPoint[];
 }
