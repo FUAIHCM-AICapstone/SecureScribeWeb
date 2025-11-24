@@ -1,7 +1,7 @@
 'use client';
 
 import { Body1, Button, Card, ProgressBar, Spinner, Text, makeStyles, shorthands, tokens } from '@fluentui/react-components';
-import { ChevronDown20Regular, CloudAdd20Regular, Delete20Regular, Document20Regular } from '@fluentui/react-icons';
+import { ArrowClockwise20Regular, ChevronDown20Regular, CloudAdd20Regular, Delete20Regular, Document20Regular } from '@fluentui/react-icons';
 import { useTranslations } from 'next-intl';
 import React from 'react';
 import { useTaskProgress } from '@/context/WebSocketContext';
@@ -111,9 +111,11 @@ interface MeetingTranscriptsProps {
     isLoading: boolean;
     error: string | null;
     onDeleteTranscript: (transcriptId: string) => void;
+    onReindexTranscript: (transcriptId: string) => void;
     onUploadAudio: () => void;
     isDeleting: boolean;
     isUploading: boolean;
+    isReindexing: boolean;
 }
 
 // Component to render speaker segments
@@ -159,18 +161,23 @@ export function MeetingTranscripts({
     isLoading,
     error,
     onDeleteTranscript,
+    onReindexTranscript,
     onUploadAudio,
     isDeleting,
     isUploading,
+    isReindexing,
 }: MeetingTranscriptsProps) {
     const styles = useStyles();
     const [expandedTranscriptId, setExpandedTranscriptId] = React.useState<string | null>(null);
     const t = useTranslations('MeetingDetail');
 
-    // Get task progress for audio transcription
+    // Get task progress for audio transcription and reindexing
     const { taskProgress } = useTaskProgress();
     const transcribingTasks = Array.from(taskProgress.values()).filter(
-        (task) => task.task_type === 'audio_asr' && task.status === 'transcribing'
+        (task) => task.task_type === 'audio_asr' && task.progress < 100
+    );
+    const reindexingTasks = Array.from(taskProgress.values()).filter(
+        (task) => task.task_type === 'transcript_reindex' && task.progress < 100
     );
 
     return (
@@ -221,6 +228,28 @@ export function MeetingTranscripts({
                         </div>
                     )}
 
+                    {/* Reindexing Progress */}
+                    {reindexingTasks.length > 0 && (
+                        <div style={{ marginBottom: '16px', padding: '16px', backgroundColor: tokens.colorNeutralBackground2, borderRadius: tokens.borderRadiusMedium }}>
+                            <Text style={{ fontWeight: 600, marginBottom: '8px' }}>
+                                {t('reindexingInProgress') || 'Reindexing in progress'}
+                            </Text>
+                            {reindexingTasks.map((task) => (
+                                <div key={task.task_id} style={{ marginBottom: '12px' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                                        <Text style={{ fontSize: tokens.fontSizeBase200 }}>
+                                            {t('transcriptReindex') || 'Transcript reindex'}
+                                        </Text>
+                                        <Text style={{ fontSize: tokens.fontSizeBase200 }}>
+                                            {task.progress}% • {task.estimated_time}
+                                        </Text>
+                                    </div>
+                                    <ProgressBar value={task.progress / 100} />
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
                     {/* Existing transcripts */}
                     {transcripts && transcripts.length > 0 ? (
                         <div>
@@ -255,6 +284,16 @@ export function MeetingTranscripts({
                                                     className={styles.expandButton}
                                                 />
                                             </div>
+                                            <Button
+                                                appearance="subtle"
+                                                icon={<ArrowClockwise20Regular />}
+                                                onClick={() => {
+                                                    onReindexTranscript(transcript.id);
+                                                }}
+                                                disabled={isReindexing}
+                                                className={styles.actionButtonSmall}
+                                                title={t('reindexTranscript') || 'Reindex transcript'}
+                                            />
                                             <Button
                                                 appearance="subtle"
                                                 icon={<Delete20Regular />}

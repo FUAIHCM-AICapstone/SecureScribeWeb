@@ -403,6 +403,9 @@
     "deleteTranscript": "Delete Transcript",
     "audioFile": "audio file",
     "transcript": "transcript",
+    "reindexTranscript": "Reindex transcript",
+    "reindexingInProgress": "Reindexing transcript...",
+    "transcriptReindex": "Transcript reindex",
     "taskTypes": {
       "file_indexing": "File Indexing",
       "audio_asr": "Audio Transcription",
@@ -448,6 +451,8 @@
       "deleteError": "Failed to delete \"{title}\". Please try again.",
       "deleteSuccess": "\"{title}\" has been deleted successfully.",
       "deleting": "Deleting...",
+      "reindexStarted": "Transcript reindex started",
+      "reindexFailed": "Failed to reindex transcript",
       "edit": "Edit Meeting",
       "label": "Meeting actions",
       "recordBot": "Record Bot",

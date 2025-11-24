@@ -403,6 +403,9 @@
     "deleteTranscript": "Xóa bản ghi âm",
     "audioFile": "tệp âm thanh",
     "transcript": "bản ghi âm",
+    "reindexTranscript": "Đánh chỉ mục lại bản ghi",
+    "reindexingInProgress": "Đang đánh chỉ mục lại bản ghi...",
+    "transcriptReindex": "Đánh chỉ mục lại bản ghi",
     "taskTypes": {
       "file_indexing": "Đánh chỉ mục tệp",
       "audio_asr": "Chuyển đổi âm thanh",
@@ -448,6 +451,8 @@
       "deleteError": "Không thể xóa \"{title}\". Vui lòng thử lại.",
       "deleteSuccess": "\"{title}\" đã được xóa thành công.",
       "deleting": "Đang xóa...",
+      "reindexStarted": "Đã bắt đầu đánh chỉ mục lại bản ghi",
+      "reindexFailed": "Không thể đánh chỉ mục lại bản ghi",
       "edit": "Chỉnh sửa",
       "label": "Hành động",
       "recordBot": "Ghi âm Bot",

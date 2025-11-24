@@ -19,7 +19,7 @@ import {
   createMeetingNote,
   updateMeetingNote,
 } from '@/services/api/meetingNote';
-import { deleteTranscript } from '@/services/api/transcript';
+import { deleteTranscript, reindexTranscript } from '@/services/api/transcript';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import React from 'react';
@@ -176,6 +176,23 @@ export const useMeetingMutations = (
     },
   });
 
+  // Reindex transcript mutation
+  const reindexTranscriptMutation = useMutation({
+    mutationFn: ({ transcriptId, force }: { transcriptId: string; force?: boolean }) =>
+      reindexTranscript(meetingId, transcriptId, { force }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['transcripts', meetingId] });
+      showSuccessToast(tMeetings('actions.reindexStarted') || 'Transcript reindex started');
+    },
+    onError: (error: any) => {
+      showErrorToast(
+        error?.response?.data?.detail ||
+          tMeetings('actions.reindexFailed') ||
+          'Failed to reindex transcript',
+      );
+    },
+  });
+
   return {
     isDeleting,
     setIsDeleting,
@@ -187,5 +204,6 @@ export const useMeetingMutations = (
     createNoteMutation,
     updateNoteMutation,
     uploadAudioMutation,
+    reindexTranscriptMutation,
   };
 };
