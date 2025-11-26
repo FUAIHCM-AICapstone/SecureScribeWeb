@@ -135,6 +135,7 @@
       }
     },
     "description": "Stay on top of personal tasks, team initiatives, and shared knowledge without leaving this workspace.",
+    "taskActivity": "Task Activity",
     "title": "Dashboard",
     "errorLoadingStats": "Cannot load statistics data",
     "errorTitle": "Error",

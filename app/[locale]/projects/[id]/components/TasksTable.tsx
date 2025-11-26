@@ -28,6 +28,7 @@ interface TasksTableProps {
 
 export function TasksTable({ data, isLoading, page, onPageChange, hasMore, projectId, onTaskDeleted, onTaskUpdated, onTaskRefetch }: TasksTableProps) {
     const t = useTranslations('ProjectDetail');
+    const tTasks = useTranslations('Tasks');
 
     // Create columns with translations
     const taskColumnHelper = useMemo(() => createColumnHelper<TaskResponse>(), []);
@@ -60,8 +61,7 @@ export function TasksTable({ data, isLoading, page, onPageChange, hasMore, proje
                                         : 'warning'
                             }
                         >
-                            {status?.replace('_', ' ').charAt(0).toUpperCase() +
-                                status?.replace('_', ' ').slice(1).toLowerCase()}
+                            {tTasks(`status.${status}`)}
                         </Badge>
                     );
                 },

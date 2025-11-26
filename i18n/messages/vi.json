@@ -135,6 +135,7 @@
       }
     },
     "description": "Theo dõi nhiệm vụ cá nhân, sáng kiến nhóm và kiến thức được chia sẻ mà không cần rời khỏi không gian làm việc này.",
+    "taskActivity": "Hoạt động nhiệm vụ",
     "title": "Bảng điều khiển",
     "errorLoadingStats": "Không thể tải dữ liệu thống kê",
     "errorTitle": "Lỗi",
