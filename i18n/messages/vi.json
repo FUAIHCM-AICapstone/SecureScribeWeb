@@ -159,7 +159,9 @@
     "members": "thành viên",
     "admin": "Quản trị viên",
     "member": "Thành viên",
-    "noData": "Không có dữ liệu"
+    "noData": "Không có dữ liệu",
+    "noActivityData": "Không có dữ liệu hoạt động cho khoảng thời gian này",
+    "tasksCreated": "Nhiệm vụ đã tạo"
   },
   "Files": {
     "actions": {

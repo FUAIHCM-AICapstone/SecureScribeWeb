@@ -159,7 +159,9 @@
     "members": "members",
     "admin": "Admin",
     "member": "Member",
-    "noData": "No data"
+    "noData": "No data",
+    "noActivityData": "No activity data for this period",
+    "tasksCreated": "Tasks Created"
   },
   "Files": {
     "actions": {

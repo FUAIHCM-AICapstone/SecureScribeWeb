@@ -16,6 +16,7 @@ import {
   OptionOnSelectData,
   SelectionEvents,
   tokens,
+  Badge,
 } from '@fluentui/react-components';
 import {
   CalendarLtr24Regular,
@@ -41,6 +42,7 @@ import { StatCard } from './StatCard';
 import { ContentGrid } from './ContentGrid';
 import { ContentSection } from './ContentSection';
 import { ChartSection } from './ChartSection';
+import { TaskDetailsModal } from '@/app/[locale]/tasks/components/TaskDetailsModal';
 
 const useStyles = makeStyles({
   root: {
@@ -106,23 +108,31 @@ const useStyles = makeStyles({
   iconSuccess: { backgroundColor: tokens.colorPaletteGreenBackground2, color: tokens.colorPaletteGreenForeground1 },
   iconWarning: { backgroundColor: tokens.colorPaletteYellowBackground2, color: tokens.colorPaletteYellowForeground1 },
   iconDanger: { backgroundColor: tokens.colorPaletteRedBackground2, color: tokens.colorPaletteRedForeground1 },
+  iconInfo: { backgroundColor: tokens.colorPaletteBlueBackground2, color: tokens.colorPaletteBlueForeground2 },
 });
 
 const Dashboard: React.FC = () => {
   const styles = useStyles();
   const router = useRouter();
   const t = useTranslations('Dashboard');
+  const tTasks = useTranslations('Tasks');
+  const tMeetings = useTranslations('Meetings');
+  const tProjects = useTranslations('Projects');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<DashboardResponse | null>(null);
   const [period, setPeriod] = useState<DashboardPeriod>(DashboardPeriod.SEVEN_DAYS);
   const [scope, setScope] = useState<DashboardScope>(DashboardScope.HYBRID);
+  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
+  const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
 
   const fetchData = async () => {
     try {
       setLoading(true);
       setError(null);
       const response = await statisticApi.getDashboardStats(period, scope);
+      console.log('[Dashboard] API Response:', response);
+      console.log('[Dashboard] Chart Data:', response?.chart_data);
       setData(response);
     } catch (err: any) {
       console.error('Failed to fetch dashboard stats:', err);
@@ -153,23 +163,94 @@ const Dashboard: React.FC = () => {
     return format(new Date(dateString), 'dd/MM/yyyy HH:mm', { locale: vi });
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
-      case 'done':
-      case 'completed':
-        return { bg: tokens.colorPaletteGreenBackground2, color: tokens.colorPaletteGreenForeground1 };
-      case 'in_progress':
-      case 'active':
-        return { bg: tokens.colorPaletteBlueBackground2, color: tokens.colorPaletteDarkOrangeForeground1 };
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
       case 'todo':
-      case 'pending':
-        return { bg: tokens.colorPaletteYellowBackground2, color: tokens.colorPaletteYellowForeground1 };
-      case 'overdue':
-      case 'cancelled':
-        return { bg: tokens.colorPaletteRedBackground2, color: tokens.colorPaletteRedForeground1 };
+        return (
+          <Badge appearance="filled" color="warning" size="small">
+            {tTasks('status.todo')}
+          </Badge>
+        );
+      case 'in_progress':
+        return (
+          <Badge appearance="filled" color="informative" size="small">
+            {tTasks('status.in_progress')}
+          </Badge>
+        );
+      case 'done':
+        return (
+          <Badge appearance="filled" color="success" size="small">
+            {tTasks('status.done')}
+          </Badge>
+        );
       default:
-        return { bg: tokens.colorNeutralBackground3, color: tokens.colorNeutralForeground3 };
+        return (
+          <Badge appearance="outline" size="small">
+            {status}
+          </Badge>
+        );
     }
+  };
+
+  const getMeetingStatusBadge = (status: string) => {
+    switch (status) {
+      case 'active':
+        return (
+          <Badge appearance="filled" color="success" size="small">
+            {tMeetings('status.active')}
+          </Badge>
+        );
+      case 'completed':
+        return (
+          <Badge appearance="filled" color="informative" size="small">
+            {tMeetings('status.completed')}
+          </Badge>
+        );
+      case 'cancelled':
+        return (
+          <Badge appearance="filled" color="danger" size="small">
+            {tMeetings('status.cancelled')}
+          </Badge>
+        );
+      case 'archived':
+        return (
+          <Badge appearance="filled" color="warning" size="small">
+            {tMeetings('status.archived')}
+          </Badge>
+        );
+      default:
+        return (
+          <Badge appearance="outline" size="small">
+            {status}
+          </Badge>
+        );
+    }
+  };
+
+  const getProjectStatusBadge = (project: any) => {
+    if (project.is_archived) {
+      return (
+        <Badge appearance="filled" color="warning" size="small">
+          {tProjects('status.archived')}
+        </Badge>
+      );
+    }
+    return (
+      <Badge appearance="filled" color="success" size="small">
+        {tProjects('status.active')}
+      </Badge>
+    );
+  };
+
+  const handleTaskClick = (taskId: string) => {
+    setSelectedTaskId(taskId);
+    setIsTaskModalOpen(true);
+  };
+
+  const handleTaskModalClose = () => {
+    setIsTaskModalOpen(false);
+    setSelectedTaskId(null);
   };
 
   if (loading && !data) {
@@ -245,6 +326,15 @@ const Dashboard: React.FC = () => {
         <ChartSection title={t('taskActivity')} data={data.chart_data} />
       )}
 
+      {data && (!data.chart_data || data.chart_data.length === 0) && (
+        <MessageBar intent="warning">
+          <MessageBarBody>
+            <MessageBarTitle>{t('noChartData')}</MessageBarTitle>
+            No activity data available for the selected period
+          </MessageBarBody>
+        </MessageBar>
+      )}
+
       {data && (
         <ContentGrid>
           <ContentSection
@@ -265,7 +355,7 @@ const Dashboard: React.FC = () => {
                   }
                 }}
               >
-                <div className={styles.itemIcon} style={{ backgroundColor: tokens.colorPaletteBlueBackground2, color: tokens.colorPaletteDarkOrangeForeground1 }}>
+                <div className={`${styles.itemIcon} ${styles.iconInfo}`}>
                   <CalendarLtr24Regular />
                 </div>
                 <div className={styles.itemContent}>
@@ -275,6 +365,7 @@ const Dashboard: React.FC = () => {
                     {formatDate(meeting.start_time)}
                   </div>
                 </div>
+                {getMeetingStatusBadge(meeting.status)}
               </div>
             ))}
           </ContentSection>
@@ -285,37 +376,32 @@ const Dashboard: React.FC = () => {
             isEmpty={data.quick_access.priority_tasks.length === 0}
             emptyMessage={t('noUrgentTasks')}
           >
-            {data.quick_access.priority_tasks.map((task: any) => {
-              const statusStyle = getStatusColor(task.status);
-              return (
-                <div
-                  key={task.id}
-                  className={styles.listItem}
-                  onClick={() => router.push(`/tasks/${task.id}`)}
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      router.push(`/tasks/${task.id}`);
-                    }
-                  }}
-                >
-                  <div className={styles.itemIcon} style={{ backgroundColor: tokens.colorPaletteRedBackground2, color: tokens.colorPaletteRedForeground1 }}>
-                    <Important24Regular />
-                  </div>
-                  <div className={styles.itemContent}>
-                    <div className={styles.itemTitle}>{task.title}</div>
-                    <div className={styles.itemSubtitle}>
-                      {task.project_name && <span>{task.project_name} • </span>}
-                      {t('due')}: {formatDate(task.due_date)}
-                    </div>
-                  </div>
-                  <div className={styles.statusBadge} style={{ backgroundColor: statusStyle.bg, color: statusStyle.color }}>
-                    {task.status}
+            {data.quick_access.priority_tasks.map((task: any) => (
+              <div
+                key={task.id}
+                className={styles.listItem}
+                onClick={() => handleTaskClick(task.id)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    handleTaskClick(task.id);
+                  }
+                }}
+              >
+                <div className={`${styles.itemIcon} ${styles.iconDanger}`}>
+                  <Important24Regular />
+                </div>
+                <div className={styles.itemContent}>
+                  <div className={styles.itemTitle}>{task.title}</div>
+                  <div className={styles.itemSubtitle}>
+                    {task.project_name && <span>{task.project_name} • </span>}
+                    {t('due')}: {formatDate(task.due_date)}
                   </div>
                 </div>
-              );
-            })}
+                {getStatusBadge(task.status)}
+              </div>
+            ))}
           </ContentSection>
 
           <ContentSection
@@ -337,20 +423,27 @@ const Dashboard: React.FC = () => {
                   }
                 }}
               >
-                <div className={styles.itemIcon} style={{ backgroundColor: tokens.colorBrandBackground2, color: tokens.colorBrandForeground1 }}>
+                <div className={`${styles.itemIcon} ${styles.iconBrand}`}>
                   <PeopleTeam24Regular />
                 </div>
                 <div className={styles.itemContent}>
                   <div className={styles.itemTitle}>{project.name}</div>
                   <div className={styles.itemSubtitle}>
-                    {project.member_count} {t('members')} • {project.role === 'admin' ? t('admin') : t('member')}
+                    {tProjects('memberCount', { count: project.member_count || 0 })} • {project.role === 'admin' ? tProjects('roleAdmin') : tProjects('roleMember')}
                   </div>
                 </div>
+                {getProjectStatusBadge(project)}
               </div>
             ))}
           </ContentSection>
         </ContentGrid>
       )}
+
+      <TaskDetailsModal
+        taskId={selectedTaskId || ''}
+        open={isTaskModalOpen}
+        onClose={handleTaskModalClose}
+      />
     </div>
   );
 };
