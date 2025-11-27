@@ -5,8 +5,11 @@ import React from 'react';
 const useStyles = makeStyles({
   contentGrid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))',
+    gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
     gap: '24px',
+    '@media (max-width: 900px)': {
+      gridTemplateColumns: '1fr',
+    },
   },
 });
 

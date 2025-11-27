@@ -5,7 +5,10 @@ import statisticApi from '@/services/api/statistic';
 import {
   DashboardPeriod,
   DashboardResponse,
-  DashboardScope
+  DashboardScope,
+  QuickAccessMeeting,
+  QuickAccessTask,
+  QuickAccessProject,
 } from 'types/statistic.type';
 import {
   Button,
@@ -17,6 +20,7 @@ import {
   SelectionEvents,
   tokens,
   Badge,
+  Tooltip,
 } from '@fluentui/react-components';
 import {
   CalendarLtr24Regular,
@@ -27,7 +31,13 @@ import {
   Important24Regular,
   PeopleTeam24Regular,
   Timer24Regular,
-  VideoClip24Regular
+  VideoClip24Regular,
+  Warning24Regular,
+  Record24Regular,
+  Folder24Regular,
+  CalendarCheckmark24Regular,
+  DocumentBulletList24Regular,
+  History24Regular,
 } from '@fluentui/react-icons';
 import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
@@ -52,6 +62,38 @@ const useStyles = makeStyles({
     width: '100%',
     padding: '24px',
     boxSizing: 'border-box',
+  },
+  chartsGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))',
+    gap: '24px',
+  },
+  periodStats: {
+    display: 'flex',
+    gap: '12px',
+    padding: '16px',
+    backgroundColor: tokens.colorNeutralBackground2,
+    borderRadius: tokens.borderRadiusMedium,
+    flexWrap: 'wrap',
+  },
+  periodStatItem: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    padding: '12px 20px',
+    backgroundColor: tokens.colorNeutralBackground1,
+    borderRadius: tokens.borderRadiusMedium,
+    minWidth: '100px',
+  },
+  periodStatValue: {
+    fontSize: tokens.fontSizeBase600,
+    fontWeight: 700,
+    color: tokens.colorBrandForeground1,
+  },
+  periodStatLabel: {
+    fontSize: tokens.fontSizeBase100,
+    color: tokens.colorNeutralForeground3,
+    textAlign: 'center',
   },
   listItem: {
     display: 'flex',
@@ -94,7 +136,7 @@ const useStyles = makeStyles({
     color: tokens.colorNeutralForeground2,
     display: 'flex',
     alignItems: 'center',
-    gap: '6px',
+    gap: '4px',
   },
   statusBadge: {
     padding: '2px 8px',
@@ -132,7 +174,8 @@ const Dashboard: React.FC = () => {
       setError(null);
       const response = await statisticApi.getDashboardStats(period, scope);
       console.log('[Dashboard] API Response:', response);
-      console.log('[Dashboard] Chart Data:', response?.chart_data);
+      console.log('[Dashboard] Task Chart Data:', response?.tasks?.chart_data);
+      console.log('[Dashboard] Summary:', response?.summary);
       setData(response);
     } catch (err: any) {
       console.error('Failed to fetch dashboard stats:', err);
@@ -285,10 +328,89 @@ const Dashboard: React.FC = () => {
           <StatCard
             icon={<CheckboxChecked24Regular />}
             iconColor={{ bg: tokens.colorBrandBackground2, color: tokens.colorBrandForeground1 }}
-            value={data.tasks.total_assigned}
-            label={t('tasksAssigned')}
+            value={data.tasks.total}
+            label={t('totalTasks')}
             metaIcon={<CheckmarkCircle24Regular fontSize={16} />}
-            metaText={`${data.tasks.completion_rate}% ${t('completed')}`}
+            metaText={
+              <Tooltip content={`${t('todo')}: ${data.tasks.status_breakdown.todo} | ${t('inProgress')}: ${data.tasks.status_breakdown.in_progress} | ${t('done')}: ${data.tasks.status_breakdown.done}`} relationship="description">
+                <span>{data.tasks.completion_rate}% {t('completed')}</span>
+              </Tooltip>
+            }
+            extraContent={
+              (data.tasks.overdue_count > 0 || data.tasks.due_today > 0) && (
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '2px' }}>
+                  {data.tasks.overdue_count > 0 && (
+                    <span style={{ color: tokens.colorPaletteRedForeground1, fontSize: '12px', fontWeight: 600 }}>
+                      {data.tasks.overdue_count} {t('overdue')}
+                    </span>
+                  )}
+                  {data.tasks.due_today > 0 && (
+                    <span style={{ color: tokens.colorPaletteYellowForeground1, fontSize: '11px' }}>
+                      {data.tasks.due_today} {t('dueToday')}
+                    </span>
+                  )}
+                </div>
+              )
+            }
+          />
+          <StatCard
+            icon={<VideoClip24Regular />}
+            iconColor={{ bg: tokens.colorPaletteGreenBackground2, color: tokens.colorPaletteGreenForeground1 }}
+            value={data.meetings.total_count}
+            label={t('totalMeetings')}
+            metaIcon={<Timer24Regular fontSize={16} />}
+            metaText={
+              <Tooltip content={`${t('avgDuration')}: ${data.meetings.average_duration_minutes} ${t('minutes')} | ${t('withBot')}: ${data.meetings.bot_usage_count} (${data.meetings.bot_usage_rate}%)`} relationship="description">
+                <span>{data.meetings.total_duration_minutes} {t('totalMinutes')}</span>
+              </Tooltip>
+            }
+            extraContent={
+              data.meetings.upcoming_count > 0 && (
+                <span style={{ color: tokens.colorPaletteBlueForeground2, fontSize: '12px', fontWeight: 600 }}>
+                  {data.meetings.upcoming_count} {t('upcoming')}
+                </span>
+              )
+            }
+          />
+          <StatCard
+            icon={<PeopleTeam24Regular />}
+            iconColor={{ bg: tokens.colorPaletteYellowBackground2, color: tokens.colorPaletteYellowForeground1 }}
+            value={data.projects.active_count}
+            label={t('activeProjects')}
+            metaText={
+              <Tooltip content={`${t('total')}: ${data.projects.total_count} | ${t('archived')}: ${data.projects.archived_count}`} relationship="description">
+                <span>{data.projects.owned_count} {t('owned')} • {data.projects.member_count} {t('member')}</span>
+              </Tooltip>
+            }
+          />
+          <StatCard
+            icon={<DocumentText24Regular />}
+            iconColor={{ bg: tokens.colorPaletteRedBackground2, color: tokens.colorPaletteRedForeground1 }}
+            value={data.storage.total_files}
+            label={t('filesUploaded')}
+            metaText={`${data.storage.total_size_mb} ${t('mbUsed')}`}
+            extraContent={
+              Object.keys(data.storage.files_by_type || {}).length > 0 && (
+                <Tooltip 
+                  content={Object.entries(data.storage.files_by_type).slice(0, 5).map(([type, count]) => `${type.split('/')[1] || type}: ${count}`).join(', ')}
+                  relationship="description"
+                >
+                  <Folder24Regular fontSize={16} style={{ color: tokens.colorNeutralForeground3 }} />
+                </Tooltip>
+              )
+            }
+          />
+          {/* Due This Week Card */}
+          <StatCard
+            icon={<CalendarCheckmark24Regular />}
+            iconColor={{ bg: tokens.colorPalettePurpleBackground2, color: tokens.colorPalettePurpleForeground2 }}
+            value={data.tasks.due_this_week}
+            label={t('dueThisWeek')}
+            metaText={
+              <Tooltip content={`${t('dueToday')}: ${data.tasks.due_today} | ${t('overdue')}: ${data.tasks.overdue_count}`} relationship="description">
+                <span>{data.tasks.due_today} {t('dueToday')}</span>
+              </Tooltip>
+            }
             extraContent={
               data.tasks.overdue_count > 0 && (
                 <span style={{ color: tokens.colorPaletteRedForeground1, fontSize: '12px', fontWeight: 600 }}>
@@ -297,40 +419,23 @@ const Dashboard: React.FC = () => {
               )
             }
           />
-          <StatCard
-            icon={<VideoClip24Regular />}
-            iconColor={{ bg: tokens.colorPaletteGreenBackground2, color: tokens.colorPaletteGreenForeground1 }}
-            value={data.meetings.total_count}
-            label={t('meetingsJoined')}
-            metaIcon={<Timer24Regular fontSize={16} />}
-            metaText={`${data.meetings.total_duration_minutes} ${t('totalMinutes')}`}
-          />
-          <StatCard
-            icon={<PeopleTeam24Regular />}
-            iconColor={{ bg: tokens.colorPaletteYellowBackground2, color: tokens.colorPaletteYellowForeground1 }}
-            value={data.projects.total_active}
-            label={t('activeProjects')}
-            metaText={`${data.projects.role_admin_count} ${t('adminsMembers')} ${data.projects.role_member_count}`}
-          />
-          <StatCard
-            icon={<DocumentText24Regular />}
-            iconColor={{ bg: tokens.colorPaletteRedBackground2, color: tokens.colorPaletteRedForeground1 }}
-            value={data.storage.total_files}
-            label={t('filesUploaded')}
-            metaText={`${data.storage.total_size_mb} ${t('mbUsed')}`}
-          />
         </StatsGrid>
       )}
 
-      {data && data.chart_data && data.chart_data.length > 0 && (
-        <ChartSection title={t('taskActivity')} data={data.chart_data} />
+      {/* Charts Section */}
+      {data && (data.tasks.chart_data?.length > 0 || data.meetings.chart_data?.length > 0) && (
+        <ChartSection
+          title={t('activityOverview')}
+          taskData={data.tasks.chart_data}
+          meetingData={data.meetings.chart_data}
+        />
       )}
 
-      {data && (!data.chart_data || data.chart_data.length === 0) && (
+      {data && (!data.tasks.chart_data || data.tasks.chart_data.length === 0) && (!data.meetings.chart_data || data.meetings.chart_data.length === 0) && (
         <MessageBar intent="warning">
           <MessageBarBody>
             <MessageBarTitle>{t('noChartData')}</MessageBarTitle>
-            No activity data available for the selected period
+            {t('noActivityDataForPeriod')}
           </MessageBarBody>
         </MessageBar>
       )}
@@ -342,7 +447,7 @@ const Dashboard: React.FC = () => {
             onViewAll={() => router.push('/meetings')}
             isEmpty={data.quick_access.upcoming_meetings.length === 0}
           >
-            {data.quick_access.upcoming_meetings.map((meeting: any) => (
+            {data.quick_access.upcoming_meetings.map((meeting: QuickAccessMeeting) => (
               <div
                 key={meeting.id}
                 className={styles.listItem}
@@ -363,9 +468,74 @@ const Dashboard: React.FC = () => {
                   <div className={styles.itemSubtitle}>
                     <Clock24Regular fontSize={16} />
                     {formatDate(meeting.start_time)}
+                    {meeting.project_names.length > 0 && (
+                      <span style={{ marginLeft: '6px' }}>• {meeting.project_names[0]}{meeting.project_names.length > 1 && ` +${meeting.project_names.length - 1}`}</span>
+                    )}
                   </div>
                 </div>
-                {getMeetingStatusBadge(meeting.status)}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  {meeting.has_transcript && (
+                    <Tooltip content={t('hasTranscript')} relationship="label">
+                      <DocumentBulletList24Regular fontSize={16} style={{ color: tokens.colorPaletteGreenForeground1 }} />
+                    </Tooltip>
+                  )}
+                  {meeting.has_recording && (
+                    <Tooltip content={t('hasRecording')} relationship="label">
+                      <Record24Regular fontSize={16} style={{ color: tokens.colorPaletteRedForeground1 }} />
+                    </Tooltip>
+                  )}
+                  {getMeetingStatusBadge(meeting.status)}
+                </div>
+              </div>
+            ))}
+          </ContentSection>
+
+          {/* Recent Meetings Section */}
+          <ContentSection
+            title={t('recentMeetings')}
+            onViewAll={() => router.push('/meetings')}
+            isEmpty={data.quick_access.recent_meetings.length === 0}
+            emptyMessage={t('noRecentMeetings')}
+          >
+            {data.quick_access.recent_meetings.map((meeting: QuickAccessMeeting) => (
+              <div
+                key={meeting.id}
+                className={styles.listItem}
+                onClick={() => router.push(`/meetings/${meeting.id}`)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    router.push(`/meetings/${meeting.id}`);
+                  }
+                }}
+              >
+                <div className={`${styles.itemIcon} ${styles.iconSuccess}`}>
+                  <History24Regular />
+                </div>
+                <div className={styles.itemContent}>
+                  <div className={styles.itemTitle}>{meeting.title || t('untitledMeeting')}</div>
+                  <div className={styles.itemSubtitle}>
+                    <Clock24Regular fontSize={16} />
+                    {formatDate(meeting.start_time)}
+                    {meeting.project_names.length > 0 && (
+                      <span style={{ marginLeft: '6px' }}>• {meeting.project_names[0]}{meeting.project_names.length > 1 && ` +${meeting.project_names.length - 1}`}</span>
+                    )}
+                  </div>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  {meeting.has_transcript && (
+                    <Tooltip content={t('hasTranscript')} relationship="label">
+                      <DocumentBulletList24Regular fontSize={16} style={{ color: tokens.colorPaletteGreenForeground1 }} />
+                    </Tooltip>
+                  )}
+                  {meeting.has_recording && (
+                    <Tooltip content={t('hasRecording')} relationship="label">
+                      <Record24Regular fontSize={16} style={{ color: tokens.colorPaletteRedForeground1 }} />
+                    </Tooltip>
+                  )}
+                  {getMeetingStatusBadge(meeting.status)}
+                </div>
               </div>
             ))}
           </ContentSection>
@@ -376,7 +546,7 @@ const Dashboard: React.FC = () => {
             isEmpty={data.quick_access.priority_tasks.length === 0}
             emptyMessage={t('noUrgentTasks')}
           >
-            {data.quick_access.priority_tasks.map((task: any) => (
+            {data.quick_access.priority_tasks.map((task: QuickAccessTask) => (
               <div
                 key={task.id}
                 className={styles.listItem}
@@ -389,14 +559,26 @@ const Dashboard: React.FC = () => {
                   }
                 }}
               >
-                <div className={`${styles.itemIcon} ${styles.iconDanger}`}>
-                  <Important24Regular />
+                <div className={`${styles.itemIcon} ${task.is_overdue ? styles.iconDanger : styles.iconWarning}`}>
+                  {task.is_overdue ? <Warning24Regular /> : <Important24Regular />}
                 </div>
                 <div className={styles.itemContent}>
                   <div className={styles.itemTitle}>{task.title}</div>
                   <div className={styles.itemSubtitle}>
-                    {task.project_name && <span>{task.project_name} • </span>}
+                    {task.project_names.length > 0 && (
+                      <span>{task.project_names[0]}{task.project_names.length > 1 && ` +${task.project_names.length - 1}`} • </span>
+                    )}
                     {t('due')}: {formatDate(task.due_date)}
+                    {task.is_overdue && (
+                      <Badge
+                        appearance="filled"
+                        color="danger"
+                        size="small"
+                        style={{ marginLeft: '6px' }}
+                      >
+                        {t('overdue')}
+                      </Badge>
+                    )}
                   </div>
                 </div>
                 {getStatusBadge(task.status)}
@@ -410,7 +592,7 @@ const Dashboard: React.FC = () => {
             isEmpty={data.quick_access.active_projects.length === 0}
             emptyMessage={t('noProjectsJoined')}
           >
-            {data.quick_access.active_projects.map((project: any) => (
+            {data.quick_access.active_projects.map((project: QuickAccessProject) => (
               <div
                 key={project.id}
                 className={styles.listItem}
@@ -429,7 +611,10 @@ const Dashboard: React.FC = () => {
                 <div className={styles.itemContent}>
                   <div className={styles.itemTitle}>{project.name}</div>
                   <div className={styles.itemSubtitle}>
-                    {tProjects('memberCount', { count: project.member_count || 0 })} • {project.role === 'admin' ? tProjects('roleAdmin') : tProjects('roleMember')}
+                    {tProjects('memberCount', { count: project.member_count || 0 })} • 
+                    {project.task_count > 0 && <span>{project.task_count} {t('tasks')} • </span>}
+                    {project.meeting_count > 0 && <span>{project.meeting_count} {t('meetings')} • </span>}
+                    {project.role === 'admin' || project.role === 'owner' ? tProjects('roleAdmin') : tProjects('roleMember')}
                   </div>
                 </div>
                 {getProjectStatusBadge(project)}

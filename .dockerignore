@@ -43,6 +43,7 @@ coverage/
 # Scripts (keep only essential)
 scripts/*
 !scripts/essential
+!scripts/validate-translations.js
 
 # Temporary files
 *.tmp
