@@ -2,10 +2,14 @@
 
 import {
   Card,
+  CardHeader,
+  CardFooter,
   Divider,
   makeStyles,
   shorthands,
   Text,
+  Caption1,
+  Badge,
   tokens
 } from '@fluentui/react-components';
 import {
@@ -16,87 +20,98 @@ import {
   Link20Regular,
   Play20Filled,
   Warning20Filled,
+  Calendar20Regular,
+  ArrowClockwise20Regular,
 } from '@fluentui/react-icons';
 import { BotResponse } from 'types/meetingBot.type';
 import { BotActionsMenu } from './BotActionsMenu';
+import { useTranslations } from 'next-intl';
+import { motion } from 'framer-motion';
 
 const useStyles = makeStyles({
   card: {
     display: 'flex',
     flexDirection: 'column',
-    gap: tokens.spacingVerticalM,
-    ...shorthands.padding(tokens.spacingVerticalL, tokens.spacingHorizontalL),
+    height: '100%',
+    minHeight: '280px',
     backgroundColor: tokens.colorNeutralBackground1,
     ...shorthands.border('1px', 'solid', tokens.colorNeutralStroke2),
     ...shorthands.borderRadius(tokens.borderRadiusXLarge),
     boxShadow: tokens.shadow4,
-    transition: 'all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+    transitionProperty: 'transform, box-shadow, border-color',
+    transitionDuration: '0.3s',
+    transitionTimingFunction: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
     position: 'relative',
     overflow: 'hidden',
-    ':before': {
-      content: '""',
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      right: 0,
-      height: '3px',
-      backgroundColor: tokens.colorBrandBackground,
-      opacity: 0,
-      transition: 'opacity 0.3s ease',
-    },
     ':hover': {
-      boxShadow: tokens.shadow8,
-      transform: 'translateY(-2px)',
-      ':before': {
-        opacity: 1,
-      },
+      boxShadow: tokens.shadow16,
+      transform: 'translateY(-4px)',
+      ...shorthands.border('1px', 'solid', tokens.colorBrandStroke1),
     },
   },
+  cardAccent: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: '3px',
+    backgroundColor: tokens.colorBrandBackground,
+  },
+  cardAccentActive: {
+    backgroundColor: tokens.colorPaletteGreenBackground3,
+  },
+  cardAccentFailed: {
+    backgroundColor: tokens.colorPaletteRedBackground3,
+  },
+  cardAccentPending: {
+    backgroundColor: tokens.colorPaletteYellowBackground3,
+  },
   header: {
+    ...shorthands.padding('20px', '20px', '12px'),
+  },
+  headerContent: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    gap: tokens.spacingHorizontalM,
-    paddingTop: tokens.spacingVerticalXS,
+    ...shorthands.gap('12px'),
   },
   info: {
     display: 'flex',
     flexDirection: 'column',
-    gap: tokens.spacingVerticalXS,
+    ...shorthands.gap('8px'),
     flex: 1,
     minWidth: 0,
   },
   title: {
-    fontSize: '16px',
-    fontWeight: 600,
+    fontSize: tokens.fontSizeBase500,
+    fontWeight: tokens.fontWeightSemibold,
     color: tokens.colorNeutralForeground1,
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
-    lineHeight: '24px',
+    lineHeight: tokens.lineHeightBase500,
   },
   url: {
-    fontSize: '12px',
-    color: tokens.colorNeutralForeground2,
+    fontSize: tokens.fontSizeBase200,
+    color: tokens.colorNeutralForeground3,
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
     display: 'flex',
     alignItems: 'center',
-    gap: tokens.spacingHorizontalXS,
+    ...shorthands.gap('6px'),
   },
   statusBadge: {
     display: 'flex',
     alignItems: 'center',
-    gap: tokens.spacingHorizontalXS,
+    ...shorthands.gap('6px'),
     ...shorthands.padding('6px', '12px'),
     ...shorthands.borderRadius(tokens.borderRadiusMedium),
-    fontSize: '12px',
-    fontWeight: 600,
+    fontSize: tokens.fontSizeBase100,
+    fontWeight: tokens.fontWeightSemibold,
     textTransform: 'uppercase',
     letterSpacing: '0.5px',
     flexShrink: 0,
-    boxShadow: tokens.shadow2,
   },
   statusPending: {
     backgroundColor: tokens.colorPaletteYellowBackground2,
@@ -109,7 +124,6 @@ const useStyles = makeStyles({
   statusActive: {
     backgroundColor: tokens.colorPaletteGreenBackground2,
     color: tokens.colorPaletteGreenForeground1,
-    boxShadow: `${tokens.shadow2}, 0 0 8px ${tokens.colorPaletteGreenBackground1}`,
   },
   statusCompleted: {
     backgroundColor: tokens.colorPaletteLightGreenBackground2,
@@ -123,62 +137,60 @@ const useStyles = makeStyles({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    fontSize: '16px',
+    fontSize: '14px',
   },
-  details: {
+  body: {
+    ...shorthands.padding('0', '20px', '16px'),
     display: 'flex',
     flexDirection: 'column',
-    gap: tokens.spacingVerticalM,
-  },
-  detailsSection: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: tokens.spacingVerticalS,
+    ...shorthands.gap('12px'),
+    flexGrow: 1,
   },
   detailRow: {
     display: 'flex',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    fontSize: '13px',
+    ...shorthands.gap('8px'),
+    fontSize: tokens.fontSizeBase200,
     color: tokens.colorNeutralForeground2,
-    paddingBottom: tokens.spacingVerticalXS,
+  },
+  detailIcon: {
+    color: tokens.colorNeutralForeground3,
+    flexShrink: 0,
   },
   detailLabel: {
-    fontWeight: 500,
+    fontWeight: tokens.fontWeightMedium,
     color: tokens.colorNeutralForeground1,
   },
   detailValue: {
     color: tokens.colorNeutralForeground2,
-    textAlign: 'right',
-    maxWidth: '50%',
+    marginLeft: 'auto',
   },
   errorSection: {
-    ...shorthands.padding(tokens.spacingVerticalS, tokens.spacingHorizontalS),
-    backgroundColor: tokens.colorPaletteRedBackground3,
-    ...shorthands.borderRadius(tokens.borderRadiusSmall),
+    ...shorthands.padding('12px'),
+    backgroundColor: tokens.colorPaletteRedBackground1,
+    ...shorthands.borderRadius(tokens.borderRadiusMedium),
     ...shorthands.border('1px', 'solid', tokens.colorPaletteRedBorder1),
   },
   errorText: {
     color: tokens.colorPaletteRedForeground1,
     wordBreak: 'break-word',
-    fontSize: '12px',
-    lineHeight: '16px',
+    fontSize: tokens.fontSizeBase200,
+    lineHeight: tokens.lineHeightBase200,
     display: 'flex',
-    gap: tokens.spacingHorizontalXS,
+    ...shorthands.gap('8px'),
     alignItems: 'flex-start',
   },
   errorIcon: {
     flexShrink: 0,
     marginTop: '2px',
   },
-  divider: {
-    marginTop: tokens.spacingVerticalXS,
-    marginBottom: tokens.spacingVerticalXS,
-  },
   footer: {
+    ...shorthands.padding('12px', '20px'),
+    borderTop: `1px solid ${tokens.colorNeutralStroke2}`,
     display: 'flex',
+    alignItems: 'center',
     justifyContent: 'flex-end',
-    paddingTop: tokens.spacingVerticalXS,
+    backgroundColor: tokens.colorNeutralBackground2,
   },
 });
 
@@ -198,6 +210,7 @@ export function BotCard({
   onViewLogs,
 }: BotCardProps) {
   const styles = useStyles();
+  const t = useTranslations('Bots');
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -233,9 +246,40 @@ export function BotCard({
     }
   };
 
+  const getAccentClass = (status: string) => {
+    switch (status) {
+      case 'active':
+        return styles.cardAccentActive;
+      case 'failed':
+        return styles.cardAccentFailed;
+      case 'pending':
+      case 'scheduled':
+        return styles.cardAccentPending;
+      default:
+        return styles.cardAccent;
+    }
+  };
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'pending':
+        return t('statusPending');
+      case 'scheduled':
+        return t('statusScheduled');
+      case 'active':
+        return t('statusInProgress');
+      case 'completed':
+        return t('statusCompleted');
+      case 'failed':
+        return t('statusFailed');
+      default:
+        return t('statusUnknown');
+    }
+  };
+
   const formatDate = (dateString: string | null) => {
     if (!dateString) return '-';
-    return new Date(dateString).toLocaleDateString('en-US', {
+    return new Date(dateString).toLocaleDateString('vi-VN', {
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
@@ -244,49 +288,60 @@ export function BotCard({
   };
 
   return (
-    <Card className={styles.card}>
-      <div className={styles.header}>
-        <div className={styles.info}>
-          <Text className={styles.title}>{meetingTitle}</Text>
-          {bot.meeting_url && (
-            <Text className={styles.url}>
-              <Link20Regular />
-              {bot.meeting_url}
-            </Text>
-          )}
-        </div>
-        <div className={`${styles.statusBadge} ${getStatusStyleClass(bot.status)}`}>
-          <span className={styles.statusIcon}>{getStatusIcon(bot.status)}</span>
-          <span>{bot.status}</span>
-        </div>
-      </div>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      <Card className={styles.card}>
+        <div className={`${styles.cardAccent} ${getAccentClass(bot.status)}`} />
+        
+        <CardHeader
+          className={styles.header}
+          header={
+            <div className={styles.headerContent}>
+              <div className={styles.info}>
+                <Text className={styles.title}>{meetingTitle}</Text>
+                {bot.meeting_url && (
+                  <Text className={styles.url}>
+                    <Link20Regular />
+                    {bot.meeting_url}
+                  </Text>
+                )}
+              </div>
+              <div className={`${styles.statusBadge} ${getStatusStyleClass(bot.status)}`}>
+                <span className={styles.statusIcon}>{getStatusIcon(bot.status)}</span>
+                <span>{getStatusLabel(bot.status)}</span>
+              </div>
+            </div>
+          }
+        />
 
-      <Divider className={styles.divider} />
-
-      <div className={styles.details}>
-        <div className={styles.detailsSection}>
+        <div className={styles.body}>
           <div className={styles.detailRow}>
-            <span className={styles.detailLabel}>Created</span>
+            <Calendar20Regular className={styles.detailIcon} />
+            <span className={styles.detailLabel}>{t('created')}</span>
             <span className={styles.detailValue}>{formatDate(bot.created_at)}</span>
           </div>
+          
           {bot.actual_start_time && (
             <div className={styles.detailRow}>
-              <span className={styles.detailLabel}>Started</span>
+              <Play20Filled className={styles.detailIcon} />
+              <span className={styles.detailLabel}>{t('started')}</span>
               <span className={styles.detailValue}>{formatDate(bot.actual_start_time)}</span>
             </div>
           )}
+          
           <div className={styles.detailRow}>
-            <span className={styles.detailLabel}>Retries</span>
+            <ArrowClockwise20Regular className={styles.detailIcon} />
+            <span className={styles.detailLabel}>{t('retries')}</span>
             <span className={styles.detailValue}>
               {bot.retry_count}
               {bot.retry_count > 0 && <Checkmark20Regular />}
             </span>
           </div>
-        </div>
 
-        {bot.last_error && (
-          <>
-            <Divider className={styles.divider} />
+          {bot.last_error && (
             <div className={styles.errorSection}>
               <div className={styles.errorText}>
                 <span className={styles.errorIcon}>
@@ -295,21 +350,19 @@ export function BotCard({
                 <span>{bot.last_error}</span>
               </div>
             </div>
-          </>
-        )}
-      </div>
+          )}
+        </div>
 
-      <Divider className={styles.divider} />
-
-      <div className={styles.footer}>
-        <BotActionsMenu
-          botId={bot.id}
-          status={bot.status}
-          onStatusChange={onStatusChange}
-          onDelete={onDelete}
-          onViewLogs={onViewLogs}
-        />
-      </div>
-    </Card>
+        <CardFooter className={styles.footer}>
+          <BotActionsMenu
+            botId={bot.id}
+            status={bot.status}
+            onStatusChange={onStatusChange}
+            onDelete={onDelete}
+            onViewLogs={onViewLogs}
+          />
+        </CardFooter>
+      </Card>
+    </motion.div>
   );
 }

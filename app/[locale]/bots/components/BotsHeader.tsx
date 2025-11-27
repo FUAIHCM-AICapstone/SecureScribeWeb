@@ -6,17 +6,21 @@ import {
   Input,
   Text,
   Caption1,
+  Title1,
+  Body1,
   makeStyles,
   tokens,
   shorthands,
+  ToggleButton,
 } from '@fluentui/react-components';
 import {
-  GridRegular,
-  ListRegular,
+  Grid20Regular,
+  List20Regular,
   Search20Regular,
   Record24Regular,
 } from '@fluentui/react-icons';
 import { useTranslations } from 'next-intl';
+import { motion } from 'framer-motion';
 
 const useStyles = makeStyles({
   header: {
@@ -24,14 +28,24 @@ const useStyles = makeStyles({
     flexDirection: 'column',
     ...shorthands.gap('20px'),
     marginBottom: '32px',
-    ...shorthands.padding('24px'),
+    ...shorthands.padding('28px', '32px'),
     backgroundColor: tokens.colorNeutralBackground1,
-    ...shorthands.borderRadius('16px'),
-    ...shorthands.border('1px', 'solid', tokens.colorNeutralStroke2),
-    boxShadow: tokens.shadow4,
+    ...shorthands.borderRadius(tokens.borderRadiusXLarge),
+    ...shorthands.border('1px', 'solid', tokens.colorNeutralStroke1),
+    boxShadow: tokens.shadow8,
+    position: 'relative',
+    overflow: 'hidden',
     '@media (max-width: 768px)': {
-      ...shorthands.padding('16px'),
+      ...shorthands.padding('20px', '16px'),
     },
+  },
+  headerAccent: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: '4px',
+    backgroundColor: tokens.colorBrandBackground,
   },
   topRow: {
     display: 'flex',
@@ -39,8 +53,14 @@ const useStyles = makeStyles({
     alignItems: 'center',
     flexWrap: 'wrap',
     ...shorthands.gap('16px'),
+    zIndex: 1,
   },
-  titleContainer: {
+  titleSection: {
+    display: 'flex',
+    flexDirection: 'column',
+    ...shorthands.gap('8px'),
+  },
+  titleRow: {
     display: 'flex',
     alignItems: 'center',
     ...shorthands.gap('12px'),
@@ -57,19 +77,28 @@ const useStyles = makeStyles({
     color: tokens.colorNeutralForegroundOnBrand,
   },
   title: {
+    color: tokens.colorNeutralForeground1,
     fontSize: tokens.fontSizeHero900,
-    fontWeight: 700,
-    color: tokens.colorBrandForeground1,
+    fontWeight: tokens.fontWeightBold,
+    lineHeight: tokens.lineHeightHero900,
+  },
+  subtitle: {
+    color: tokens.colorNeutralForeground3,
+    fontSize: tokens.fontSizeBase300,
+    lineHeight: tokens.lineHeightBase300,
+    maxWidth: '500px',
   },
   viewToggle: {
     display: 'flex',
     ...shorthands.gap('8px'),
+    alignItems: 'center',
   },
   filtersRow: {
     display: 'flex',
     flexWrap: 'wrap',
     alignItems: 'center',
-    ...shorthands.gap('12px'),
+    ...shorthands.gap('16px'),
+    zIndex: 1,
   },
   searchGroup: {
     display: 'flex',
@@ -80,14 +109,25 @@ const useStyles = makeStyles({
   searchInput: {
     minWidth: '280px',
     flexGrow: 1,
+    backgroundColor: tokens.colorNeutralBackground2,
+    ...shorthands.borderRadius(tokens.borderRadiusLarge),
     '@media (max-width: 768px)': {
       minWidth: '100%',
       width: '100%',
     },
   },
+  countBadge: {
+    display: 'flex',
+    alignItems: 'center',
+    ...shorthands.gap('8px'),
+    ...shorthands.padding('8px', '16px'),
+    backgroundColor: tokens.colorNeutralBackground2,
+    ...shorthands.borderRadius(tokens.borderRadiusLarge),
+    ...shorthands.border('1px', 'solid', tokens.colorNeutralStroke2),
+  },
   countText: {
     color: tokens.colorNeutralForeground2,
-    marginLeft: 'auto',
+    fontWeight: tokens.fontWeightSemibold,
   },
 });
 
@@ -131,26 +171,38 @@ export function BotsHeader({
   };
 
   return (
-    <div className={styles.header}>
+    <motion.div
+      className={styles.header}
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      <div className={styles.headerAccent} />
+      
       <div className={styles.topRow}>
-        <div className={styles.titleContainer}>
-          <div className={styles.iconBadge}>
-            <Record24Regular />
+        <div className={styles.titleSection}>
+          <div className={styles.titleRow}>
+            <div className={styles.iconBadge}>
+              <Record24Regular />
+            </div>
+            <Title1 className={styles.title}>{t('title')}</Title1>
           </div>
-          <Text className={styles.title}>{t('meetingRecordings')}</Text>
+          <Body1 className={styles.subtitle}>{t('description')}</Body1>
         </div>
         <div className={styles.viewToggle}>
-          <Button
-            appearance={viewMode === 'grid' ? 'primary' : 'secondary'}
-            icon={<GridRegular />}
+          <ToggleButton
+            appearance={viewMode === 'grid' ? 'primary' : 'outline'}
+            icon={<Grid20Regular />}
+            checked={viewMode === 'grid'}
             onClick={() => onViewModeChange('grid')}
-            title={t('gridView')}
+            aria-label={t('gridView')}
           />
-          <Button
-            appearance={viewMode === 'list' ? 'primary' : 'secondary'}
-            icon={<ListRegular />}
+          <ToggleButton
+            appearance={viewMode === 'list' ? 'primary' : 'outline'}
+            icon={<List20Regular />}
+            checked={viewMode === 'list'}
             onClick={() => onViewModeChange('list')}
-            title={t('listView')}
+            aria-label={t('listView')}
           />
         </div>
       </div>
@@ -159,7 +211,7 @@ export function BotsHeader({
         <div className={styles.searchGroup}>
           <Input
             className={styles.searchInput}
-            placeholder={t('searchMeetings')}
+            placeholder={t('searchPlaceholder')}
             value={localSearch}
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}
@@ -167,7 +219,7 @@ export function BotsHeader({
             appearance="outline"
           />
           <Button
-            appearance="secondary"
+            appearance="primary"
             icon={<Search20Regular />}
             onClick={handleSearchSubmit}
           >
@@ -175,10 +227,12 @@ export function BotsHeader({
           </Button>
         </div>
 
-        <Caption1 className={styles.countText}>
-          {t('totalBots', { count: totalCount })}
-        </Caption1>
+        <div className={styles.countBadge}>
+          <Caption1 className={styles.countText}>
+            {t('totalBots', { count: totalCount })}
+          </Caption1>
+        </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
