@@ -27,6 +27,7 @@ import {
   ClipboardTaskListLtr24Regular,
   Person24Regular,
   Chat24Regular,
+  Bot24Regular,
 } from '@fluentui/react-icons';
 
 const useStyles = makeStyles({
@@ -173,6 +174,7 @@ export default function Sidebar({ className }: SidebarProps) {
       icon: <Person24Regular />,
     },
     { key: 'chat', label: t('chat'), href: '/chat', icon: <Chat24Regular /> },
+    { key: 'bots', label: t('bots'), href: '/bots', icon: <Bot24Regular /> },
   ];
 
   return (
@@ -232,84 +234,10 @@ export default function Sidebar({ className }: SidebarProps) {
               </div>
             </div>
             <Accordion multiple collapsible>
-              <AccordionItem value="management">
-                <AccordionHeader>
-                  {tSafe('management', 'Management')}
-                </AccordionHeader>
-                <AccordionPanel>
-                  <List>
-                    <ListItem>
-                      <ToggleButton
-                        appearance="subtle"
-                        size="large"
-                        className={styles.toggleButton}
-                        checked={isActive('/bots')}
-                        onClick={() => {
-                          router.push('/bots', { locale });
-                        }}
-                      >
-                        {tSafe('bots', 'Bots & Automations')}
-                      </ToggleButton>
-                    </ListItem>
-                    <ListItem>
-                      <ToggleButton
-                        appearance="subtle"
-                        size="large"
-                        className={styles.toggleButton}
-                        checked={isActive('/integrations')}
-                        onClick={() => {
-                          router.push('/integrations', { locale });
-                        }}
-                      >
-                        {tSafe('integrations', 'Integrations')}
-                      </ToggleButton>
-                    </ListItem>
-                    <ListItem>
-                      <ToggleButton
-                        appearance="subtle"
-                        size="large"
-                        className={styles.toggleButton}
-                        checked={isActive('/reports')}
-                        onClick={() => {
-                          router.push('/reports', { locale });
-                        }}
-                      >
-                        {tSafe('reports', 'Reports & Analytics')}
-                      </ToggleButton>
-                    </ListItem>
-                    <ListItem>
-                      <ToggleButton
-                        appearance="subtle"
-                        size="large"
-                        className={styles.toggleButton}
-                        checked={isActive('/settings')}
-                        onClick={() => {
-                          router.push('/settings', { locale });
-                        }}
-                      >
-                        {tSafe('settings', 'Settings')}
-                      </ToggleButton>
-                    </ListItem>
-                  </List>
-                </AccordionPanel>
-              </AccordionItem>
               <AccordionItem value="extra">
                 <AccordionHeader>{t('extra')}</AccordionHeader>
                 <AccordionPanel>
                   <List>
-                    <ListItem>
-                      <ToggleButton
-                        appearance="subtle"
-                        size="large"
-                        className={styles.toggleButton}
-                        checked={isActive('/help')}
-                        onClick={() => {
-                          router.push('/help', { locale });
-                        }}
-                      >
-                        {t('help')}
-                      </ToggleButton>
-                    </ListItem>
                     <ListItem>
                       <ToggleButton
                         appearance="subtle"
@@ -334,19 +262,6 @@ export default function Sidebar({ className }: SidebarProps) {
                         }}
                       >
                         {tSafe('terms', 'Terms of Service')}
-                      </ToggleButton>
-                    </ListItem>
-                    <ListItem>
-                      <ToggleButton
-                        appearance="subtle"
-                        size="large"
-                        className={styles.toggleButton}
-                        checked={isActive('/about')}
-                        onClick={() => {
-                          router.push('/about', { locale });
-                        }}
-                      >
-                        {t('about')}
                       </ToggleButton>
                     </ListItem>
                   </List>
