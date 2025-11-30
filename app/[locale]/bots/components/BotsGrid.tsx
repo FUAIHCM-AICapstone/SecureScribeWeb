@@ -1,24 +1,23 @@
 'use client';
 
 import React from 'react';
-import { makeStyles, tokens } from '@fluentui/react-components';
+import { makeStyles, shorthands, tokens } from '@fluentui/react-components';
 import type { BotResponse } from 'types/meetingBot.type';
 import { BotCard } from './BotCard';
 
 const useStyles = makeStyles({
   grid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))',
-    gap: tokens.spacingHorizontalXL,
+    gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
+    ...shorthands.gap(tokens.spacingHorizontalL),
     '@media (min-width: 1200px)': {
       gridTemplateColumns: 'repeat(3, 1fr)',
     },
     '@media (min-width: 768px) and (max-width: 1199px)': {
       gridTemplateColumns: 'repeat(2, 1fr)',
     },
-    '@media (max-width: 768px)': {
+    '@media (max-width: 767px)': {
       gridTemplateColumns: '1fr',
-      gap: tokens.spacingHorizontalL,
     },
   },
 });

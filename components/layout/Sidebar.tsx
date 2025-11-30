@@ -142,40 +142,40 @@ export default function Sidebar({ className }: SidebarProps) {
     href: string;
     icon: React.ReactNode;
   }> = [
-    { key: 'home', label: t('home'), href: '/', icon: <Home24Regular /> },
-    {
-      key: 'files',
-      label: t('files'),
-      href: '/files',
-      icon: <Folder24Regular />,
-    },
-    {
-      key: 'meetings',
-      label: t('meetings'),
-      href: '/meetings',
-      icon: <CalendarLtr24Regular />,
-    },
-    {
-      key: 'projects',
-      label: t('projects'),
-      href: '/projects',
-      icon: <Briefcase24Regular />,
-    },
-    {
-      key: 'tasks',
-      label: t('tasks'),
-      href: '/tasks',
-      icon: <ClipboardTaskListLtr24Regular />,
-    },
-    {
-      key: 'profile',
-      label: t('profile'),
-      href: '/profile',
-      icon: <Person24Regular />,
-    },
-    { key: 'chat', label: t('chat'), href: '/chat', icon: <Chat24Regular /> },
-    { key: 'bots', label: t('bots'), href: '/bots', icon: <Bot24Regular /> },
-  ];
+      { key: 'home', label: t('home'), href: '/', icon: <Home24Regular /> },
+      {
+        key: 'files',
+        label: t('files'),
+        href: '/files',
+        icon: <Folder24Regular />,
+      },
+      {
+        key: 'meetings',
+        label: t('meetings'),
+        href: '/meetings',
+        icon: <CalendarLtr24Regular />,
+      },
+      {
+        key: 'projects',
+        label: t('projects'),
+        href: '/projects',
+        icon: <Briefcase24Regular />,
+      },
+      {
+        key: 'tasks',
+        label: t('tasks'),
+        href: '/tasks',
+        icon: <ClipboardTaskListLtr24Regular />,
+      },
+      {
+        key: 'profile',
+        label: t('profile'),
+        href: '/profile',
+        icon: <Person24Regular />,
+      },
+      { key: 'chat', label: t('chat'), href: '/chat', icon: <Chat24Regular /> },
+      { key: 'bots', label: t('bots'), href: '/bots', icon: <Bot24Regular /> },
+    ];
 
   return (
     <aside
@@ -190,11 +190,11 @@ export default function Sidebar({ className }: SidebarProps) {
       style={
         drawerType === 'overlay'
           ? {
-              width: 0,
-              borderRight: 'none',
-              background: 'transparent',
-              overflow: 'visible',
-            }
+            width: 0,
+            borderRight: 'none',
+            background: 'transparent',
+            overflow: 'visible',
+          }
           : undefined
       }
     >

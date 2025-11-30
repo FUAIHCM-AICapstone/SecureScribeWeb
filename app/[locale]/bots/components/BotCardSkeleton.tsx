@@ -4,6 +4,7 @@ import React from 'react';
 import {
   Card,
   Skeleton,
+  SkeletonItem,
   makeStyles,
   shorthands,
   tokens,
@@ -13,30 +14,49 @@ const useStyles = makeStyles({
   card: {
     display: 'flex',
     flexDirection: 'column',
-    gap: tokens.spacingVerticalM,
-    ...shorthands.padding(tokens.spacingVerticalL),
+    minHeight: '280px',
     backgroundColor: tokens.colorNeutralBackground1,
     ...shorthands.border('1px', 'solid', tokens.colorNeutralStroke2),
     ...shorthands.borderRadius(tokens.borderRadiusXLarge),
-  },
-  skeleton: {
-    height: '20px',
-    borderRadius: tokens.borderRadiusSmall,
-  },
-  skeletonShort: {
-    height: '16px',
-    borderRadius: tokens.borderRadiusSmall,
-    maxWidth: '70%',
+    ...shorthands.overflow('hidden'),
   },
   header: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    gap: tokens.spacingHorizontalM,
+    ...shorthands.padding('16px', '16px', '8px'),
   },
-  details: {
+  body: {
+    ...shorthands.padding('0', '16px', '16px'),
     display: 'flex',
     flexDirection: 'column',
-    gap: tokens.spacingVerticalXS,
+    ...shorthands.gap('12px'),
+    flexGrow: 1,
+  },
+  footer: {
+    ...shorthands.padding('12px', '16px'),
+    borderTop: `1px solid ${tokens.colorNeutralStroke2}`,
+    display: 'flex',
+    justifyContent: 'flex-end',
+  },
+  skeletonTitle: {
+    height: '20px',
+    width: '70%',
+  },
+  skeletonBadge: {
+    height: '24px',
+    width: '80px',
+    ...shorthands.borderRadius(tokens.borderRadiusMedium),
+  },
+  skeletonRow: {
+    height: '16px',
+    width: '100%',
+  },
+  skeletonRowShort: {
+    height: '16px',
+    width: '60%',
+  },
+  skeletonButton: {
+    height: '32px',
+    width: '32px',
+    ...shorthands.borderRadius(tokens.borderRadiusMedium),
   },
 });
 
@@ -46,19 +66,31 @@ export function BotCardSkeleton() {
   return (
     <Card className={styles.card}>
       <div className={styles.header}>
-        <div style={{ flex: 1 }}>
-          <Skeleton className={styles.skeleton} />
-          <Skeleton className={styles.skeletonShort} style={{ marginTop: '8px' }} />
-        </div>
+        <Skeleton>
+          <SkeletonItem className={styles.skeletonTitle} />
+        </Skeleton>
       </div>
 
-      <div className={styles.details}>
-        <Skeleton className={styles.skeleton} />
-        <Skeleton className={styles.skeleton} />
-        <Skeleton className={styles.skeletonShort} />
+      <div className={styles.body}>
+        <Skeleton>
+          <SkeletonItem className={styles.skeletonBadge} />
+        </Skeleton>
+        <Skeleton>
+          <SkeletonItem className={styles.skeletonRow} />
+        </Skeleton>
+        <Skeleton>
+          <SkeletonItem className={styles.skeletonRow} />
+        </Skeleton>
+        <Skeleton>
+          <SkeletonItem className={styles.skeletonRowShort} />
+        </Skeleton>
       </div>
 
-      <Skeleton className={styles.skeleton} />
+      <div className={styles.footer}>
+        <Skeleton>
+          <SkeletonItem className={styles.skeletonButton} />
+        </Skeleton>
+      </div>
     </Card>
   );
 }

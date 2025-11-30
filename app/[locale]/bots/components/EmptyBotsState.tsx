@@ -1,10 +1,9 @@
 'use client';
 
 import React from 'react';
-import { Text, makeStyles, shorthands, tokens } from '@fluentui/react-components';
-import { Record48Regular, Search24Regular } from '@fluentui/react-icons';
+import { Text, Caption1, makeStyles, shorthands, tokens } from '@fluentui/react-components';
+import { Record20Regular, Search20Regular } from '@fluentui/react-icons';
 import { useTranslations } from 'next-intl';
-import { motion } from 'framer-motion';
 
 const useStyles = makeStyles({
   container: {
@@ -12,10 +11,10 @@ const useStyles = makeStyles({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    ...shorthands.padding('80px', '24px'),
-    minHeight: '400px',
+    ...shorthands.padding('64px', '24px'),
+    minHeight: '360px',
     textAlign: 'center',
-    ...shorthands.gap('20px'),
+    ...shorthands.gap('16px'),
     backgroundColor: tokens.colorNeutralBackground1,
     ...shorthands.borderRadius(tokens.borderRadiusXLarge),
     ...shorthands.border('1px', 'dashed', tokens.colorNeutralStroke2),
@@ -24,18 +23,18 @@ const useStyles = makeStyles({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    width: '96px',
-    height: '96px',
+    width: '80px',
+    height: '80px',
     ...shorthands.borderRadius(tokens.borderRadiusCircular),
     backgroundColor: tokens.colorNeutralBackground3,
     color: tokens.colorNeutralForeground3,
   },
   icon: {
-    fontSize: '48px',
+    fontSize: '40px',
   },
   title: {
-    fontSize: tokens.fontSizeBase600,
-    fontWeight: tokens.fontWeightSemibold,
+    fontSize: tokens.fontSizeBase500,
+    fontWeight: 600,
     color: tokens.colorNeutralForeground1,
   },
   message: {
@@ -55,25 +54,20 @@ export function EmptyBotsState({ isFiltered }: EmptyBotsStateProps) {
   const t = useTranslations('Bots');
 
   return (
-    <motion.div
-      className={styles.container}
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.3 }}
-    >
+    <div className={styles.container}>
       <div className={styles.iconWrapper}>
         {isFiltered ? (
-          <Search24Regular className={styles.icon} />
+          <Search20Regular className={styles.icon} />
         ) : (
-          <Record48Regular className={styles.icon} />
+          <Record20Regular className={styles.icon} />
         )}
       </div>
       <Text className={styles.title}>
         {isFiltered ? t('noSearchResults') : t('noMeetings')}
       </Text>
-      <Text className={styles.message}>
+      <Caption1 className={styles.message}>
         {isFiltered ? t('tryDifferentSearch') : t('createMeetingToRecord')}
-      </Text>
-    </motion.div>
+      </Caption1>
+    </div>
   );
 }

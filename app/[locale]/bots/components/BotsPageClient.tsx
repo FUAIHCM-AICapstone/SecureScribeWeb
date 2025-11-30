@@ -29,15 +29,15 @@ import { BotDetailsModal } from './BotDetailsModal';
 const useStyles = makeStyles({
   container: {
     width: '100%',
-    maxWidth: '1600px',
+    maxWidth: '1400px',
     margin: '0 auto',
-    ...shorthands.padding('40px', '32px', '24px'),
+    ...shorthands.padding('24px', '24px'),
     '@media (max-width: 768px)': {
-      ...shorthands.padding('24px', '16px', '16px'),
+      ...shorthands.padding('16px', '12px'),
     },
   },
   content: {
-    marginBottom: '32px',
+    marginBottom: '24px',
   },
   errorContainer: {
     display: 'flex',
@@ -45,12 +45,15 @@ const useStyles = makeStyles({
     alignItems: 'center',
     justifyContent: 'center',
     ...shorthands.padding('64px', '24px'),
-    minHeight: '400px',
+    minHeight: '360px',
     textAlign: 'center',
     ...shorthands.gap('16px'),
+    backgroundColor: tokens.colorNeutralBackground1,
+    ...shorthands.borderRadius(tokens.borderRadiusXLarge),
+    ...shorthands.border('1px', 'solid', tokens.colorNeutralStroke2),
   },
   errorTitle: {
-    fontSize: '20px',
+    fontSize: tokens.fontSizeBase500,
     fontWeight: 600,
     color: tokens.colorPaletteRedForeground1,
   },
@@ -64,7 +67,6 @@ const useStyles = makeStyles({
     gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
     '@media (min-width: 1200px)': {
       gridTemplateColumns: 'repeat(3, 1fr)',
-      ...shorthands.gap(tokens.spacingHorizontalXL),
     },
     '@media (min-width: 768px) and (max-width: 1199px)': {
       gridTemplateColumns: 'repeat(2, 1fr)',
@@ -74,28 +76,14 @@ const useStyles = makeStyles({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    ...shorthands.gap('16px'),
-    ...shorthands.padding('24px', '0'),
+    ...shorthands.gap('12px'),
+    ...shorthands.padding('16px', '0'),
   },
   pageInfo: {
-    minWidth: '120px',
+    minWidth: '100px',
     textAlign: 'center',
     color: tokens.colorNeutralForeground2,
-  },
-  loadingIndicator: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    ...shorthands.gap('12px'),
-    ...shorthands.padding('16px'),
-    backgroundColor: tokens.colorNeutralBackground1,
-    ...shorthands.borderRadius(tokens.borderRadiusMedium),
-    ...shorthands.border('1px', 'solid', tokens.colorNeutralStroke2),
-    marginBottom: '16px',
-  },
-  loadingText: {
-    color: tokens.colorNeutralForeground2,
-    fontSize: '14px',
+    fontSize: tokens.fontSizeBase200,
   },
 });
 

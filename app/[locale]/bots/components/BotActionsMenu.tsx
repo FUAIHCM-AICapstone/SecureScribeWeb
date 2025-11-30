@@ -5,9 +5,9 @@ import {
   Button,
   Menu,
   MenuItem,
+  MenuList,
   MenuPopover,
   MenuTrigger,
-  makeStyles,
 } from '@fluentui/react-components';
 import {
   MoreVertical20Regular,
@@ -16,13 +16,6 @@ import {
   Delete20Regular,
 } from '@fluentui/react-icons';
 import { useTranslations } from 'next-intl';
-
-const useStyles = makeStyles({
-  container: {
-    display: 'flex',
-    justifyContent: 'flex-end',
-  },
-});
 
 interface BotActionsMenuProps {
   botId: string;
@@ -39,26 +32,22 @@ export function BotActionsMenu({
   onDelete,
   onViewLogs,
 }: BotActionsMenuProps) {
-  const styles = useStyles();
   const t = useTranslations('Bots');
   const [isOpen, setIsOpen] = useState(false);
 
   const canRetry = status === 'failed';
 
   return (
-    <div className={styles.container}>
-      <Menu
-        open={isOpen}
-        onOpenChange={(e, data) => setIsOpen(data.open)}
-      >
-        <MenuTrigger disableButtonEnhancement>
-          <Button
-            appearance="subtle"
-            icon={<MoreVertical20Regular />}
-            title="Actions"
-          />
-        </MenuTrigger>
-        <MenuPopover>
+    <Menu open={isOpen} onOpenChange={(e, data) => setIsOpen(data.open)}>
+      <MenuTrigger disableButtonEnhancement>
+        <Button
+          appearance="subtle"
+          icon={<MoreVertical20Regular />}
+          aria-label={t('actions')}
+        />
+      </MenuTrigger>
+      <MenuPopover>
+        <MenuList>
           {canRetry && (
             <MenuItem
               icon={<Play20Regular />}
@@ -88,8 +77,8 @@ export function BotActionsMenu({
           >
             {t('deleteBot')}
           </MenuItem>
-        </MenuPopover>
-      </Menu>
-    </div>
+        </MenuList>
+      </MenuPopover>
+    </Menu>
   );
 }

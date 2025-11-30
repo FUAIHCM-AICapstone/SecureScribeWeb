@@ -1,11 +1,13 @@
 'use client';
 
 import {
+  Badge,
   TableCell,
   TableHeaderCell,
   TableRow,
   Text,
   Tooltip,
+  Caption1,
   makeStyles,
   shorthands,
   tokens
@@ -14,110 +16,70 @@ import {
   CheckmarkCircle20Filled,
   Clock20Filled,
   ErrorCircle20Filled,
-  Info20Regular,
   Play20Filled,
   Warning20Filled,
-  Record24Regular,
+  Record20Regular,
 } from '@fluentui/react-icons';
 import type { BotResponse } from 'types/meetingBot.type';
 import { BotActionsMenu } from './BotActionsMenu';
 import { useTranslations } from 'next-intl';
-import { motion } from 'framer-motion';
 
 const useStyles = makeStyles({
   tableWrapper: {
     width: '100%',
-    ...shorthands.border('1px', 'solid', tokens.colorNeutralStroke1),
-    ...shorthands.borderRadius(tokens.borderRadiusXLarge),
-    overflow: 'hidden',
-    boxShadow: tokens.shadow8,
     backgroundColor: tokens.colorNeutralBackground1,
+    ...shorthands.border('1px', 'solid', tokens.colorNeutralStroke2),
+    ...shorthands.borderRadius(tokens.borderRadiusXLarge),
+    ...shorthands.overflow('hidden'),
+    boxShadow: `0 2px 8px ${tokens.colorNeutralShadowAmbient}`,
   },
   table: {
     width: '100%',
     borderCollapse: 'collapse' as const,
   },
   headerCell: {
-    fontWeight: tokens.fontWeightSemibold,
+    fontWeight: 600,
     backgroundColor: tokens.colorNeutralBackground2,
     color: tokens.colorNeutralForeground1,
-    ...shorthands.padding('16px', '20px'),
+    ...shorthands.padding('12px', '16px'),
     fontSize: tokens.fontSizeBase200,
-    letterSpacing: '0.5px',
-    textTransform: 'uppercase' as const,
-    borderBottom: `2px solid ${tokens.colorNeutralStroke1}`,
+    borderBottom: `1px solid ${tokens.colorNeutralStroke2}`,
   },
   row: {
     borderBottom: `1px solid ${tokens.colorNeutralStroke2}`,
-    transitionProperty: 'background-color',
-    transitionDuration: '0.2s',
-    transitionTimingFunction: 'ease',
+    ...shorthands.transition('background-color', '0.2s', 'ease'),
     ':hover': {
-      backgroundColor: tokens.colorNeutralBackground2,
+      backgroundColor: tokens.colorNeutralBackground1Hover,
     },
     ':last-child': {
       borderBottom: 'none',
     },
   },
   cell: {
-    ...shorthands.padding('16px', '20px'),
+    ...shorthands.padding('12px', '16px'),
     verticalAlign: 'middle' as const,
     fontSize: tokens.fontSizeBase300,
     color: tokens.colorNeutralForeground1,
   },
   meetingCell: {
-    fontWeight: tokens.fontWeightMedium,
-  },
-  statusCell: {
-    display: 'flex',
-    alignItems: 'center',
-    ...shorthands.gap('6px'),
-    ...shorthands.padding('6px', '12px'),
-    ...shorthands.borderRadius(tokens.borderRadiusMedium),
-    fontSize: tokens.fontSizeBase100,
-    fontWeight: tokens.fontWeightSemibold,
-    textTransform: 'uppercase',
-    letterSpacing: '0.5px',
-    width: 'fit-content',
-  },
-  statusPending: {
-    backgroundColor: tokens.colorPaletteYellowBackground2,
-    color: tokens.colorPaletteYellowForeground1,
-  },
-  statusScheduled: {
-    backgroundColor: tokens.colorPaletteLightTealBackground2,
-    color: tokens.colorPaletteLightTealForeground2,
-  },
-  statusActive: {
-    backgroundColor: tokens.colorPaletteGreenBackground2,
-    color: tokens.colorPaletteGreenForeground1,
-  },
-  statusCompleted: {
-    backgroundColor: tokens.colorPaletteLightGreenBackground2,
-    color: tokens.colorPaletteLightGreenForeground1,
-  },
-  statusFailed: {
-    backgroundColor: tokens.colorPaletteRedBackground2,
-    color: tokens.colorPaletteRedForeground1,
-  },
-  statusIcon: {
-    display: 'flex',
-    alignItems: 'center',
-    fontSize: '14px',
+    fontWeight: 500,
+    maxWidth: '250px',
+    ...shorthands.overflow('hidden'),
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
   },
   errorCell: {
     display: 'flex',
     alignItems: 'center',
-    ...shorthands.gap('8px'),
+    ...shorthands.gap('6px'),
   },
   errorText: {
     color: tokens.colorPaletteRedForeground1,
     fontSize: tokens.fontSizeBase200,
-    maxWidth: '200px',
+    maxWidth: '180px',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
-    fontWeight: tokens.fontWeightMedium,
   },
   errorIcon: {
     flexShrink: 0,
@@ -130,33 +92,35 @@ const useStyles = makeStyles({
     flexDirection: 'column' as const,
     alignItems: 'center',
     justifyContent: 'center',
-    ...shorthands.padding('80px', '24px'),
-    ...shorthands.gap('20px'),
+    ...shorthands.padding('64px', '24px'),
+    ...shorthands.gap('16px'),
     backgroundColor: tokens.colorNeutralBackground1,
     ...shorthands.borderRadius(tokens.borderRadiusXLarge),
     ...shorthands.border('1px', 'dashed', tokens.colorNeutralStroke2),
+    textAlign: 'center',
   },
   emptyStateIconWrapper: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    width: '96px',
-    height: '96px',
+    width: '80px',
+    height: '80px',
     ...shorthands.borderRadius(tokens.borderRadiusCircular),
     backgroundColor: tokens.colorNeutralBackground3,
     color: tokens.colorNeutralForeground3,
   },
   emptyStateIcon: {
-    fontSize: '48px',
+    fontSize: '40px',
   },
   emptyStateTitle: {
-    fontSize: tokens.fontSizeBase600,
-    fontWeight: tokens.fontWeightSemibold,
+    fontSize: tokens.fontSizeBase500,
+    fontWeight: 600,
     color: tokens.colorNeutralForeground1,
   },
   emptyStateMessage: {
     color: tokens.colorNeutralForeground3,
     fontSize: tokens.fontSizeBase300,
+    maxWidth: '400px',
   },
   textMuted: {
     color: tokens.colorNeutralForeground3,
@@ -183,54 +147,69 @@ export function BotsList({
   const styles = useStyles();
   const t = useTranslations('Bots');
 
-  const getStatusIcon = (status: string) => {
+  const getStatusBadge = (status: string) => {
     switch (status) {
       case 'pending':
-        return <Clock20Filled />;
+        return (
+          <Badge
+            appearance="filled"
+            color="warning"
+            size="small"
+            icon={<Clock20Filled />}
+          >
+            {t('statusPending')}
+          </Badge>
+        );
       case 'scheduled':
-        return <Warning20Filled />;
+        return (
+          <Badge
+            appearance="filled"
+            color="informative"
+            size="small"
+            icon={<Warning20Filled />}
+          >
+            {t('statusScheduled')}
+          </Badge>
+        );
       case 'active':
-        return <Play20Filled />;
+        return (
+          <Badge
+            appearance="filled"
+            color="success"
+            size="small"
+            icon={<Play20Filled />}
+          >
+            {t('statusInProgress')}
+          </Badge>
+        );
       case 'completed':
-        return <CheckmarkCircle20Filled />;
+        return (
+          <Badge
+            appearance="filled"
+            color="success"
+            size="small"
+            icon={<CheckmarkCircle20Filled />}
+          >
+            {t('statusCompleted')}
+          </Badge>
+        );
       case 'failed':
-        return <ErrorCircle20Filled />;
+        return (
+          <Badge
+            appearance="filled"
+            color="danger"
+            size="small"
+            icon={<ErrorCircle20Filled />}
+          >
+            {t('statusFailed')}
+          </Badge>
+        );
       default:
-        return null;
-    }
-  };
-
-  const getStatusStyleClass = (status: string) => {
-    switch (status) {
-      case 'pending':
-        return styles.statusPending;
-      case 'scheduled':
-        return styles.statusScheduled;
-      case 'active':
-        return styles.statusActive;
-      case 'completed':
-        return styles.statusCompleted;
-      case 'failed':
-        return styles.statusFailed;
-      default:
-        return '';
-    }
-  };
-
-  const getStatusLabel = (status: string) => {
-    switch (status) {
-      case 'pending':
-        return t('statusPending');
-      case 'scheduled':
-        return t('statusScheduled');
-      case 'active':
-        return t('statusInProgress');
-      case 'completed':
-        return t('statusCompleted');
-      case 'failed':
-        return t('statusFailed');
-      default:
-        return t('statusUnknown');
+        return (
+          <Badge appearance="outline" size="small">
+            {t('statusUnknown')}
+          </Badge>
+        );
     }
   };
 
@@ -246,50 +225,46 @@ export function BotsList({
 
   if (!bots || bots.length === 0) {
     return (
-      <motion.div
-        className={styles.emptyState}
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.3 }}
-      >
+      <div className={styles.emptyState}>
         <div className={styles.emptyStateIconWrapper}>
-          <Record24Regular className={styles.emptyStateIcon} />
+          <Record20Regular className={styles.emptyStateIcon} />
         </div>
         <Text className={styles.emptyStateTitle}>{t('noMeetings')}</Text>
-        <Text className={styles.emptyStateMessage}>
+        <Caption1 className={styles.emptyStateMessage}>
           {t('createMeetingToRecord')}
-        </Text>
-      </motion.div>
+        </Caption1>
+      </div>
     );
   }
 
   return (
-    <motion.div
-      className={styles.tableWrapper}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-    >
+    <div className={styles.tableWrapper}>
       <table className={styles.table} role="grid" aria-label={t('title')}>
         <thead>
           <TableRow className={styles.row}>
-            <TableHeaderCell className={styles.headerCell}>{t('meeting')}</TableHeaderCell>
-            <TableHeaderCell className={styles.headerCell}>{t('status')}</TableHeaderCell>
-            <TableHeaderCell className={styles.headerCell}>{t('created')}</TableHeaderCell>
-            <TableHeaderCell className={styles.headerCell}>{t('retries')}</TableHeaderCell>
-            <TableHeaderCell className={styles.headerCell}>{t('error')}</TableHeaderCell>
-            <TableHeaderCell className={styles.headerCell}>{t('actions')}</TableHeaderCell>
+            <TableHeaderCell className={styles.headerCell}>
+              {t('meeting')}
+            </TableHeaderCell>
+            <TableHeaderCell className={styles.headerCell}>
+              {t('status')}
+            </TableHeaderCell>
+            <TableHeaderCell className={styles.headerCell}>
+              {t('created')}
+            </TableHeaderCell>
+            <TableHeaderCell className={styles.headerCell}>
+              {t('retries')}
+            </TableHeaderCell>
+            <TableHeaderCell className={styles.headerCell}>
+              {t('error')}
+            </TableHeaderCell>
+            <TableHeaderCell className={styles.headerCell}>
+              {t('actions')}
+            </TableHeaderCell>
           </TableRow>
         </thead>
         <tbody>
-          {bots.map((bot, index) => (
-            <motion.tr
-              key={bot.id}
-              className={styles.row}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.2, delay: index * 0.05 }}
-            >
+          {bots.map((bot) => (
+            <tr key={bot.id} className={styles.row}>
               <TableCell className={`${styles.cell} ${styles.meetingCell}`}>
                 <Tooltip
                   content={bot.meeting?.title || '-'}
@@ -300,16 +275,13 @@ export function BotsList({
                 </Tooltip>
               </TableCell>
               <TableCell className={styles.cell}>
-                <div className={`${styles.statusCell} ${getStatusStyleClass(bot.status)}`}>
-                  <span className={styles.statusIcon}>{getStatusIcon(bot.status)}</span>
-                  <span>{getStatusLabel(bot.status)}</span>
-                </div>
+                {getStatusBadge(bot.status)}
               </TableCell>
               <TableCell className={styles.cell}>
-                <Text>{formatDate(bot.created_at)}</Text>
+                <Caption1>{formatDate(bot.created_at)}</Caption1>
               </TableCell>
               <TableCell className={styles.cell}>
-                <Text>{bot.retry_count}</Text>
+                <Caption1>{bot.retry_count}</Caption1>
               </TableCell>
               <TableCell className={styles.cell}>
                 {bot.last_error ? (
@@ -326,7 +298,7 @@ export function BotsList({
                     </Tooltip>
                   </div>
                 ) : (
-                  <Text className={styles.textMuted}>{t('noError')}</Text>
+                  <Caption1 className={styles.textMuted}>{t('noError')}</Caption1>
                 )}
               </TableCell>
               <TableCell className={`${styles.cell} ${styles.actionsCell}`}>
@@ -338,10 +310,10 @@ export function BotsList({
                   onViewLogs={onViewLogs}
                 />
               </TableCell>
-            </motion.tr>
+            </tr>
           ))}
         </tbody>
       </table>
-    </motion.div>
+    </div>
   );
 }
