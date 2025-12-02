@@ -582,7 +582,7 @@ export function FileUploadModal({
                       setMeetingId((data.optionValue as string) || undefined);
                       setMeetingSearchQuery('');
                     }}
-                    disabled={uploadMutation.isPending}
+                    disabled={!!defaultMeetingId || uploadMutation.isPending}
                     listbox={{
                       onScroll: handleMeetingsListScroll,
                     }}

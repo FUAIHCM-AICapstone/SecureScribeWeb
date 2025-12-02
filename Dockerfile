@@ -1,40 +1,39 @@
 # Use official Node.js image as build environment
-FROM node:20-alpine AS builder
+FROM node:20-alpine AS base
 
 WORKDIR /app
 
 # Install Yarn and security updates
 RUN corepack enable && \
-    apk add --no-cache dumb-init && \
+    apk add --no-cache dumb-init gettext && \
     addgroup -g 1001 -S nodejs && \
     adduser -S nextjs -u 1001
 
-
-# Copy package files first for better layer caching
+# Install dependencies
+FROM base AS deps
 COPY package.json yarn.lock ./
-
-# Install dependencies with cache mount for better performance
 RUN --mount=type=cache,target=/root/.yarn \
-    yarn install --frozen-lockfile && \
-    yarn cache clean
+    yarn install --frozen-lockfile
 
-# Copy source code
-COPY --chown=nextjs:nodejs . .
+# Development image
+FROM base AS dev
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+ENV NODE_ENV=development
+CMD ["yarn", "run", "dev"]
 
 # Build the Next.js app
+FROM base AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
 RUN yarn build
 
 # Production image - use distroless for smaller size
-FROM node:20-alpine AS runner
+FROM base AS runner
 
 WORKDIR /app
-
-# Install dumb-init and gettext for envsubst
-RUN apk add --no-cache dumb-init gettext
-
-# Create non-root user
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nextjs -u 1001
 
 # Set environment variables
 ENV NODE_ENV=production

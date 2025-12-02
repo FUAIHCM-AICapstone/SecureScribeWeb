@@ -9,8 +9,10 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import type { ChatMessageResponse } from 'types/chat.type';
+import type { ChatMessageResponse, MentionType } from 'types/chat.type';
 import { MessageCodeBlock } from './MessageCodeBlock';
+import { useMentionTitle } from '@/hooks/useMentionTitle';
+import { usePrefetchMentions } from '@/hooks/usePrefetchMentions';
 
 const useStyles = makeStyles({
   userMessage: {
@@ -101,6 +103,9 @@ export function ChatMessage({
   const tMsg = useTranslations('Chat.Messages');
   const styles = useStyles();
 
+  // Prefetch all mentions in this message
+  usePrefetchMentions(message.mentions);
+
   useEffect(() => {
     try {
       const brandCfg = getBrandConfig();
@@ -114,6 +119,7 @@ export function ChatMessage({
   const formatTimestamp = (timestamp: string): string => {
     return new Date(timestamp).toLocaleTimeString();
   }
+
   const handleCopyMessage = async (messageId: string, content: string) => {
     try {
       await navigator.clipboard.writeText(content);
@@ -124,15 +130,32 @@ export function ChatMessage({
     }
   };
 
+  // Component to render mention bubble with fetched title
+  const MentionBubble = ({ entityType, entityId, isUser }: { entityType: string; entityId: string; isUser: boolean }) => {
+    const { title } = useMentionTitle(entityType as MentionType, entityId);
+    return (
+      <span
+        className={
+          isUser
+            ? 'inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-white/20 text-white text-[0.9em] border border-white/60'
+            : 'inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-[rgba(0,120,212,0.18)] text-[#0b5cad] text-[0.9em] border border-[#5aa0e6]'
+        }
+      >
+        @{title}
+      </span>
+    );
+  };
+
   const renderContentWithMentions = (text: string, isUser: boolean) => {
-    const parts: Array<string | { name: string }> = []
+    const parts: Array<string | { type: string; id: string }> = []
     const regex = /@\{(meeting|project|file)\}\{([^}]+)\}/g
     let lastIndex = 0
     let match: RegExpExecArray | null
     while ((match = regex.exec(text)) !== null) {
       if (match.index > lastIndex) parts.push(text.slice(lastIndex, match.index))
-      const name = match[2].trim()
-      parts.push({ name })
+      const type = match[1].trim()
+      const id = match[2].trim()
+      parts.push({ type, id })
       lastIndex = match.index + match[0].length
     }
     if (lastIndex < text.length) parts.push(text.slice(lastIndex))
@@ -142,16 +165,8 @@ export function ChatMessage({
           typeof p === 'string' ? (
             <span key={i}>{p}</span>
           ) : (
-            <span
-              key={i}
-              className={
-                isUser
-                  ? 'inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-white/20 text-white text-[0.9em] border border-white/60'
-                  : 'inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-[rgba(0,120,212,0.18)] text-[#0b5cad] text-[0.9em] border border-[#5aa0e6]'
-              }
-            >
-              @{p.name}
-            </span>
+            <MentionBubble key={i} entityType={p.type} entityId={p.id} 
+            isUser={isUser} />
           )
         )}
       </>
@@ -206,36 +221,18 @@ export function ChatMessage({
             remarkPlugins={[remarkGfm]}
             components={{
               code: (props: any) => {
-                const { inline, className, children, ...rest } = props;
+                const { className, children } = props;
                 const match = /language-(\w+)/.exec(className || '');
                 const codeContent = String(children).replace(/\n$/, '');
                 const language = match ? match[1] : 'text';
-
-                // Handle inline code with simple styling
-                if (inline) {
-                  return (
-                    <code
-                      style={{
-                        backgroundColor: tokens.colorNeutralBackground3,
-                        color: tokens.colorNeutralForeground1,
-                        paddingLeft: tokens.spacingHorizontalXS,
-                        paddingRight: tokens.spacingHorizontalXS,
-                        paddingTop: tokens.spacingVerticalXS,
-                        paddingBottom: tokens.spacingVerticalXS,
-                        borderRadius: tokens.borderRadiusSmall,
-                        fontSize: tokens.fontSizeBase300,
-                        fontFamily: tokens.fontFamilyMonospace,
-                        border: `1px solid ${tokens.colorNeutralStroke1}`,
-                        boxShadow: tokens.shadow2,
-                      }}
-                      {...rest}
-                    >
-                      {children}
-                    </code>
-                  );
+                // pattern single backtick inline code
+                if (!match) {
+                  return (<span className="bg-[color:var(--muted)] rounded px-1 font-mono text-[color:var(--foreground)]">
+                    {codeContent}
+                  </span>);
                 }
 
-                // Handle block code with MessageCodeBlock
+                // Handle block code (triple backticks) with MessageCodeBlock
                 return (
                   <MessageCodeBlock
                     code={codeContent}

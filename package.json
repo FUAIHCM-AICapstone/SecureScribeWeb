@@ -10,7 +10,9 @@
     "format": "prettier --write \"**/*.{js,ts,tsx}\"",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "postbuild": "next-sitemap"
+    "postbuild": "next-sitemap",
+    "validate:translations": "node scripts/validate-translations.js",
+    "prebuild": "npm run validate:translations"
   },
   "dependencies": {
     "@emotion/react": "^11.13.3",
@@ -45,6 +47,7 @@
     "next-themes": "^0.4.6",
     "ogl": "^1.0.11",
     "react": "^18.2.0",
+    "react-countup": "^6.5.3",
     "react-datepicker": "^8.4.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.61.1",
@@ -55,6 +58,7 @@
     "react-redux": "^9.1.2",
     "react-resizable": "^3.0.5",
     "react-syntax-highlighter": "^15.6.6",
+    "recharts": "^3.5.0",
     "remark-gfm": "^4.0.1",
     "server-only": "^0.0.1"
   },

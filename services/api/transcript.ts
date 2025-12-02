@@ -9,6 +9,8 @@ import type {
     TranscriptCreate,
     TranscriptFilter,
     TranscriptQueryParams,
+    TranscriptReindexRequest,
+    TranscriptReindexResponse,
     TranscriptResponse,
     TranscriptUpdate,
 } from 'types/transcript.type';
@@ -148,5 +150,23 @@ export const bulkDeleteTranscripts = async (
 ): Promise<BulkTranscriptResponse> => {
     return ApiWrapper.executeBulk(() =>
         axiosInstance.delete('/transcripts/bulk', { data: payload })
+    );
+};
+
+/**
+ * Reindex a transcript for search
+ */
+export const reindexTranscript = async (
+    meetingId: string,
+    transcriptId: string,
+    payload?: TranscriptReindexRequest
+): Promise<TranscriptReindexResponse> => {
+    UuidValidator.validate(meetingId, 'Meeting ID');
+    UuidValidator.validate(transcriptId, 'Transcript ID');
+    return ApiWrapper.execute(() =>
+        axiosInstance.post(
+            `/meetings/${meetingId}/transcripts/${transcriptId}/reindex`,
+            payload || {}
+        )
     );
 };

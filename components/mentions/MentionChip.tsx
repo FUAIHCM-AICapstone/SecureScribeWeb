@@ -2,7 +2,8 @@
 
 import { makeStyles, tokens } from '@fluentui/react-components'
 import { CalendarLtr24Regular, Document24Regular, Folder24Regular } from '@fluentui/react-icons'
-import type { Mention } from 'types/chat.type'
+import type { Mention, MentionType } from 'types/chat.type'
+import { useMentionTitle } from '@/hooks/useMentionTitle'
 
 type Props = {
     mention: Mention
@@ -34,6 +35,7 @@ const useStyles = makeStyles({
 
 export default function MentionChip({ mention }: Props) {
     const styles = useStyles()
+    const { title } = useMentionTitle(mention.entity_type as MentionType, mention.entity_id)
     const iconClass = mention.entity_type === 'meeting' ? styles.iconMeeting : mention.entity_type === 'file' ? styles.iconFile : styles.iconProject
     const icon = mention.entity_type === 'meeting' ? <CalendarLtr24Regular className={iconClass} /> : mention.entity_type === 'file' ? <Document24Regular className={iconClass} /> : <Folder24Regular className={iconClass} />
     return (
@@ -42,10 +44,10 @@ export default function MentionChip({ mention }: Props) {
             contentEditable={false}
             data-mention-id={mention.entity_id}
             data-mention-type={mention.entity_type}
-            data-mention-name={mention.entity_type}
+            data-mention-name={title}
         >
             <span>{icon}</span>
-            <span className={styles.name}>{mention.entity_type}</span>
+            <span className={styles.name}>{title}</span>
         </span>
     )
 }

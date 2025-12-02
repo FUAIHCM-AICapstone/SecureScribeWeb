@@ -1,6 +1,7 @@
 'use client';
 
 import MeetingEditModal from '@/components/modal/MeetingEditModal';
+import { FileUploadModal } from '@/components/modal/FileUploadModal';
 import {
   Body1,
   Button,
@@ -11,7 +12,7 @@ import {
   shorthands,
   tokens,
 } from '@fluentui/react-components';
-import { ArrowLeft20Regular } from '@fluentui/react-icons';
+import { Add20Regular, ArrowLeft20Regular } from '@fluentui/react-icons';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import React from 'react';
@@ -20,6 +21,7 @@ import { useWebSocket } from '@/context/WebSocketContext';
 import { MeetingHeader } from './MeetingHeader';
 import { MeetingNotes } from './MeetingNotes';
 import { MeetingFiles } from './MeetingFiles';
+import { MeetingFilesTable } from './MeetingFilesTable';
 import { MeetingTranscripts } from './MeetingTranscripts';
 import { MeetingModals } from './MeetingModals';
 import { LinkedProjectsSection } from './LinkedProjectsSection';
@@ -133,6 +135,7 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
     createNoteMutation,
     updateNoteMutation,
     uploadAudioMutation,
+    reindexTranscriptMutation,
   } = useMeetingMutations(meetingId, tMeetings, t, () => {
     setShowUploadModal(false);
     setUploadedFile(null);
@@ -147,6 +150,12 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
       // Handle audio transcription completion
       if (status === 'completed' && task_type === 'audio_asr') {
         console.log('[MeetingDetailClient] Audio transcription completed, invalidating transcripts query');
+        queryClient.invalidateQueries({ queryKey: ['transcripts', meetingId] });
+      }
+
+      // Handle transcript reindex completion
+      if (status === 'completed' && task_type === 'transcript_reindex') {
+        console.log('[MeetingDetailClient] Transcript reindex completed, invalidating transcripts query');
         queryClient.invalidateQueries({ queryKey: ['transcripts', meetingId] });
       }
 
@@ -192,6 +201,7 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
   const [isUploadingAudio, setIsUploadingAudio] = React.useState(false);
   const [uploadedFile, setUploadedFile] = React.useState<File | null>(null);
   const [showTaskModal, setShowTaskModal] = React.useState(false);
+  const [showFileModal, setShowFileModal] = React.useState(false);
 
   // Handlers
   const handleEdit = () => setShowEditModal(true);
@@ -249,9 +259,20 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
     setShowDeleteConfirm(true);
   };
 
+  const handleReindexTranscript = (transcriptId: string) => {
+    reindexTranscriptMutation.mutate({ transcriptId });
+  };
+
   const handleUploadAudio = () => setShowUploadModal(true);
 
   const handleShowTasks = () => setShowTaskModal(true);
+
+  const handleFileModalOpen = () => setShowFileModal(true);
+
+  const handleFileModalClose = () => {
+    setShowFileModal(false);
+    queryClient.invalidateQueries({ queryKey: ['files', meetingId] });
+  };
 
   const handleConfirmDelete = () => {
     if (!deleteTarget) return;
@@ -341,6 +362,28 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
             onDeleteAudio={handleDeleteAudio}
             isDeleting={deleteAudioMutation.isPending}
           />
+          {/* Files Table (non-audio files) */}
+          <Card className={styles.section}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <Text style={{ fontWeight: 700, fontSize: tokens.fontSizeBase400 }}>
+                {t('files')} (Context)
+              </Text>
+              <Button
+                appearance="primary"
+                icon={<Add20Regular />}
+                onClick={handleFileModalOpen}
+              >
+                {t('uploadFile')}
+              </Button>
+            </div>
+            <MeetingFilesTable
+              files={files}
+              isLoading={isLoadingFiles}
+              page={1}
+              onPageChange={() => {}}
+              hasMore={false}
+            />
+          </Card>
         </div>
 
         <div className={styles.sideColumn}>
@@ -350,9 +393,11 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
             isLoading={isLoadingTranscripts}
             error={transcriptError}
             onDeleteTranscript={handleDeleteTranscript}
+            onReindexTranscript={handleReindexTranscript}
             onUploadAudio={handleUploadAudio}
             isDeleting={deleteTranscriptMutation.isPending}
             isUploading={isUploadingAudio || uploadAudioMutation.isPending}
+            isReindexing={reindexTranscriptMutation.isPending}
           />
 
           {/* Related Projects */}
@@ -440,6 +485,13 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
         showTaskModal={showTaskModal}
         meetingId={meetingId}
         onTaskModalOpenChange={setShowTaskModal}
+      />
+
+      {/* File Upload Modal */}
+      <FileUploadModal
+        open={showFileModal}
+        onClose={handleFileModalClose}
+        defaultMeetingId={meetingId}
       />
     </div>
   );

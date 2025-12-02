@@ -72,6 +72,18 @@ export interface TranscriptQueryParams {
     limit?: number;
 }
 
+export interface TranscriptReindexRequest {
+    force?: boolean;
+}
+
+export interface TranscriptReindexResponse {
+    task_id: string;
+    transcript_id: string;
+    meeting_id: string;
+    status: string;
+    qdrant_vector_id?: string;
+}
+
 // Import common types
 import type { ApiResponse } from './common.type';
 

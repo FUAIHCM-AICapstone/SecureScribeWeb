@@ -22,6 +22,7 @@ import { SidebarProvider } from '../context/SidebarContext';
 import ClientOnlyLayout from '@/components/layout/ClientOnly';
 import { AuthOverlay } from '@/components/layout/AuthOverlay';
 import { useFCM } from '@/hooks/useFCM';
+import { ApiTranslationProvider } from '@/components/providers/ApiTranslationProvider';
 
 export default function RootLayoutClient({
   children,
@@ -116,10 +117,11 @@ export default function RootLayoutClient({
                 messages={messages}
                 timeZone="Asia/Bangkok"
               >
-                <AuthProvider>
-                  <WebSocketProvider>
-                    <SidebarProvider>
-                      <AuthOverlay locale={locale} shouldShow={shouldShowAuthOverlay} />
+                <ApiTranslationProvider>
+                  <AuthProvider>
+                    <WebSocketProvider>
+                      <SidebarProvider>
+                        <AuthOverlay locale={locale} shouldShow={shouldShowAuthOverlay} />
                       <div
                         style={{
                           display: 'flex',
@@ -143,9 +145,10 @@ export default function RootLayoutClient({
                           </main>
                         </div>
                       </div>
-                    </SidebarProvider>
-                  </WebSocketProvider>
-                </AuthProvider>
+                      </SidebarProvider>
+                    </WebSocketProvider>
+                  </AuthProvider>
+                </ApiTranslationProvider>
               </NextIntlClientProvider>
             </ReactQueryProvider>
           </Provider>

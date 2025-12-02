@@ -13,10 +13,10 @@ import {
     Text,
     tokens,
 } from '@fluentui/react-components';
-import { ClipboardTaskListLtrRegular } from '@fluentui/react-icons';
+import { ClipboardTaskListLtrRegular, ArrowLeft20Regular, ArrowRight20Regular } from '@fluentui/react-icons';
 import { useTranslations } from 'next-intl';
 import React from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { getTasks } from '@/services/api/task';
 import { TaskRow } from '@/app/[locale]/tasks/components/TaskRow';
 import type { TaskResponse } from 'types/task.type';
@@ -57,10 +57,28 @@ const useStyles = makeStyles({
     },
     actions: {
         display: 'flex',
-        justifyContent: 'flex-end',
+        justifyContent: 'space-between',
+        alignItems: 'center',
         ...shorthands.gap(tokens.spacingHorizontalS),
         padding: tokens.spacingVerticalM,
         borderTop: `1px solid ${tokens.colorNeutralStroke1}`,
+    },
+    pagination: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        ...shorthands.gap('12px'),
+    },
+    pageInfo: {
+        minWidth: '120px',
+        textAlign: 'center',
+        color: tokens.colorNeutralForeground2,
+        fontSize: tokens.fontSizeBase200,
+    },
+    loadingContainer: {
+        display: 'flex',
+        justifyContent: 'center',
+        padding: tokens.spacingVerticalL,
     },
 });
 
@@ -69,6 +87,8 @@ interface MeetingTasksModalProps {
     meetingId: string;
     onOpenChange: (open: boolean) => void;
 }
+
+const DEFAULT_PAGE_SIZE = 10;
 
 
 export function MeetingTasksModal({
@@ -79,17 +99,35 @@ export function MeetingTasksModal({
     const styles = useStyles();
     const t = useTranslations();
     const tTasks = useTranslations('Tasks');
+    const [currentPage, setCurrentPage] = React.useState(1);
 
     const { data: tasksData, isLoading, error } = useQuery({
-        queryKey: queryKeys.meetingTasks(meetingId),
-        queryFn: () => getTasks({ meeting_id: meetingId }),
+        queryKey: queryKeys.meetingTasks(meetingId, currentPage),
+        queryFn: () => getTasks(
+            { meeting_id: meetingId },
+            { page: currentPage, limit: DEFAULT_PAGE_SIZE }
+        ),
         enabled: isOpen && !!meetingId,
+        placeholderData: keepPreviousData,
     });
 
     const tasks = tasksData?.data || [];
+    const pagination = tasksData?.pagination || {};
+    const totalCount = pagination?.total || 0;
+    const totalPages = pagination?.total_pages || 1;
+    const hasNext = pagination?.has_next || false;
+    const hasPrev = pagination?.has_prev || false;
 
     const handleOpenChange = (event: any, data: { open: boolean }) => {
         onOpenChange(data.open);
+        // Reset page when modal closes
+        if (!data.open) {
+            setCurrentPage(1);
+        }
+    };
+
+    const handlePageChange = (newPage: number) => {
+        setCurrentPage(newPage);
     };
 
     return (
@@ -97,11 +135,11 @@ export function MeetingTasksModal({
             <DialogSurface className={styles.dialog}>
                 <DialogTitle>
                     <ClipboardTaskListLtrRegular style={{ marginRight: tokens.spacingHorizontalS }} />
-                    {tTasks('meetingTasksTitle')} ({tasks.length})
+                    {tTasks('meetingTasksTitle')} ({totalCount})
                 </DialogTitle>
                 <DialogBody className={styles.content}>
                     {isLoading ? (
-                        <div style={{ display: 'flex', justifyContent: 'center', padding: '24px' }}>
+                        <div className={styles.loadingContainer}>
                             <Spinner size="medium" />
                         </div>
                     ) : error ? (
@@ -127,6 +165,32 @@ export function MeetingTasksModal({
                     )}
                 </DialogBody>
                 <DialogActions className={styles.actions}>
+                    {tasks.length > 0 && totalPages > 1 && (
+                        <div className={styles.pagination}>
+                            <Button
+                                appearance="secondary"
+                                icon={<ArrowLeft20Regular />}
+                                disabled={!hasPrev || isLoading}
+                                onClick={() => handlePageChange(currentPage - 1)}
+                                size="small"
+                            >
+                                {t('Common.previous')}
+                            </Button>
+                            <Text className={styles.pageInfo}>
+                                {t('Common.pageInfo', { current: currentPage, total: totalPages })}
+                            </Text>
+                            <Button
+                                appearance="secondary"
+                                icon={<ArrowRight20Regular />}
+                                iconPosition="after"
+                                disabled={!hasNext || isLoading}
+                                onClick={() => handlePageChange(currentPage + 1)}
+                                size="small"
+                            >
+                                {t('Common.next')}
+                            </Button>
+                        </div>
+                    )}
                     <Button
                         appearance="secondary"
                         onClick={() => onOpenChange(false)}

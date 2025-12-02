@@ -130,7 +130,7 @@ interface AudioUploadModalProps {
     onFileUpload: (file: File) => void;
 }
 
-const ACCEPTED_AUDIO_TYPES = ['audio/mpeg', 'audio/wav', 'audio/webm', 'audio/mp4'];
+const ACCEPTED_AUDIO_TYPES = ['audio/mpeg', 'audio/wav', 'audio/webm', 'audio/mp4', 'video/webm'];
 const ACCEPTED_AUDIO_EXTENSIONS = ['.mp3', '.wav', '.webm', '.m4a'];
 
 export function AudioUploadModal({

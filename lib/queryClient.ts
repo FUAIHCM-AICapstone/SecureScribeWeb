@@ -33,7 +33,7 @@ export const queryKeys = {
   meeting: (id: string) => ['meetings', id] as const,
   meetingFiles: (id: string) => ['meetings', id, 'files'] as const,
   meetingNote: (id: string) => ['meetings', id, 'note'] as const,
-  meetingTasks: (id: string) => ['tasks', { meeting_id: id }] as const,
+  meetingTasks: (id: string, page: number = 1) => ['tasks', { meeting_id: id, page }] as const,
 
   tasks: ['tasks'] as const,
   myTasks: ['tasks', 'my'] as const,
@@ -42,6 +42,15 @@ export const queryKeys = {
 
   files: ['files'] as const,
   file: (id: string) => ['files', id] as const,
+
+  // Bot queries
+  bots: ['bots'] as const,
+  botList: (page: number, limit: number, search?: string) => 
+    search 
+      ? ['bots', { page, limit, search }] as const
+      : ['bots', { page, limit }] as const,
+  bot: (id: string) => ['bots', id] as const,
+  botLogs: (id: string) => ['bots', id, 'logs'] as const,
 
   user: ['user'] as const,
   users: ['users'] as const,
