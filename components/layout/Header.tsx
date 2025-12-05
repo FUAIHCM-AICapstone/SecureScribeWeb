@@ -63,6 +63,7 @@ import { getMeetings } from '@/services/api/meeting';
 import { getFiles } from '@/services/api/file';
 import { getUsers } from '@/services/api/user';
 import { getBrandConfig } from '@/lib/utils/runtimeConfig';
+import { getNotificationDisplay as parseNotificationDisplay } from '@/lib/notifications/parseNotification';
 
 const useStyles = makeStyles({
   header: {
@@ -361,41 +362,7 @@ export default function Header(
 
   // Helper function to extract display information from notification
   const getNotificationDisplay = (notification: NotificationResponse) => {
-    const { type, payload } = notification;
-
-    // Extract title and message from type and payload
-    let title = type || 'Notification';
-    let message = '';
-
-    if (payload && typeof payload === 'object') {
-      // Handle task-related notifications
-      if (payload.task_title) {
-        title = payload.task_title;
-        message = t('taskAssigned');
-
-        // Add assigned by information if available (could be user name or ID)
-        if (payload.assigned_by) {
-          message += ` ${t('assignedBy')} ${payload.assigned_by}`;
-        }
-      }
-      // Handle other types of notifications
-      else if (payload.title) {
-        title = payload.title;
-      }
-
-      if (payload.message) {
-        message = payload.message;
-      } else if (payload.description) {
-        message = payload.description;
-      } else if (payload.content) {
-        message = payload.content;
-      } else if (!payload.task_title) {
-        // Only fallback to stringify if it's not a task notification
-        message = JSON.stringify(payload);
-      }
-    }
-
-    return { title, message };
+    return parseNotificationDisplay(notification, t);
   };
 
   // Breadcrumbs: from URL segments, then title map via i18n keys
