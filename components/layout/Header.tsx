@@ -7,7 +7,7 @@ import { showToast } from '@/hooks/useShowToast';
 import { usePathname, useRouter } from '@/i18n/navigation';
 import {
   Avatar,
-  Badge,
+  // Badge,
   Button,
   CounterBadge,
   Dialog,
@@ -45,7 +45,8 @@ import Image from 'next/image';
 import React, { useState, useEffect } from 'react';
 import LanguageSwitcher from './LanguageSwitcher';
 import ThemeToggle from './ThemeToggle';
-import { TestNotificationButton } from './TestNotificationButton';
+// import { TestNotificationButton } from './TestNotificationButton';
+import { NotificationItem } from './NotificationItem';
 import { useSidebar } from '@/context/SidebarContext';
 import { useAuth } from '@/context/AuthContext';
 import {
@@ -63,7 +64,6 @@ import { getMeetings } from '@/services/api/meeting';
 import { getFiles } from '@/services/api/file';
 import { getUsers } from '@/services/api/user';
 import { getBrandConfig } from '@/lib/utils/runtimeConfig';
-import { getNotificationDisplay as parseNotificationDisplay } from '@/lib/notifications/parseNotification';
 
 const useStyles = makeStyles({
   header: {
@@ -301,7 +301,7 @@ export default function Header(
         );
       }
       console.error('Failed to update notification:', err);
-      showToast('error', 'Failed to update notification');
+      showToast('error', t('failedToUpdateNotification'));
     },
     onSuccess: (data, { isRead }) => {
       showToast(
@@ -332,7 +332,7 @@ export default function Header(
       setIsNotiOpen(false);
     },
     onError: (error: any) => {
-      showToast('error', error.message || 'Failed to mark all as read');
+      showToast('error', error.message || t('failedToMarkAsRead'));
     },
   });
 
@@ -352,17 +352,12 @@ export default function Header(
       setIsDeleteDialogOpen(false);
     },
     onError: (error: any) => {
-      showToast('error', error.message || 'Failed to delete notifications');
+      showToast('error', error.message || t('failedToDeleteNotifications'));
     },
   });
 
   const deleteAllHandler = () => {
     deleteAllNotificationsMutation.mutate();
-  };
-
-  // Helper function to extract display information from notification
-  const getNotificationDisplay = (notification: NotificationResponse) => {
-    return parseNotificationDisplay(notification, t);
   };
 
   // Breadcrumbs: from URL segments, then title map via i18n keys
@@ -407,12 +402,12 @@ export default function Header(
     }
 
     router.push(url);
-    showToast('info', `Opening ${result.type}: ${result.title}`);
+    showToast('info', t('opening', { type: result.type, title: result.title }));
   };
 
   const onPreviewResult = (result: any) => {
     // For now, just show a toast. Could open a preview modal in the future
-    showToast('info', `Preview ${result.type}: ${result.title}`);
+    showToast('info', t('preview', { type: result.type, title: result.title }));
   };
 
   // Custom search function that returns SearchResultsGrouped format
@@ -697,7 +692,6 @@ export default function Header(
           </Menu>
 
           <Divider vertical style={{ height: 28 }} />
-          <TestNotificationButton />
           <LanguageSwitcher />
           <ThemeToggle />
         </div>
@@ -785,43 +779,15 @@ export default function Header(
                 {t('noNotifications')}
               </div>
             ) : (
-              notifications.map((n) => {
-                const displayInfo = getNotificationDisplay(n);
-                return (
-                  <div
-                    key={n.id}
-                    className={styles.drawerItem}
-                    role="button"
-                    tabIndex={0}
-                    onClick={() => toggleNotificationRead(n.id)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ')
-                        toggleNotificationRead(n.id);
-                    }}
-                  >
-                    <div className={styles.drawerItemHeader}>
-                      <span>{displayInfo.title}</span>
-                      {!n.is_read && (
-                        <Badge appearance="filled" color="brand" size="small">
-                          New
-                        </Badge>
-                      )}
-                    </div>
-                    <div className={styles.drawerItemSub}>
-                      {displayInfo.message}
-                    </div>
-                    <div
-                      style={{
-                        fontSize: '10px',
-                        color: 'var(--colorNeutralForeground3)',
-                        marginTop: '4px',
-                      }}
-                    >
-                      {new Date(n.created_at).toLocaleString()}
-                    </div>
-                  </div>
-                );
-              })
+              notifications.map((n: NotificationResponse) => (
+                <NotificationItem
+                  key={n.id}
+                  notification={n}
+                  t={t}
+                  onToggleRead={toggleNotificationRead}
+                  onDelete={deleteNotification}
+                />
+              ))
             )}
           </div>
         </DrawerBody>

@@ -385,7 +385,12 @@
     "cancel": "Cancel",
     "delete": "Delete",
     "upload": "Upload file",
-    "view": "View"
+    "view": "View",
+    "failedToUpdateNotification": "Failed to update notification",
+    "failedToMarkAsRead": "Failed to mark as read",
+    "failedToDeleteNotifications": "Failed to delete notifications",
+    "opening": "Opening {type}: {title}",
+    "preview": "Preview {type}: {title}"
   },
   "notifications": {
     "user_joined_project": "{user_name} joined project {project_name}",
@@ -395,6 +400,8 @@
     "task_assigned": "Task '{task_title}' assigned by {assigned_by}",
     "task_updated": "Task '{task_title}' status changed to {new_status}",
     "file_indexing_completed": "File '{filename}' has been indexed successfully",
+    "audio_processing_completed": "Audio processing completed for meeting",
+    "meeting_analysis_completed": "Meeting analysis completed ({tasks_count} tasks, {note_length} characters)",
     "meeting_reminder": "Upcoming meeting: {title}",
     "bot_status_update": "Bot status: {status}",
     "system_announcement": "System announcement: {message}",

@@ -6,6 +6,17 @@ import { ApiWrapper, QueryBuilder, UuidValidator } from './utilities';
 import type { User, UserUpdate, UserCreate, BulkUserCreate, BulkUserUpdate } from 'types/user.type';
 
 /**
+ * Get a specific user by ID
+ */
+export const getUser = async (userId: string): Promise<User> => {
+  UuidValidator.validate(userId, 'User ID');
+
+  return ApiWrapper.execute(() =>
+    axiosInstance.get(`/users/${userId}`)
+  );
+};
+
+/**
  * Get all users with pagination and filtering
  */
 export const getUsers = async (params?: {

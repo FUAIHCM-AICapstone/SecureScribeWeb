@@ -7,6 +7,7 @@ export interface NotificationTypeConfig {
   translationKey: string;
   icon: string;
   payloadFields: string[]; // Fields to extract from payload for interpolation
+  entityIds?: string[]; // Entity IDs (meeting_id, project_id, etc.) to fetch if needed
 }
 
 export const notificationTypeMap: Record<string, NotificationTypeConfig> = {
@@ -15,40 +16,63 @@ export const notificationTypeMap: Record<string, NotificationTypeConfig> = {
     translationKey: 'notifications.user_joined_project',
     icon: 'UserAdd',
     payloadFields: ['user_name', 'project_name'],
+    entityIds: ['user_id', 'project_id'], // IDs to fetch if names not present
   },
   added_to_project: {
     translationKey: 'notifications.added_to_project',
     icon: 'PersonAdd',
     payloadFields: ['added_by_name', 'project_name'],
+    entityIds: ['added_by', 'project_id'],
   },
   user_removed_project: {
     translationKey: 'notifications.user_removed_project',
     icon: 'PersonRemove',
     payloadFields: ['user_name', 'project_name'],
+    entityIds: ['user_id', 'project_id'],
   },
   removed_from_project: {
     translationKey: 'notifications.removed_from_project',
     icon: 'Warning',
     payloadFields: ['removed_by_name', 'project_name'],
+    entityIds: ['removed_by', 'project_id'],
   },
 
   // Task-related notifications
   task_assigned: {
     translationKey: 'notifications.task_assigned',
     icon: 'CheckmarkCircle',
-    payloadFields: ['task_title', 'assigned_by'],
+    payloadFields: ['task_title', 'assigned_by_name'],
+    entityIds: ['task_id', 'assigned_by'],
   },
   task_updated: {
     translationKey: 'notifications.task_updated',
     icon: 'Edit',
     payloadFields: ['task_title', 'new_status'],
+    entityIds: ['task_id'],
   },
 
   // File-related notifications
   'task.file_indexing.completed': {
     translationKey: 'notifications.file_indexing_completed',
     icon: 'DocumentSearch',
-    payloadFields: ['filename'],
+    payloadFields: ['filename', 'meeting_name'],
+    entityIds: ['meeting_id'],
+  },
+
+  // Audio processing notifications
+  audio_processing_completed: {
+    translationKey: 'notifications.audio_processing_completed',
+    icon: 'Speaker1',
+    payloadFields: ['meeting_name'],
+    entityIds: ['meeting_id'],
+  },
+
+  // Meeting analysis notifications
+  'task.meeting_analysis.completed': {
+    translationKey: 'notifications.meeting_analysis_completed',
+    icon: 'DocumentAnalytics',
+    payloadFields: ['meeting_name', 'tasks_count', 'note_length'],
+    entityIds: ['meeting_id'],
   },
 
   // Meeting notifications
@@ -56,6 +80,7 @@ export const notificationTypeMap: Record<string, NotificationTypeConfig> = {
     translationKey: 'notifications.meeting_reminder',
     icon: 'Calendar',
     payloadFields: ['title'],
+    entityIds: [],
   },
 
   // Bot notifications
@@ -63,6 +88,7 @@ export const notificationTypeMap: Record<string, NotificationTypeConfig> = {
     translationKey: 'notifications.bot_status_update',
     icon: 'Bot',
     payloadFields: ['status', 'message'],
+    entityIds: [],
   },
 
   // System notifications
@@ -70,11 +96,13 @@ export const notificationTypeMap: Record<string, NotificationTypeConfig> = {
     translationKey: 'notifications.system_announcement',
     icon: 'Info',
     payloadFields: ['message'],
+    entityIds: [],
   },
   maintenance: {
     translationKey: 'notifications.maintenance',
     icon: 'Wrench',
     payloadFields: ['duration'],
+    entityIds: [],
   },
 
   // General notifications
@@ -82,11 +110,13 @@ export const notificationTypeMap: Record<string, NotificationTypeConfig> = {
     translationKey: 'notifications.project_update',
     icon: 'FolderOpen',
     payloadFields: ['project_name'],
+    entityIds: ['project_id'],
   },
   comment_reply: {
     translationKey: 'notifications.comment_reply',
     icon: 'Chat',
     payloadFields: ['user_name', 'content'],
+    entityIds: ['user_id'],
   },
 };
 
