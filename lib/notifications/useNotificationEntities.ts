@@ -3,12 +3,11 @@
  * Instead of displaying raw IDs, we fetch the entity data to show names/titles
  */
 
-import { useQuery, useQueries } from '@tanstack/react-query';
-import { queryKeys } from '@/lib/queryClient';
 import { getMeeting } from '@/services/api/meeting';
 import { getProject } from '@/services/api/project';
 import { getTask } from '@/services/api/task';
 import { getUser } from '@/services/api/user';
+import { useQueries } from '@tanstack/react-query';
 
 export interface EntityData {
   [key: string]: any;
@@ -55,7 +54,7 @@ export const extractEntityIdsToFetch = (
 
   Object.entries(ENTITY_ID_MAPPINGS).forEach(([fieldName, config]) => {
     const id = payload[fieldName];
-    
+
     // Only fetch if ID exists and we have a fetch function
     if (id && config.fetch) {
       idsToFetch.push({ fieldName, id });
@@ -78,7 +77,7 @@ export const useNotificationEntities = (
   const queries = useQueries({
     queries: idsToFetch.map(({ fieldName, id }) => {
       const config = ENTITY_ID_MAPPINGS[fieldName];
-      
+
       return {
         queryKey: [fieldName, id],
         queryFn: () => config.fetch!(id),

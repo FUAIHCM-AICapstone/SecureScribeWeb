@@ -3,11 +3,11 @@
  * Displays a single notification with entity data fetching
  */
 
-import React from 'react';
-import { Badge, Skeleton } from '@fluent-ui/react-components';
-import type { NotificationResponse } from 'types/notification.type';
-import { useEnrichedNotificationPayload } from '@/lib/notifications/useNotificationEntities';
 import { parseNotification } from '@/lib/notifications/parseNotification';
+import { useEnrichedNotificationPayload } from '@/lib/notifications/useNotificationEntities';
+import { Badge, Skeleton } from '@fluentui/react-components';
+import React from 'react';
+import type { NotificationResponse } from 'types/notification.type';
 
 interface NotificationItemProps {
   notification: NotificationResponse;
@@ -64,6 +64,7 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
   notification,
   t,
   onToggleRead,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onDelete,
 }) => {
   // Fetch entity data if needed (meeting_id, project_id, etc.)
@@ -83,15 +84,15 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
     return (
       <div style={{ ...notificationItemStyles.wrapper, cursor: 'default' }}>
         <Skeleton
-          appearance="line"
+          appearance="opaque"
           style={{ ...notificationItemStyles.skeletonLine, width: '200px', height: '16px' }}
         />
         <Skeleton
-          appearance="line"
+          appearance="opaque"
           style={{ ...notificationItemStyles.skeletonLine, width: '300px', height: '14px' }}
         />
         <Skeleton
-          appearance="line"
+          appearance="opaque"
           style={{ width: '100px', height: '12px' }}
         />
       </div>
@@ -101,11 +102,6 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     onToggleRead(notification.id);
-  };
-
-  const handleDelete = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (onDelete) onDelete(notification.id);
   };
 
   return (
