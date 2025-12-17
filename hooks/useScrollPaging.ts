@@ -13,7 +13,7 @@ export function useScrollPaging({
     fetchNextPage,
     enabled = true,
 }: UseScrollPagingOptions) {
-    const scrollTimeoutRef = useRef<NodeJS.Timeout>();
+    const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const handleScroll = useCallback(
         (e: Event) => {
             const target = e.target as HTMLDivElement;

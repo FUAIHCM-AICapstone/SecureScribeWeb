@@ -4,10 +4,10 @@
  */
 
 import React from 'react';
-import { Skeleton } from '@fluent-ui/react-components';
+import { Skeleton } from '@fluentui/react-components';
 import type { NotificationResponse } from 'types/notification.type';
-import { parseNotification } from './parseNotification';
-import { useEnrichedNotificationPayload } from './useNotificationEntities';
+import { parseNotification } from '@/lib/notifications/parseNotification';
+import { useEnrichedNotificationPayload } from '@/lib/notifications/useNotificationEntities';
 
 export interface NotificationDisplayProps {
   notification: NotificationResponse;
@@ -37,8 +37,8 @@ export const NotificationDisplay: React.FC<NotificationDisplayProps> = ({
   if (isLoading) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-        <Skeleton appearance="line" style={{ width: '200px', height: '16px' }} />
-        <Skeleton appearance="line" style={{ width: '300px', height: '14px' }} />
+        <Skeleton appearance="opaque" style={{ width: '200px', height: '16px' }} />
+        <Skeleton appearance="opaque" style={{ width: '300px', height: '14px' }} />
       </div>
     );
   }

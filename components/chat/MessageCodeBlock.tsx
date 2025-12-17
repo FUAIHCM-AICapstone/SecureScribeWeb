@@ -128,7 +128,6 @@ export function MessageCodeBlock({
           </div>
           {/* Code content with syntax highlighting */}
           <div className="overflow-y-auto" dir="ltr">
-            {/* @ts-expect-error SyntaxHighlighter type issue with react-syntax-highlighter */}
             <SyntaxHighlighter
               language={language}
               style={syntaxTheme}
@@ -155,7 +154,6 @@ export function MessageCodeBlock({
     return (
       <div className={`${styles.floatingContainer} group`}>
         <div style={{ position: 'relative' }}>
-          {/* @ts-expect-error SyntaxHighlighter type issue with react-syntax-highlighter */}
           <SyntaxHighlighter
             language={language}
             style={syntaxTheme}
@@ -180,7 +178,6 @@ export function MessageCodeBlock({
   return (
     <>
       <div className={`${styles.inlineContainer} group`}>
-        {/* @ts-expect-error SyntaxHighlighter type issue with react-syntax-highlighter */}
         <SyntaxHighlighter
           language={language}
           style={syntaxTheme}

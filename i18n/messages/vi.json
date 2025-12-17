@@ -390,25 +390,26 @@
     "failedToMarkAsRead": "Không thể đánh dấu đã đọc",
     "failedToDeleteNotifications": "Không thể xóa thông báo",
     "opening": "Đang mở {type}: {title}",
-    "preview": "Xem trước {type}: {title}"
-  },
-  "notifications": {
-    "user_joined_project": "{user_name} vừa tham gia vào project {project_name}",
-    "added_to_project": "Bạn vừa được {added_by_name} thêm vào project {project_name}",
-    "user_removed_project": "{user_name} đã bị loại khỏi project {project_name}",
-    "removed_from_project": "Bạn đã bị loại khỏi project {project_name} bởi {removed_by_name}",
-    "task_assigned": "Nhiệm vụ '{task_title}' đã được giao bởi {assigned_by}",
-    "task_updated": "Trạng thái nhiệm vụ '{task_title}' đã đổi thành {new_status}",
-    "file_indexing_completed": "Tệp '{filename}' đã được lập chỉ mục thành công",
-    "audio_processing_completed": "Xử lý âm thanh hoàn tất cho cuộc họp",
-    "meeting_analysis_completed": "Phân tích cuộc họp hoàn tất ({tasks_count} nhiệm vụ, {note_length} ký tự)",
-    "meeting_reminder": "Cuộc họp sắp tới: {title}",
-    "bot_status_update": "Trạng thái bot: {status}",
-    "system_announcement": "Thông báo hệ thống: {message}",
-    "maintenance": "Bảo trì hệ thống: {duration}",
-    "project_update": "Project {project_name} vừa được cập nhật",
-    "comment_reply": "{user_name} đã trả lời bình luận của bạn",
-    "generic": "Bạn có một thông báo mới"
+    "preview": "Xem trước {type}: {title}",
+    "notification": {
+      "user_joined_project": "{user_name} vừa tham gia vào project {project_name}",
+      "added_to_project": "Bạn vừa được {added_by_name} thêm vào project {project_name}",
+      "user_removed_project": "{user_name} đã bị loại khỏi project {project_name}",
+      "removed_from_project": "Bạn đã bị loại khỏi project {project_name} bởi {removed_by_name}",
+      "task_assigned": "Nhiệm vụ '{task_title}' đã được giao bởi {assigned_by}",
+      "task_updated": "Trạng thái nhiệm vụ '{task_title}' đã đổi thành {new_status}",
+      "file_indexing_completed": "Tệp '{filename}' đã được lập chỉ mục thành công",
+      "audio_processing_completed": "Xử lý âm thanh hoàn tất cho cuộc họp",
+      "chat_processing_completed": "Xử lý chat hoàn tất",
+      "meeting_analysis_completed": "Phân tích cuộc họp hoàn tất ({tasks_count} nhiệm vụ, {note_length} ký tự)",
+      "meeting_reminder": "Cuộc họp sắp tới: {title}",
+      "bot_status_update": "Trạng thái bot: {status}",
+      "system_announcement": "Thông báo hệ thống: {message}",
+      "maintenance": "Bảo trì hệ thống: {duration}",
+      "project_update": "Project {project_name} vừa được cập nhật",
+      "comment_reply": "{user_name} đã trả lời bình luận của bạn",
+      "generic": "Bạn có một thông báo mới"
+    }
   },
   "LanguageSwitcher": {
     "selectLanguage": "Chọn ngôn ngữ ({current})"

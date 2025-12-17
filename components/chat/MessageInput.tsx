@@ -115,7 +115,7 @@ export function MessageInput({
   };
 
   const mention = useMentionInput({
-    editorRef,
+    editorRef: editorRef as React.RefObject<HTMLElement>,
     search: searchMentionsAdapter,
     limit: 8,
   });
