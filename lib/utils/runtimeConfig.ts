@@ -36,7 +36,7 @@ export function loadRuntimeConfig(): RuntimeConfig {
 
 function getFallbackConfig(): RuntimeConfig {
     return {
-        API_ENDPOINT: 'https://securescribe.wc504.io.vn/be/api',
+        API_ENDPOINT: 'https://chang.wc504.io.vn/be/api',
         BRAND_NAME: 'FPT Telecom',
         BRAND_LOGO: '/images/logos/logo.png'
     };

@@ -2,7 +2,7 @@ import axios, { InternalAxiosRequestConfig, AxiosResponse, AxiosError } from 'ax
 import authApi from './auth';
 import { loadRuntimeConfig } from '@/lib/utils/runtimeConfig';
 
-const DEFAULT_API_BASE_URL = 'https://securescribe.wc504.io.vn/be/api';
+const DEFAULT_API_BASE_URL = 'https://chang.wc504.io.vn/be/api';
 const API_VERSION = 'v1';
 
 let API_BASE_URL = DEFAULT_API_BASE_URL;

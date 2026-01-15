@@ -6,7 +6,7 @@
 echo "🚀 Generating runtime config from environment variables..."
 
 # Set defaults if not provided
-API_ENDPOINT="${API_ENDPOINT:-https://securescribe.wc504.io.vn/be/api}"
+API_ENDPOINT="${API_ENDPOINT:-https://chang.wc504.io.vn/be/api}"
 BRAND_NAME="${BRAND_NAME:-SecureScribe}"
 BRAND_LOGO="${BRAND_LOGO:-/images/logos/logo.png}"
 
