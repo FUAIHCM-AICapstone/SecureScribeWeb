@@ -2,7 +2,7 @@
 
 import { FileMoveModal } from '@/components/modal/FileMoveModal';
 import { showToast } from '@/hooks/useShowToast';
-import { deleteFile, updateFile } from '@/services/api/file';
+import { deleteFile, downloadFile, updateFile } from '@/services/api/file';
 import {
   Button,
   Dialog,
@@ -90,9 +90,20 @@ export function FileActionsMenu({ file, onRenameSuccess, onDeleteSuccess, onMove
     },
   });
 
-  const handleDownload = () => {
-    if (file.storage_url) {
-      window.open(file.storage_url, '_blank');
+  const handleDownload = async () => {
+    try {
+      const blob = await downloadFile(file.id);
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = file.filename || 'download';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Download failed:', error);
+      showToast('error', t('download.downloadError'));
     }
   };
 

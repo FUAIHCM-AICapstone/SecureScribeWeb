@@ -277,6 +277,19 @@ export function FilesPageClient() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
+  // File operation callbacks - refetch data after successful operations
+  const handleFileDeleted = useCallback(() => {
+    refetch();
+  }, [refetch]);
+
+  const handleFileRenamed = useCallback(() => {
+    refetch();
+  }, [refetch]);
+
+  const handleFileMoved = useCallback(() => {
+    refetch();
+  }, [refetch]);
+
   // Loading state
   if (isLoading) {
     return (
@@ -342,9 +355,21 @@ export function FilesPageClient() {
             onUploadClick={() => setUploadModalOpen(true)}
           />
         ) : viewMode === 'grid' ? (
-          <FilesGrid files={files} />
+          <FilesGrid 
+            files={files}
+            onFileDeleted={handleFileDeleted}
+            onFileRenamed={handleFileRenamed}
+            onFileMoved={handleFileMoved}
+          />
         ) : (
-          <FilesList files={files} projects={projects} meetings={meetings} />
+          <FilesList 
+            files={files} 
+            projects={projects} 
+            meetings={meetings}
+            onFileDeleted={handleFileDeleted}
+            onFileRenamed={handleFileRenamed}
+            onFileMoved={handleFileMoved}
+          />
         )}
       </div>
 

@@ -233,6 +233,9 @@
       "deleteSuccess": "Xóa tệp thành công!",
       "deleting": "Đang xóa..."
     },
+    "download": {
+      "downloadError": "Tải xuống tệp thất bại. Vui lòng thử lại."
+    },
     "dragDropHere": "hoặc kéo thả vào đây",
     "emptyFilteredDescription": "Thử điều chỉnh bộ lọc hoặc từ khóa tìm kiếm để tìm những gì bạn cần.",
     "emptyUnfilteredDescription": "Bắt đầu bằng cách tải lên tệp đầu tiên để chia sẻ với nhóm của bạn.",

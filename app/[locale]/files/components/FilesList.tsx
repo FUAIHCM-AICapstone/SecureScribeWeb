@@ -19,9 +19,12 @@ interface FilesListProps {
   files: FileResponse[];
   projects?: ProjectResponse[];
   meetings?: MeetingResponse[];
+  onFileDeleted?: () => void;
+  onFileRenamed?: () => void;
+  onFileMoved?: () => void;
 }
 
-export function FilesList({ files, projects, meetings }: FilesListProps) {
+export function FilesList({ files, projects, meetings, onFileDeleted, onFileRenamed, onFileMoved }: FilesListProps) {
   const styles = useStyles();
 
   return (
@@ -32,6 +35,9 @@ export function FilesList({ files, projects, meetings }: FilesListProps) {
           file={file}
           projects={projects}
           meetings={meetings}
+          onFileDeleted={onFileDeleted}
+          onFileRenamed={onFileRenamed}
+          onFileMoved={onFileMoved}
         />
       ))}
     </div>

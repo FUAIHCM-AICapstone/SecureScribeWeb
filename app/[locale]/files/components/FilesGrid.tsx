@@ -26,15 +26,25 @@ const useStyles = makeStyles({
 interface FilesGridProps {
   files: FileResponse[];
   onPreview?: (file: FileResponse) => void;
+  onFileDeleted?: () => void;
+  onFileRenamed?: () => void;
+  onFileMoved?: () => void;
 }
 
-export function FilesGrid({ files, onPreview }: FilesGridProps) {
+export function FilesGrid({ files, onPreview, onFileDeleted, onFileRenamed, onFileMoved }: FilesGridProps) {
   const styles = useStyles();
 
   return (
     <div className={styles.grid}>
       {files.map((file) => (
-        <FileCard key={file.id} file={file} onPreview={onPreview} />
+        <FileCard 
+          key={file.id} 
+          file={file} 
+          onPreview={onPreview}
+          onFileDeleted={onFileDeleted}
+          onFileRenamed={onFileRenamed}
+          onFileMoved={onFileMoved}
+        />
       ))}
     </div>
   );

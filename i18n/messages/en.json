@@ -233,6 +233,9 @@
       "deleteSuccess": "File deleted successfully!",
       "deleting": "Deleting..."
     },
+    "download": {
+      "downloadError": "Failed to download file. Please try again."
+    },
     "dragDropHere": "or drag and drop here",
     "emptyFilteredDescription": "Try adjusting your filters or search terms to find what you're looking for.",
     "emptyUnfilteredDescription": "Get started by uploading your first file to share with your team.",
