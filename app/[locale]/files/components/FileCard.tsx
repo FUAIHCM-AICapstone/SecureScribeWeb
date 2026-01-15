@@ -29,6 +29,7 @@ const useStyles = makeStyles({
     height: '100%',
     cursor: 'pointer',
     transition: 'all 0.2s ease',
+    position: 'relative',
     ':hover': {
       transform: 'translateY(-4px)',
       boxShadow: tokens.shadow16,
@@ -84,8 +85,11 @@ const useStyles = makeStyles({
   caption: {
     color: tokens.colorNeutralForeground3,
   },
-  actionsContainer: {
-    flexShrink: 0,
+  actionsMenu: {
+    position: 'absolute',
+    top: '8px',
+    left: '8px',
+    zIndex: 10,
   },
 });
 
@@ -152,17 +156,18 @@ export function FileCard({ file, onPreview, onFileDeleted, onFileRenamed, onFile
                 </Caption1>
               </div>
             </div>
-            <div className={styles.actionsContainer}>
-              <FileActionsMenu
-                file={file}
-                onDeleteSuccess={onFileDeleted}
-                onRenameSuccess={onFileRenamed}
-                onMoveSuccess={onFileMoved}
-              />
-            </div>
           </div>
         }
       />
+
+      <div className={styles.actionsMenu}>
+        <FileActionsMenu
+          file={file}
+          onDeleteSuccess={onFileDeleted}
+          onRenameSuccess={onFileRenamed}
+          onMoveSuccess={onFileMoved}
+        />
+      </div>
     </Card>
   );
 }
