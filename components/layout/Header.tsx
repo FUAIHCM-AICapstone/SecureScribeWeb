@@ -6,31 +6,12 @@ import SearchBoxWithResults from '@/components/search/SearchBoxWithResults';
 import { showToast } from '@/hooks/useShowToast';
 import { usePathname, useRouter } from '@/i18n/navigation';
 import {
-  Avatar,
-  // Badge,
   Button,
   CounterBadge,
-  Dialog,
-  DialogTrigger,
-  DialogSurface,
-  DialogTitle,
-  DialogBody,
-  DialogActions,
-  DialogContent,
   Divider,
-  Drawer,
-  DrawerBody,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerHeaderTitle,
-  Menu,
-  MenuItem,
-  MenuList,
-  MenuPopover,
-  MenuTrigger,
   Tooltip,
-  makeStyles,
   mergeClasses,
+  makeStyles,
   tokens,
 } from '@fluentui/react-components';
 import {
@@ -38,31 +19,24 @@ import {
   ArrowUpload24Regular,
   CalendarAdd24Regular,
   Navigation24Regular,
-  SignOut24Regular,
 } from '@fluentui/react-icons';
 import { useLocale, useTranslations } from 'next-intl';
 import Image from 'next/image';
 import React, { useState, useEffect } from 'react';
 import LanguageSwitcher from './LanguageSwitcher';
 import ThemeToggle from './ThemeToggle';
-// import { TestNotificationButton } from './TestNotificationButton';
-import { NotificationItem } from './NotificationItem';
+import { NotificationDrawer } from './NotificationDrawer';
+import { UserMenu } from './UserMenu';
 import { useSidebar } from '@/context/SidebarContext';
 import { useAuth } from '@/context/AuthContext';
-import {
-  getNotifications,
-  markNotificationAsRead,
-  markNotificationAsUnread,
-  deleteNotification,
-} from '@/services/api/notification';
-import type { NotificationResponse } from 'types/notification.type';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { queryKeys } from '@/lib/queryClient';
+import { getNotifications } from '@/services/api/notification';
 import { dynamicSearch } from '@/services/api/search';
 import { getProjects } from '@/services/api/project';
 import { getMeetings } from '@/services/api/meeting';
 import { getFiles } from '@/services/api/file';
 import { getUsers } from '@/services/api/user';
+import { useQuery } from '@tanstack/react-query';
+import { queryKeys } from '@/lib/queryClient';
 import { getBrandConfig } from '@/lib/utils/runtimeConfig';
 
 const useStyles = makeStyles({
@@ -178,8 +152,8 @@ const useStyles = makeStyles({
     flexDirection: 'column',
     gap: '2px',
     padding: '10px 12px',
-    borderRadius: tokens.borderRadiusMedium,
-    border: `1px solid ${tokens.colorNeutralStroke1}`,
+    borderRadius: 'var(--borderRadiusMedium)',
+    border: `1px solid var(--colorNeutralStroke1)`,
     backgroundColor: 'var(--colorNeutralBackground1)',
     cursor: 'pointer',
     transition: 'background .15s ease',
@@ -201,19 +175,7 @@ const useStyles = makeStyles({
 
 // Removed legacy inline search types in favor of reusable SearchBoxWithResults
 
-export default function Header(
-  {
-    // notificationPermission,
-    // fcmToken,
-    // fcmLoading,
-    // requestNotificationPermission,
-  }: {
-    notificationPermission: NotificationPermission;
-    fcmToken: string | null;
-    fcmLoading: boolean;
-    requestNotificationPermission: () => Promise<boolean>;
-  },
-) {
+export default function Header() {
   const styles = useStyles();
   const pathname = usePathname();
   const locale = useLocale();
@@ -226,8 +188,6 @@ export default function Header(
   const [isSchedulerOpen, setIsSchedulerOpen] = useState(false);
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [isNotiOpen, setIsNotiOpen] = useState(false);
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const queryClient = useQueryClient();
 
   // Brand configuration from runtime config
   const [brandName, setBrandName] = useState('SecureScribe');
@@ -262,103 +222,6 @@ export default function Header(
   });
 
   const unreadCount = notifications.filter((n) => !n.is_read).length;
-
-  // Mutation for toggling notification read status
-  const toggleReadMutation = useMutation({
-    mutationFn: async ({ id, isRead }: { id: string; isRead: boolean }) => {
-      if (isRead) {
-        return await markNotificationAsUnread(id);
-      } else {
-        return await markNotificationAsRead(id);
-      }
-    },
-    onMutate: async ({ id, isRead }) => {
-      // Cancel any outgoing refetches
-      await queryClient.cancelQueries({ queryKey: queryKeys.notifications });
-
-      // Snapshot the previous value
-      const previousNotifications = queryClient.getQueryData(
-        queryKeys.notifications,
-      );
-
-      // Optimistically update the cache
-      queryClient.setQueryData(
-        queryKeys.notifications,
-        (old: NotificationResponse[] | undefined) => {
-          if (!old) return old;
-          return old.map((n) => (n.id === id ? { ...n, is_read: !isRead } : n));
-        },
-      );
-
-      return { previousNotifications };
-    },
-    onError: (err, variables, context) => {
-      // If the mutation fails, use the context returned from onMutate to roll back
-      if (context?.previousNotifications) {
-        queryClient.setQueryData(
-          queryKeys.notifications,
-          context.previousNotifications,
-        );
-      }
-      console.error('Failed to update notification:', err);
-      showToast('error', t('failedToUpdateNotification'));
-    },
-    onSuccess: (data, { isRead }) => {
-      showToast(
-        isRead ? 'info' : 'success',
-        isRead ? t('markedAsUnread') : t('markedAsRead'),
-      );
-    },
-  });
-
-  const toggleNotificationRead = (id: string) => {
-    const target = notifications.find((n) => n.id === id);
-    if (!target) return;
-
-    toggleReadMutation.mutate({ id, isRead: target.is_read });
-  };
-
-  // Mark all notifications as read mutation
-  const markAllAsReadMutation = useMutation({
-    mutationFn: async () => {
-      const unreadNotifications = notifications.filter((n) => !n.is_read);
-      await Promise.all(
-        unreadNotifications.map((n) => markNotificationAsRead(n.id)),
-      );
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.notifications });
-      showToast('success', t('markAllAsRead'));
-      setIsNotiOpen(false);
-    },
-    onError: (error: any) => {
-      showToast('error', error.message || t('failedToMarkAsRead'));
-    },
-  });
-
-  const markAllAsReadHandler = () => {
-    markAllAsReadMutation.mutate();
-  };
-
-  // Delete all notifications mutation
-  const deleteAllNotificationsMutation = useMutation({
-    mutationFn: async () => {
-      await Promise.all(notifications.map((n) => deleteNotification(n.id)));
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.notifications });
-      showToast('success', t('deleteSuccess'));
-      setIsNotiOpen(false);
-      setIsDeleteDialogOpen(false);
-    },
-    onError: (error: any) => {
-      showToast('error', error.message || t('failedToDeleteNotifications'));
-    },
-  });
-
-  const deleteAllHandler = () => {
-    deleteAllNotificationsMutation.mutate();
-  };
 
   // Breadcrumbs: from URL segments, then title map via i18n keys
   const segments = pathname
@@ -560,8 +423,12 @@ export default function Header(
             if (e.key === 'Enter' || e.key === ' ') onClickBrand();
           }}
         >
-          <Image src={brandLogo} alt={brandName} 
-          width={28} height={28} />
+          <Image
+            src={brandLogo}
+            alt={brandName}
+            width={28}
+            height={28}
+          />
           <strong className={styles.brandText}>{brandName}</strong>
         </div>
 
@@ -594,6 +461,7 @@ export default function Header(
               />
             </div>
           </div>
+
           <Tooltip content={t('upload')} relationship="label">
             <Button
               appearance="primary"
@@ -605,6 +473,7 @@ export default function Header(
               <span className={styles.buttonText}>{t('upload')}</span>
             </Button>
           </Tooltip>
+
           <Tooltip content={t('schedule')} relationship="label">
             <Button
               appearance="secondary"
@@ -620,7 +489,6 @@ export default function Header(
             </Button>
           </Tooltip>
 
-          {/* Notifications */}
           <Tooltip content={t('notifications')} relationship="label">
             <Button
               appearance="subtle"
@@ -638,206 +506,24 @@ export default function Header(
             </Button>
           </Tooltip>
 
-          {/* User Profile Dropdown */}
-          <Menu>
-            <MenuTrigger>
-              <Tooltip content="Profile" relationship="label">
-                <Button appearance="subtle" size="small">
-                  <Avatar
-                    name={user?.name || user?.email || 'User'}
-                    image={
-                      user?.avatar_url ? { src: user.avatar_url } : undefined
-                    }
-                    size={28}
-                  />
-                </Button>
-              </Tooltip>
-            </MenuTrigger>
-            <MenuPopover>
-              <MenuList>
-                <div
-                  style={{
-                    padding: '12px 16px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '4px',
-                  }}
-                >
-                  <div style={{ fontWeight: 600 }}>{user?.name || 'User'}</div>
-                  <div
-                    style={{
-                      fontSize: '12px',
-                      color: 'var(--colorNeutralForeground3)',
-                    }}
-                  >
-                    {user?.email}
-                  </div>
-                  {user?.position && (
-                    <div
-                      style={{
-                        fontSize: '12px',
-                        color: 'var(--colorNeutralForeground3)',
-                      }}
-                    >
-                      {user.position}
-                    </div>
-                  )}
-                </div>
-                <Divider />
-                <MenuItem icon={<SignOut24Regular />} onClick={logout}>
-                  {t('logout') || 'Logout'}
-                </MenuItem>
-              </MenuList>
-            </MenuPopover>
-          </Menu>
+          <UserMenu user={user} onLogout={logout} t={t} />
 
           <Divider vertical style={{ height: 28 }} />
           <LanguageSwitcher />
           <ThemeToggle />
         </div>
       </header>
-      <Drawer
-        open={isNotiOpen}
-        position="end"
-        onOpenChange={(_, data) => setIsNotiOpen(!!data.open)}
-      >
-        <DrawerHeader>
-          <DrawerHeaderTitle>{t('notifications')}</DrawerHeaderTitle>
-        </DrawerHeader>
-        <DrawerBody>
-          {/* Notification Settings - Compact Design */}
-          {/* <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--colorNeutralStroke2)' }}>
-            <div style={{ fontSize: '13px', fontWeight: 600, marginBottom: '8px' }}>
-              {t('notificationSettings')}
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '11px', color: 'var(--colorNeutralForeground3)' }}>
-                  {t('browserPermission')}:
-                </span>
-                <Badge
-                  appearance="filled"
-                  color={
-                    notificationPermission === 'granted' ? 'success' :
-                      notificationPermission === 'denied' ? 'danger' : 'warning'
-                  }
-                  size="small"
-                >
-                  {notificationPermission === 'granted' ? t('permissionGranted') :
-                    notificationPermission === 'denied' ? t('permissionDenied') : t('permissionDefault')}
-                </Badge>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '11px', color: 'var(--colorNeutralForeground3)' }}>
-                  {t('fcmToken')}:
-                </span>
-                <Badge
-                  appearance="filled"
-                  color={fcmToken ? 'success' : 'warning'}
-                  size="small"
-                >
-                  {fcmToken ? t('tokenRegistered') : t('tokenNotRegistered')}
-                </Badge>
-              </div>
-              {notificationPermission !== 'granted' && (
-                <Button
-                  appearance="primary"
-                  size="small"
-                  onClick={requestNotificationPermission}
-                  disabled={fcmLoading}
-                  style={{ alignSelf: 'flex-start', marginTop: '4px', fontSize: '11px', padding: '4px 8px' }}
-                >
-                  {fcmLoading ? t('enablingNotifications') : t('enableNotifications')}
-                </Button>
-              )}
-            </div>
-          </div> */}
 
-          <div className={styles.drawerList}>
-            {notificationsLoading ? (
-              <div style={{ textAlign: 'center', padding: '20px' }}>
-                {t('loadingNotifications')}
-              </div>
-            ) : notificationsError ? (
-              <div
-                style={{
-                  textAlign: 'center',
-                  padding: '20px',
-                  color: 'var(--colorStatusDangerForeground1)',
-                }}
-              >
-                {notificationsError.message || t('failedToLoadNotifications')}
-              </div>
-            ) : notifications.length === 0 ? (
-              <div
-                style={{
-                  textAlign: 'center',
-                  padding: '20px',
-                  color: 'var(--colorNeutralForeground3)',
-                }}
-              >
-                {t('noNotifications')}
-              </div>
-            ) : (
-              notifications.map((n: NotificationResponse) => (
-                <NotificationItem
-                  key={n.id}
-                  notification={n}
-                  t={t}
-                  onToggleRead={toggleNotificationRead}
-                  onDelete={deleteNotification}
-                />
-              ))
-            )}
-          </div>
-        </DrawerBody>
-        <DrawerFooter>
-          {unreadCount > 0 ? (
-            <Button
-              appearance="secondary"
-              onClick={markAllAsReadHandler}
-              disabled={markAllAsReadMutation.isPending}
-            >
-              {t('markAllAsRead')}
-            </Button>
-          ) : notifications.length > 0 ? (
-            <Dialog
-              open={isDeleteDialogOpen}
-              onOpenChange={(_, data) => setIsDeleteDialogOpen(data.open)}
-            >
-              <DialogTrigger disableButtonEnhancement>
-                <Button
-                  appearance="secondary"
-                  disabled={deleteAllNotificationsMutation.isPending}
-                >
-                  {t('deleteHistory')}
-                </Button>
-              </DialogTrigger>
-              <DialogSurface>
-                <DialogBody>
-                  <DialogTitle>{t('deleteHistory')}</DialogTitle>
-                  <DialogContent>{t('confirmDeleteHistory')}</DialogContent>
-                  <DialogActions>
-                    <DialogTrigger disableButtonEnhancement>
-                      <Button appearance="secondary">{t('cancel')}</Button>
-                    </DialogTrigger>
-                    <Button
-                      appearance="primary"
-                      onClick={deleteAllHandler}
-                      disabled={deleteAllNotificationsMutation.isPending}
-                    >
-                      {t('delete')}
-                    </Button>
-                  </DialogActions>
-                </DialogBody>
-              </DialogSurface>
-            </Dialog>
-          ) : null}
-          <Button appearance="secondary" onClick={() => setIsNotiOpen(false)}>
-            {t('close')}
-          </Button>
-        </DrawerFooter>
-      </Drawer>
+      <NotificationDrawer
+        open={isNotiOpen}
+        onOpenChange={setIsNotiOpen}
+        notifications={notifications}
+        isLoading={notificationsLoading}
+        error={notificationsError}
+        unreadCount={unreadCount}
+        t={t}
+      />
+
       <MeetingSchedulerModal
         open={isSchedulerOpen}
         onOpenChange={setIsSchedulerOpen}

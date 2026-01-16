@@ -1,7 +1,10 @@
 'use client';
 
-import MeetingEditModal from '@/components/modal/MeetingEditModal';
-import { FileUploadModal } from '@/components/modal/FileUploadModal';
+import { Suspense } from 'react';
+const MeetingEditModal = React.lazy(() => import('@/components/modal/MeetingEditModal'));
+const FileUploadModalComponent = React.lazy(() => import('@/components/modal/FileUploadModal').then(m => ({ default: m.FileUploadModal })));
+const MeetingNotesComponent = React.lazy(() => import('./MeetingNotes').then(m => ({ default: m.MeetingNotes })));
+const MeetingTranscriptsComponent = React.lazy(() => import('./MeetingTranscripts').then(m => ({ default: m.MeetingTranscripts })));
 import {
   Body1,
   Button,
@@ -19,10 +22,8 @@ import React from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useWebSocket } from '@/context/WebSocketContext';
 import { MeetingHeader } from './MeetingHeader';
-import { MeetingNotes } from './MeetingNotes';
 import { MeetingFiles } from './MeetingFiles';
 import { MeetingFilesTable } from './MeetingFilesTable';
-import { MeetingTranscripts } from './MeetingTranscripts';
 import { MeetingModals } from './MeetingModals';
 import { LinkedProjectsSection } from './LinkedProjectsSection';
 import { useMeetingQueries } from './useMeetingQueries';
@@ -339,17 +340,19 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
       <div className={styles.content}>
         <div className={styles.mainColumn}>
           {/* Notes Section */}
-          <MeetingNotes
-            note={meetingNote}
-            isLoading={isLoadingNote}
-            error={noteError}
-            onCreateNote={handleCreateNote}
-            onEditNote={handleEditNote}
-            onShowTasks={handleShowTasks}
-            isCreating={createNoteMutation.isPending}
-            isUpdating={updateNoteMutation.isPending}
-            analysisProgress={analysisProgress}
-          />
+          <Suspense fallback={<Card className={styles.section}><Spinner /></Card>}>
+            <MeetingNotesComponent
+              note={meetingNote}
+              isLoading={isLoadingNote}
+              error={noteError}
+              onCreateNote={handleCreateNote}
+              onEditNote={handleEditNote}
+              onShowTasks={handleShowTasks}
+              isCreating={createNoteMutation.isPending}
+              isUpdating={updateNoteMutation.isPending}
+              analysisProgress={analysisProgress}
+            />
+          </Suspense>
 
           {/* Files Section */}
           <MeetingFiles
@@ -388,17 +391,19 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
 
         <div className={styles.sideColumn}>
           {/* Transcripts Section */}
-          <MeetingTranscripts
-            transcripts={transcripts}
-            isLoading={isLoadingTranscripts}
-            error={transcriptError}
-            onDeleteTranscript={handleDeleteTranscript}
-            onReindexTranscript={handleReindexTranscript}
-            onUploadAudio={handleUploadAudio}
-            isDeleting={deleteTranscriptMutation.isPending}
-            isUploading={isUploadingAudio || uploadAudioMutation.isPending}
-            isReindexing={reindexTranscriptMutation.isPending}
-          />
+          <Suspense fallback={<Card className={styles.section}><Spinner /></Card>}>
+            <MeetingTranscriptsComponent
+              transcripts={transcripts}
+              isLoading={isLoadingTranscripts}
+              error={transcriptError}
+              onDeleteTranscript={handleDeleteTranscript}
+              onReindexTranscript={handleReindexTranscript}
+              onUploadAudio={handleUploadAudio}
+              isDeleting={deleteTranscriptMutation.isPending}
+              isUploading={isUploadingAudio || uploadAudioMutation.isPending}
+              isReindexing={reindexTranscriptMutation.isPending}
+            />
+          </Suspense>
 
           {/* Related Projects */}
           {meeting.projects && meeting.projects.length > 0 && (
@@ -436,12 +441,14 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
 
       {/* Edit Modal */}
       {meeting && (
-        <MeetingEditModal
-          open={showEditModal}
-          onOpenChange={setShowEditModal}
-          meeting={meeting}
-          onEditSuccess={() => setShowEditModal(false)}
-        />
+        <Suspense fallback={null}>
+          <MeetingEditModal
+            open={showEditModal}
+            onOpenChange={setShowEditModal}
+            meeting={meeting}
+            onEditSuccess={() => setShowEditModal(false)}
+          />
+        </Suspense>
       )}
 
       {/* Delete & Upload Modals */}
@@ -488,11 +495,13 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
       />
 
       {/* File Upload Modal */}
-      <FileUploadModal
-        open={showFileModal}
-        onClose={handleFileModalClose}
-        defaultMeetingId={meetingId}
-      />
+      <Suspense fallback={null}>
+        <FileUploadModalComponent
+          open={showFileModal}
+          onClose={handleFileModalClose}
+          defaultMeetingId={meetingId}
+        />
+      </Suspense>
     </div>
   );
 }

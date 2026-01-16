@@ -115,12 +115,7 @@ export default function RootLayoutClient({
                           overflow: 'hidden',
                         }}
                       >
-                        {!hideHeader && <Header
-                          notificationPermission="default"
-                          fcmToken=""
-                          fcmLoading={false}
-                          requestNotificationPermission={async () => false}
-                        />}
+                        {!hideHeader && <Header />}
                         <div style={{ display: 'flex', flex: 1, minHeight: 0 }}>
                           {!hideHeader && <Sidebar />}
                           <main
