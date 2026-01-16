@@ -78,7 +78,7 @@ interface LinkedProjectsSectionProps {
     itemsPerPage?: number;
 }
 
-export export function LinkedProjectsSection({
+export function LinkedProjectsSection({
     projects,
     itemsPerPage = 6,
 }: LinkedProjectsSectionProps) {
