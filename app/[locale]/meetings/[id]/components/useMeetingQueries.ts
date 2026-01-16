@@ -19,6 +19,12 @@ import type { TranscriptResponse } from 'types/transcript.type';
 
 export const useMeetingQueries = (meetingId: string) => {
   const t = useTranslations('MeetingDetail');
+  
+  // Track which data tabs should be loaded (lazy loading for performance)
+  const [loadAudio, setLoadAudio] = React.useState(false);
+  const [loadTranscripts, setLoadTranscripts] = React.useState(false);
+  const [loadFiles, setLoadFiles] = React.useState(false);
+  
   const [audioFiles, setAudioFiles] = React.useState<AudioFileResponse[]>([]);
   const [files, setFiles] = React.useState<FileResponse[]>([]);
   const [transcripts, setTranscripts] = React.useState<TranscriptResponse[]>(
@@ -42,7 +48,7 @@ export const useMeetingQueries = (meetingId: string) => {
     queryFn: () => getMeeting(meetingId),
   });
 
-  // Query: Fetch audio files for the meeting
+  // Query: Fetch audio files for the meeting (lazy load - only when audio tab is clicked)
   const audioQuery = useQuery({
     queryKey: ['audioFiles', meetingId],
     queryFn: async () => {
@@ -58,10 +64,11 @@ export const useMeetingQueries = (meetingId: string) => {
         throw error;
       }
     },
-    enabled: !!meetingId,
+    enabled: !!meetingId && loadAudio, // ← Only fetch when needed
+    staleTime: 30 * 60 * 1000, // 30 minutes (audio rarely changes)
   });
 
-  // Query: Fetch files for the meeting
+  // Query: Fetch files for the meeting (lazy load - only when files tab is clicked)
   const filesQuery = useQuery({
     queryKey: ['meetingFiles', meetingId],
     queryFn: async () => {
@@ -77,10 +84,11 @@ export const useMeetingQueries = (meetingId: string) => {
         throw error;
       }
     },
-    enabled: !!meetingId,
+    enabled: !!meetingId && loadFiles, // ← Only fetch when needed
+    staleTime: 30 * 60 * 1000, // 30 minutes
   });
 
-  // Query: Fetch transcripts for the meeting
+  // Query: Fetch transcripts for the meeting (lazy load - only when transcripts tab is clicked)
   const transcriptQuery = useQuery({
     queryKey: ['transcripts', meetingId],
     queryFn: async () => {
@@ -96,7 +104,8 @@ export const useMeetingQueries = (meetingId: string) => {
         throw error;
       }
     },
-    enabled: !!meetingId,
+    enabled: !!meetingId && loadTranscripts, // ← Only fetch when needed
+    staleTime: 60 * 60 * 1000, // 1 hour (transcripts never change)
   });
 
   // Query: Fetch meeting note
@@ -167,5 +176,10 @@ export const useMeetingQueries = (meetingId: string) => {
     meetingAgenda,
     isLoadingAgenda: agendaQuery.isLoading,
     agendaError,
+
+    // Setters for lazy loading - call these when user clicks on tabs
+    setLoadAudio,
+    setLoadTranscripts,
+    setLoadFiles,
   };
 };

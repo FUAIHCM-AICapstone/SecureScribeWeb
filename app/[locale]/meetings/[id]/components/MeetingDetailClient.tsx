@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense } from 'react';
+import React, { Suspense } from 'react';
 const MeetingEditModal = React.lazy(() => import('@/components/modal/MeetingEditModal'));
 const FileUploadModalComponent = React.lazy(() => import('@/components/modal/FileUploadModal').then(m => ({ default: m.FileUploadModal })));
 import {
@@ -16,7 +16,6 @@ import {
 import { ArrowLeft20Regular } from '@/lib/icons';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import React from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useWebSocket } from '@/context/WebSocketContext';
 import { MeetingHeader } from './MeetingHeader';
@@ -112,6 +111,9 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
     meetingAgenda,
     isLoadingAgenda,
     agendaError,
+    setLoadAudio,    // ← Add these for lazy loading
+    setLoadTranscripts,
+    setLoadFiles,
   } = useMeetingQueries(meetingId);
 
   // Get all mutations using custom hook
@@ -196,39 +198,43 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
   const [showTaskModal, setShowTaskModal] = React.useState(false);
   const [showFileModal, setShowFileModal] = React.useState(false);
 
-  // Handlers
-  const handleEdit = () => setShowEditModal(true);
+  // Memoized event handlers to prevent child component re-renders
+  const handleEdit = React.useCallback(() => {
+    setShowEditModal(true);
+  }, []);
 
-  const handleDelete = () => setShowDeleteModal(true);
+  const handleDelete = React.useCallback(() => {
+    setShowDeleteModal(true);
+  }, []);
 
-  const handleDeleteConfirm = () => {
+  const handleDeleteConfirm = React.useCallback(() => {
     setIsDeleting(true);
     setShowDeleteModal(false);
     deleteMutation.mutate();
-  };
+  }, [deleteMutation]);
 
-  const handleArchiveToggle = () => {
+  const handleArchiveToggle = React.useCallback(() => {
     if (meeting?.status === 'archived') {
       unarchiveMutation.mutate();
     } else {
       archiveMutation.mutate();
     }
-  };
+  }, [meeting?.status, unarchiveMutation, archiveMutation]);
 
-  const handleCreateNote = () => {
+  const handleCreateNote = React.useCallback(() => {
     setNoteModalMode('create');
     setNoteContent('');
     setCustomNotePrompt('');
     setShowNoteModal(true);
-  };
+  }, []);
 
-  const handleEditNote = () => {
+  const handleEditNote = React.useCallback(() => {
     setNoteModalMode('edit');
     setNoteContent(meetingNote?.content || '');
     setShowNoteModal(true);
-  };
+  }, [meetingNote?.content]);
 
-  const handleSaveNote = () => {
+  const handleSaveNote = React.useCallback(() => {
     if (noteModalMode === 'create') {
       createNoteMutation.mutate(customNotePrompt);
       setShowNoteModal(false);
@@ -240,34 +246,40 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
       setCustomNotePrompt('');
       setNoteContent('');
     }
-  };
+  }, [noteModalMode, customNotePrompt, noteContent, createNoteMutation, updateNoteMutation]);
 
-  const handleDeleteAudio = (audioId: string) => {
+  const handleDeleteAudio = React.useCallback((audioId: string) => {
     setDeleteTarget({ type: 'audio', id: audioId });
     setShowDeleteConfirm(true);
-  };
+  }, []);
 
-  const handleDeleteTranscript = (transcriptId: string) => {
+  const handleDeleteTranscript = React.useCallback((transcriptId: string) => {
     setDeleteTarget({ type: 'transcript', id: transcriptId });
     setShowDeleteConfirm(true);
-  };
+  }, []);
 
-  const handleReindexTranscript = (transcriptId: string) => {
+  const handleReindexTranscript = React.useCallback((transcriptId: string) => {
     reindexTranscriptMutation.mutate({ transcriptId });
-  };
+  }, [reindexTranscriptMutation]);
 
-  const handleUploadAudio = () => setShowUploadModal(true);
+  const handleUploadAudio = React.useCallback(() => {
+    setShowUploadModal(true);
+  }, []);
 
-  const handleShowTasks = () => setShowTaskModal(true);
+  const handleShowTasks = React.useCallback(() => {
+    setShowTaskModal(true);
+  }, []);
 
-  const handleFileModalOpen = () => setShowFileModal(true);
+  const handleFileModalOpen = React.useCallback(() => {
+    setShowFileModal(true);
+  }, []);
 
-  const handleFileModalClose = () => {
+  const handleFileModalClose = React.useCallback(() => {
     setShowFileModal(false);
     queryClient.invalidateQueries({ queryKey: ['files', meetingId] });
-  };
+  }, [queryClient, meetingId]);
 
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = React.useCallback(() => {
     if (!deleteTarget) return;
 
     if (deleteTarget.type === 'audio') {
@@ -277,7 +289,18 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
     }
     setShowDeleteConfirm(false);
     setDeleteTarget(null);
-  };
+  }, [deleteTarget, deleteAudioMutation, deleteTranscriptMutation]);
+
+  // Handle tab selection to trigger lazy loading of data
+  const handleTabChange = React.useCallback((tabValue: string) => {
+    if (tabValue === 'audio') {
+      setLoadAudio(true);
+    } else if (tabValue === 'transcripts') {
+      setLoadTranscripts(true);
+    } else if (tabValue === 'files') {
+      setLoadFiles(true);
+    }
+  }, [setLoadAudio, setLoadTranscripts, setLoadFiles]);
 
   const handleFileUpload = (file: File) => {
     setUploadedFile(file);
@@ -364,6 +387,7 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
           }}
           isUpdatingAgenda={updateAgendaMutation.isPending}
           isGeneratingAgenda={generateAgendaMutation.isPending}
+          onTabChange={handleTabChange}  // ← Pass handler for lazy loading
         />
 
         {/* Audio Files Section */}

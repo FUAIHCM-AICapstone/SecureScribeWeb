@@ -18,7 +18,7 @@ import {
     tokens,
 } from '@/lib/components';
 import { useTranslations } from 'next-intl';
-import { Suspense, useState } from 'react';
+import React, { Suspense, useState } from 'react';
 import type { MeetingNoteResponse } from 'types/meeting_note.type';
 import type { TranscriptResponse } from 'types/transcript.type';
 import type { MeetingAgendaResponse } from 'types/agenda.type';
@@ -94,9 +94,12 @@ interface MeetingDetailTabsProps {
   onGenerateAgenda: (customPrompt?: string) => Promise<void>;
   isUpdatingAgenda: boolean;
   isGeneratingAgenda: boolean;
+  
+  onTabChange?: (tabValue: string) => void; // ← Add handler for tab changes
 }
 
-export function MeetingDetailTabs({
+// Component implementation - renamed to add memo wrapper
+function MeetingDetailTabsComponent({
   note,
   isLoadingNote,
   noteError,
@@ -125,17 +128,26 @@ export function MeetingDetailTabs({
   onGenerateAgenda,
   isUpdatingAgenda,
   isGeneratingAgenda,
+  onTabChange, // ← Add to destructuring
 }: MeetingDetailTabsProps) {
   const styles = useStyles();
   const t = useTranslations('MeetingDetail');
   const [selectedTab, setSelectedTab] = useState<string>('notes');
+
+  // Handle tab selection and trigger lazy loading
+  const handleTabSelect = (event: any, data: any) => {
+    const tabValue = data.value as string;
+    setSelectedTab(tabValue);
+    // Call parent handler to trigger lazy loading
+    onTabChange?.(tabValue);
+  };
 
   return (
     <div className={styles.tabsContainer}>
       <div className={styles.tabListWrapper}>
         <TabList
           selectedValue={selectedTab}
-          onTabSelect={(event, data) => setSelectedTab(data.value as string)}
+          onTabSelect={handleTabSelect}
           appearance="subtle"
         >
           <Tab value="notes" icon={<Document20Regular />}>
@@ -263,3 +275,36 @@ export function MeetingDetailTabs({
     </div>
   );
 }
+
+// Set display name for React DevTools debugging
+MeetingDetailTabsComponent.displayName = 'MeetingDetailTabs';
+
+// Wrap with React.memo to prevent unnecessary re-renders
+// Only re-render if these specific props change
+export const MeetingDetailTabs = React.memo(
+  MeetingDetailTabsComponent,
+  (prevProps, nextProps) => {
+    // Return true if props are the same (DON'T re-render)
+    // Return false if props changed (DO re-render)
+    return (
+      prevProps.note === nextProps.note &&
+      prevProps.isLoadingNote === nextProps.isLoadingNote &&
+      prevProps.noteError === nextProps.noteError &&
+      prevProps.transcripts === nextProps.transcripts &&
+      prevProps.isLoadingTranscripts === nextProps.isLoadingTranscripts &&
+      prevProps.files === nextProps.files &&
+      prevProps.isLoadingFiles === nextProps.isLoadingFiles &&
+      prevProps.agenda === nextProps.agenda &&
+      prevProps.isLoadingAgenda === nextProps.isLoadingAgenda &&
+      prevProps.agendaError === nextProps.agendaError &&
+      prevProps.analysisProgress === nextProps.analysisProgress &&
+      prevProps.isCreating === nextProps.isCreating &&
+      prevProps.isUpdating === nextProps.isUpdating &&
+      prevProps.isDeletingTranscript === nextProps.isDeletingTranscript &&
+      prevProps.isUploadingAudio === nextProps.isUploadingAudio &&
+      prevProps.isReindexing === nextProps.isReindexing &&
+      prevProps.isUpdatingAgenda === nextProps.isUpdatingAgenda &&
+      prevProps.isGeneratingAgenda === nextProps.isGeneratingAgenda
+    );
+  }
+);

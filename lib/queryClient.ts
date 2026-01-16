@@ -1,14 +1,25 @@
 import { QueryClient } from '@tanstack/react-query';
 
+// Caching strategies for different data types
+export const cacheConfig = {
+  // Data that changes frequently (user-generated content, real-time)
+  short: { staleTime: 30 * 1000, gcTime: 5 * 60 * 1000 },        // 30s stale, 5m GC
+  // Data that changes occasionally (meetings, notes, agenda)
+  medium: { staleTime: 5 * 60 * 1000, gcTime: 30 * 60 * 1000 },   // 5m stale, 30m GC
+  // Data that rarely changes (transcripts, file lists, archived items)
+  long: { staleTime: 1 * 60 * 60 * 1000, gcTime: 2 * 60 * 60 * 1000 }, // 1h stale, 2h GC
+};
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: 2,
       refetchOnWindowFocus: false, // Don't refetch on window focus (prevent double calls)
-      staleTime: 5 * 60 * 1000, // 5 minutes for general data caching
-      gcTime: 15 * 60 * 1000, // 15 minutes garbage collection
+      staleTime: cacheConfig.medium.staleTime, // 5 minutes default for general data caching
+      gcTime: cacheConfig.medium.gcTime, // 30 minutes garbage collection
       refetchOnMount: false, // Don't auto-refetch on mount (rely on staleTime)
       refetchOnReconnect: false, // Don't auto-refetch on reconnect
+      keepPreviousData: true, // ← CRITICAL: Shows previous data while fetching new data (eliminates UI flicker)
     },
     mutations: {
       retry: 0, // No retry for mutations (prevent accidental duplicates)
