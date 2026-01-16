@@ -1,29 +1,29 @@
 'use client';
 
 import {
-  Card,
-  CardHeader,
-  CardFooter,
-  makeStyles,
-  shorthands,
-  Text,
-  Caption1,
-  Badge,
-  tokens
-} from '@fluentui/react-components';
-import {
+  ArrowClockwise20Regular,
+  Calendar20Regular,
   CheckmarkCircle20Filled,
   Clock20Filled,
   ErrorCircle20Filled,
   Link20Regular,
   Play20Filled,
   Warning20Filled,
-  Calendar20Regular,
-  ArrowClockwise20Regular,
 } from '@/lib/icons';
+import {
+  Badge,
+  Caption1,
+  Card,
+  CardFooter,
+  CardHeader,
+  makeStyles,
+  shorthands,
+  Text,
+  tokens,
+} from '@fluentui/react-components';
+import { useTranslations } from 'next-intl';
 import { BotResponse } from 'types/meetingBot.type';
 import { BotActionsMenu } from './BotActionsMenu';
-import { useTranslations } from 'next-intl';
 
 const useStyles = makeStyles({
   card: {
@@ -237,17 +237,11 @@ export function BotCard({
     <Card className={styles.card}>
       <CardHeader
         className={styles.header}
-        header={
-          <Text className={styles.title}>
-            {meetingTitle}
-          </Text>
-        }
+        header={<Text className={styles.title}>{meetingTitle}</Text>}
       />
 
       <div className={styles.body}>
-        <div className={styles.badgeRow}>
-          {getStatusBadge()}
-        </div>
+        <div className={styles.badgeRow}>{getStatusBadge()}</div>
 
         {bot.meeting_url && (
           <div className={styles.detailRow}>
@@ -262,7 +256,7 @@ export function BotCard({
             {t('created')}: {formatDate(bot.created_at)}
           </Caption1>
         </div>
-        
+
         {bot.actual_start_time && (
           <div className={styles.detailRow}>
             <Play20Filled className={styles.detailIcon} />
@@ -271,7 +265,7 @@ export function BotCard({
             </Caption1>
           </div>
         )}
-        
+
         {bot.retry_count > 0 && (
           <div className={styles.detailRow}>
             <ArrowClockwise20Regular className={styles.detailIcon} />

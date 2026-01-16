@@ -11,6 +11,10 @@ import {
   uploadAndTranscribeAudio,
 } from '@/services/api/audio';
 import {
+  generateMeetingAgenda,
+  updateMeetingAgenda,
+} from '@/services/api/agenda';
+import {
   archiveMeeting,
   deleteMeeting,
   unarchiveMeeting,
@@ -193,6 +197,35 @@ export const useMeetingMutations = (
     },
   });
 
+  // Update meeting agenda mutation
+  const updateAgendaMutation = useMutation({
+    mutationFn: (content: string) =>
+      updateMeetingAgenda(meetingId, { content }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['meetingAgenda', meetingId] });
+      showSuccessToast(t('updateAgendaSuccess') || 'Agenda updated successfully');
+    },
+    onError: (error: any) => {
+      showErrorToast(error?.response?.data?.detail || 'Failed to update agenda');
+    },
+  });
+
+  // Generate meeting agenda mutation
+  const generateAgendaMutation = useMutation({
+    mutationFn: (customPrompt?: string) =>
+      generateMeetingAgenda({
+        meeting_id: meetingId,
+        custom_prompt: customPrompt || undefined,
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['meetingAgenda', meetingId] });
+      showSuccessToast(t('generateAgendaSuccess') || 'Agenda generated successfully');
+    },
+    onError: (error: any) => {
+      showErrorToast(error?.response?.data?.detail || 'Failed to generate agenda');
+    },
+  });
+
   return {
     isDeleting,
     setIsDeleting,
@@ -205,5 +238,7 @@ export const useMeetingMutations = (
     updateNoteMutation,
     uploadAudioMutation,
     reindexTranscriptMutation,
+    updateAgendaMutation,
+    generateAgendaMutation,
   };
 };

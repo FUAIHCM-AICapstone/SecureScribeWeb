@@ -3,8 +3,6 @@
 import { Suspense } from 'react';
 const MeetingEditModal = React.lazy(() => import('@/components/modal/MeetingEditModal'));
 const FileUploadModalComponent = React.lazy(() => import('@/components/modal/FileUploadModal').then(m => ({ default: m.FileUploadModal })));
-const MeetingNotesComponent = React.lazy(() => import('./MeetingNotes').then(m => ({ default: m.MeetingNotes })));
-const MeetingTranscriptsComponent = React.lazy(() => import('./MeetingTranscripts').then(m => ({ default: m.MeetingTranscripts })));
 import {
   Body1,
   Button,
@@ -15,7 +13,7 @@ import {
   shorthands,
   tokens,
 } from '@fluentui/react-components';
-import { Add20Regular, ArrowLeft20Regular } from '@/lib/icons';
+import { ArrowLeft20Regular } from '@/lib/icons';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import React from 'react';
@@ -23,8 +21,8 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useWebSocket } from '@/context/WebSocketContext';
 import { MeetingHeader } from './MeetingHeader';
 import { MeetingFiles } from './MeetingFiles';
-import { MeetingFilesTable } from './MeetingFilesTable';
 import { MeetingModals } from './MeetingModals';
+import { MeetingDetailTabs } from './MeetingDetailTabs';
 
 // Lazy load LinkedProjectsSection to save ~40-50 kB on initial meeting detail load
 const LinkedProjectsSection = React.lazy(() => import('./LinkedProjectsSection').then(m => ({ default: m.LinkedProjectsSection })));
@@ -40,19 +38,6 @@ const useStyles = makeStyles({
     },
   },
   content: {
-    display: 'grid',
-    gridTemplateColumns: '1fr',
-    ...shorthands.gap('16px'),
-    '@media (min-width: 1024px)': {
-      gridTemplateColumns: '2fr 1fr',
-    },
-  },
-  mainColumn: {
-    display: 'flex',
-    flexDirection: 'column',
-    ...shorthands.gap('16px'),
-  },
-  sideColumn: {
     display: 'flex',
     flexDirection: 'column',
     ...shorthands.gap('16px'),
@@ -124,6 +109,9 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
     meetingNote,
     isLoadingNote,
     noteError,
+    meetingAgenda,
+    isLoadingAgenda,
+    agendaError,
   } = useMeetingQueries(meetingId);
 
   // Get all mutations using custom hook
@@ -139,6 +127,8 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
     updateNoteMutation,
     uploadAudioMutation,
     reindexTranscriptMutation,
+    updateAgendaMutation,
+    generateAgendaMutation,
   } = useMeetingMutations(meetingId, tMeetings, t, () => {
     setShowUploadModal(false);
     setUploadedFile(null);
@@ -338,109 +328,89 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
         tMeetings={tMeetings}
       />
 
-      {/* Main Content */}
+      {/* Main Content - Single Column with Tabs */}
       <div className={styles.content}>
-        <div className={styles.mainColumn}>
-          {/* Notes Section */}
-          <Suspense fallback={<Card className={styles.section}><Spinner /></Card>}>
-            <MeetingNotesComponent
-              note={meetingNote}
-              isLoading={isLoadingNote}
-              error={noteError}
-              onCreateNote={handleCreateNote}
-              onEditNote={handleEditNote}
-              onShowTasks={handleShowTasks}
-              isCreating={createNoteMutation.isPending}
-              isUpdating={updateNoteMutation.isPending}
-              analysisProgress={analysisProgress}
-            />
-          </Suspense>
+        {/* Tab Component for Notes, Transcripts, Files, Agenda */}
+        <MeetingDetailTabs
+          note={meetingNote}
+          isLoadingNote={isLoadingNote}
+          noteError={noteError}
+          onCreateNote={handleCreateNote}
+          onEditNote={handleEditNote}
+          onShowTasks={handleShowTasks}
+          isCreating={createNoteMutation.isPending}
+          isUpdating={updateNoteMutation.isPending}
+          analysisProgress={analysisProgress}
+          transcripts={transcripts}
+          isLoadingTranscripts={isLoadingTranscripts}
+          transcriptError={transcriptError}
+          onDeleteTranscript={handleDeleteTranscript}
+          onReindexTranscript={handleReindexTranscript}
+          onUploadAudio={handleUploadAudio}
+          isDeletingTranscript={deleteTranscriptMutation.isPending}
+          isUploadingAudio={isUploadingAudio || uploadAudioMutation.isPending}
+          isReindexing={reindexTranscriptMutation.isPending}
+          files={files}
+          isLoadingFiles={isLoadingFiles}
+          onFileModalOpen={handleFileModalOpen}
+          agenda={meetingAgenda}
+          isLoadingAgenda={isLoadingAgenda}
+          agendaError={agendaError}
+          onUpdateAgenda={async (content: string) => {
+            await updateAgendaMutation.mutateAsync(content);
+          }}
+          onGenerateAgenda={async (customPrompt?: string) => {
+            await generateAgendaMutation.mutateAsync(customPrompt);
+          }}
+          isUpdatingAgenda={updateAgendaMutation.isPending}
+          isGeneratingAgenda={generateAgendaMutation.isPending}
+        />
 
-          {/* Files Section */}
-          <MeetingFiles
-            audioFiles={audioFiles}
-            files={files}
-            isLoadingAudio={isLoadingAudio}
-            isLoadingFiles={isLoadingFiles}
-            audioError={audioError}
-            filesError={filesError}
-            onDeleteAudio={handleDeleteAudio}
-            isDeleting={deleteAudioMutation.isPending}
-          />
-          {/* Files Table (non-audio files) */}
+        {/* Audio Files Section */}
+        <MeetingFiles
+          audioFiles={audioFiles}
+          files={files}
+          isLoadingAudio={isLoadingAudio}
+          isLoadingFiles={isLoadingFiles}
+          audioError={audioError}
+          filesError={filesError}
+          onDeleteAudio={handleDeleteAudio}
+          isDeleting={deleteAudioMutation.isPending}
+        />
+
+        {/* Related Projects */}
+        {meeting.projects && meeting.projects.length > 0 && (
+          <Suspense fallback={null}>
+            <LinkedProjectsSection projects={meeting.projects} />
+          </Suspense>
+        )}
+
+        {/* Meeting URL */}
+        {meeting.url && (
           <Card className={styles.section}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <Text style={{ fontWeight: 700, fontSize: tokens.fontSizeBase400 }}>
-                {t('files')} (Context)
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '16px',
+              }}
+            >
+              <Text
+                style={{ fontWeight: 700, fontSize: tokens.fontSizeBase400 }}
+              >
+                {t('meetingUrl')}
               </Text>
-              <Button
-                appearance="primary"
-                icon={<Add20Regular />}
-                onClick={handleFileModalOpen}
-              >
-                {t('uploadFile')}
-              </Button>
             </div>
-            <MeetingFilesTable
-              files={files}
-              isLoading={isLoadingFiles}
-              page={1}
-              onPageChange={() => {}}
-              hasMore={false}
-            />
+            <Button
+              appearance="primary"
+              onClick={() => window.open(meeting.url, '_blank')}
+              style={{ width: '100%' }}
+            >
+              {t('openUrl')}
+            </Button>
           </Card>
-        </div>
-
-        <div className={styles.sideColumn}>
-          {/* Transcripts Section */}
-          <Suspense fallback={<Card className={styles.section}><Spinner /></Card>}>
-            <MeetingTranscriptsComponent
-              transcripts={transcripts}
-              isLoading={isLoadingTranscripts}
-              error={transcriptError}
-              onDeleteTranscript={handleDeleteTranscript}
-              onReindexTranscript={handleReindexTranscript}
-              onUploadAudio={handleUploadAudio}
-              isDeleting={deleteTranscriptMutation.isPending}
-              isUploading={isUploadingAudio || uploadAudioMutation.isPending}
-              isReindexing={reindexTranscriptMutation.isPending}
-            />
-          </Suspense>
-
-          {/* Related Projects */}
-          {meeting.projects && meeting.projects.length > 0 && (
-            <Suspense fallback={null}>
-              <LinkedProjectsSection projects={meeting.projects} />
-            </Suspense>
-          )}
-
-          {/* Meeting URL */}
-          {meeting.url && (
-            <Card className={styles.section}>
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  marginBottom: '16px',
-                }}
-              >
-                <Text
-                  style={{ fontWeight: 700, fontSize: tokens.fontSizeBase400 }}
-                >
-                  {t('meetingUrl')}
-                </Text>
-              </div>
-              <Button
-                appearance="primary"
-                onClick={() => window.open(meeting.url, '_blank')}
-                style={{ width: '100%' }}
-              >
-                {t('openUrl')}
-              </Button>
-            </Card>
-          )}
-        </div>
+        )}
       </div>
 
       {/* Edit Modal */}

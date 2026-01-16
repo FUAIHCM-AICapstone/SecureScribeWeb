@@ -1,7 +1,7 @@
 'use client';
 
-import { Body1, Button, Card, ProgressBar, Spinner, Text, makeStyles, shorthands, tokens } from '@fluentui/react-components';
-import { ArrowClockwise20Regular, ChevronDown20Regular, CloudAdd20Regular, Delete20Regular, Document20Regular } from '@/lib/icons';
+import { Body1, Button, ProgressBar, Spinner, Text, makeStyles, shorthands, tokens } from '@fluentui/react-components';
+import { ArrowClockwise20Regular, ChevronDown20Regular, CloudAdd20Regular, Delete20Regular } from '@/lib/icons';
 import { useTranslations } from 'next-intl';
 import React from 'react';
 import { useTaskProgress } from '@/context/WebSocketContext';
@@ -10,17 +10,6 @@ import { formatDateTime } from './meetingDetailUtils';
 import { parseTranscriptContent, formatSpeakerLabel, useSpeakerSegmentStyles, type SpeakerSegment } from './transcriptUtils';
 
 const useStyles = makeStyles({
-    section: {
-        ...shorthands.padding('28px'),
-        backgroundColor: tokens.colorNeutralBackground1,
-        ...shorthands.border('1px', 'solid', tokens.colorNeutralStroke2),
-        ...shorthands.borderRadius(tokens.borderRadiusXLarge),
-        boxShadow: tokens.shadow4,
-        ...shorthands.transition('box-shadow', '0.2s', 'ease'),
-        ':hover': {
-            boxShadow: tokens.shadow8,
-        },
-    },
     sectionTitle: {
         marginBottom: '20px',
         paddingBottom: '16px',
@@ -29,10 +18,6 @@ const useStyles = makeStyles({
         alignItems: 'center',
         justifyContent: 'space-between',
         ...shorthands.gap('12px'),
-    },
-    sectionIcon: {
-        color: tokens.colorBrandForeground2,
-        opacity: 0.8,
     },
     sectionHeading: {
         fontSize: tokens.fontSizeBase400,
@@ -181,12 +166,9 @@ export function MeetingTranscripts({
     );
 
     return (
-        <Card className={styles.section}>
+        <div>
             <div className={styles.sectionTitle}>
-                <div>
-                    <Document20Regular className={styles.sectionIcon} />
-                    <Text className={styles.sectionHeading}>{t('transcripts')}</Text>
-                </div>
+                <Text className={styles.sectionHeading}>{t('transcripts')}</Text>
                 <Button
                     appearance="primary"
                     icon={<CloudAdd20Regular />}
@@ -349,6 +331,6 @@ export function MeetingTranscripts({
                     )}
                 </div>
             )}
-        </Card>
+        </div>
     );
 }

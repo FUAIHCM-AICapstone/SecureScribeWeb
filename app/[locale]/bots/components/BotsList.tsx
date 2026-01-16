@@ -1,28 +1,28 @@
 'use client';
 
 import {
-  Badge,
-  TableCell,
-  TableHeaderCell,
-  TableRow,
-  Text,
-  Tooltip,
-  Caption1,
-  makeStyles,
-  shorthands,
-  tokens
-} from '@fluentui/react-components';
-import {
   CheckmarkCircle20Filled,
   Clock20Filled,
   ErrorCircle20Filled,
   Play20Filled,
-  Warning20Filled,
   Record20Regular,
+  Warning20Filled,
 } from '@/lib/icons';
+import {
+  Badge,
+  Caption1,
+  makeStyles,
+  shorthands,
+  TableCell,
+  TableHeaderCell,
+  TableRow,
+  Text,
+  tokens,
+  Tooltip
+} from '@fluentui/react-components';
+import { useTranslations } from 'next-intl';
 import type { BotResponse } from 'types/meetingBot.type';
 import { BotActionsMenu } from './BotActionsMenu';
-import { useTranslations } from 'next-intl';
 
 const useStyles = makeStyles({
   tableWrapper: {

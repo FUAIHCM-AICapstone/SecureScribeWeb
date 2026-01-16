@@ -422,6 +422,7 @@
     "selectLanguage": "Chọn ngôn ngữ ({current})"
   },
   "MeetingDetail": {
+    "meetingNote": "Ghi chú cuộc họp",
     "uploadFile": "Tải tệp lên",
     "hasMeetingUrl": "Có link cuộc họp",
     "meetingDetails": "Chi tiết cuộc họp",
@@ -479,6 +480,7 @@
     "enterCustomPrompt": "Nhập lời nhắc tùy chỉnh của bạn...",
     "noteContent": "Nội dung ghi chú",
     "enterNoteContent": "Nhập nội dung ghi chú...",
+    "agendaContent": "Nội dung chương trình nghị sự",
     "creating": "Đang tạo...",
     "saving": "Đang lưu...",
     "save": "Lưu",

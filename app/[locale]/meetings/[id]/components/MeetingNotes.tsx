@@ -1,24 +1,13 @@
 'use client';
 
-import { Body1, Button, Card, Spinner, Text, makeStyles, shorthands, tokens, ProgressBar } from '@fluentui/react-components';
-import { Document20Regular, Edit20Regular, ClipboardTaskListLtrRegular } from '@/lib/icons';
+import { Body1, Button, Spinner, Text, makeStyles, shorthands, tokens, ProgressBar } from '@fluentui/react-components';
+import { Edit20Regular, ClipboardTaskListLtrRegular } from '@/lib/icons';
 import { useTranslations } from 'next-intl';
 import React from 'react';
 import type { MeetingNoteResponse } from 'types/meeting_note.type';
 import { parseMarkdownNote, useMeetingNoteStyles, type MarkdownSection, HEADING_SIZE_CONFIG, type HeadingSize } from './meetingNoteUtils';
 
 const useStyles = makeStyles({
-    section: {
-        ...shorthands.padding('28px'),
-        backgroundColor: tokens.colorNeutralBackground1,
-        ...shorthands.border('1px', 'solid', tokens.colorNeutralStroke2),
-        ...shorthands.borderRadius(tokens.borderRadiusXLarge),
-        boxShadow: tokens.shadow4,
-        ...shorthands.transition('box-shadow', '0.2s', 'ease'),
-        ':hover': {
-            boxShadow: tokens.shadow8,
-        },
-    },
     sectionTitle: {
         marginBottom: '20px',
         paddingBottom: '16px',
@@ -35,10 +24,6 @@ const useStyles = makeStyles({
     },
     headingSizeSelector: {
         minWidth: '80px',
-    },
-    sectionIcon: {
-        color: tokens.colorBrandForeground2,
-        opacity: 0.8,
     },
     sectionHeading: {
         fontSize: tokens.fontSizeBase400,
@@ -216,10 +201,9 @@ export function MeetingNotes({
     }, [note]);
 
     return (
-        <Card className={styles.section}>
+        <div>
             <div className={styles.sectionTitle}>
                 <div className={styles.sectionTitleContent}>
-                    <Document20Regular className={styles.sectionIcon} />
                     <Text className={styles.sectionHeading}>{t('notes')}</Text>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -321,9 +305,7 @@ export function MeetingNotes({
                             </div>
                             <Button
                                 appearance="subtle"
-                                onClick={() => {
-                                    setIsExpanded(!isExpanded);
-                                }}
+                                onClick={() => setIsExpanded(!isExpanded)}
                                 className={styles.expandButton}
                             >
                                 {isExpanded ? t('showLess') || 'Show Less' : t('showMore') || 'Show More'}
@@ -340,6 +322,6 @@ export function MeetingNotes({
                     <Body1>{t('noNotes')}</Body1>
                 </div>
             )}
-        </Card>
+        </div>
     );
 }

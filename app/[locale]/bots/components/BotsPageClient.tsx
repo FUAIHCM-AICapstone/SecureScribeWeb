@@ -1,30 +1,30 @@
 'use client';
 
-import React, { useState, useCallback, useMemo, useEffect } from 'react';
-import { useQuery, keepPreviousData } from '@tanstack/react-query';
-import { useSearchParams, useRouter } from 'next/navigation';
-import { useTranslations } from 'next-intl';
-import {
-  Button,
-  Text,
-  makeStyles,
-  tokens,
-  shorthands,
-  Toast,
-  ToastTitle,
-  ToastBody,
-  useToastController,
-} from '@fluentui/react-components';
+import { showLoadingToast } from '@/components/loading/LoadingToast';
 import { ArrowLeft20Regular, ArrowRight20Regular } from '@/lib/icons';
 import { meetingBotApi } from '@/services/api/meetingBot';
-import { showLoadingToast } from '@/components/loading/LoadingToast';
-import { BotsHeader } from './BotsHeader';
+import {
+  Button,
+  makeStyles,
+  shorthands,
+  Text,
+  Toast,
+  ToastBody,
+  ToastTitle,
+  tokens,
+  useToastController,
+} from '@fluentui/react-components';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { BotCardSkeleton } from './BotCardSkeleton';
+import { BotDetailsModal } from './BotDetailsModal';
+import { BotLogsModal } from './BotLogsModal';
 import { BotsGrid } from './BotsGrid';
+import { BotsHeader } from './BotsHeader';
 import { BotsList } from './BotsList';
 import { EmptyBotsState } from './EmptyBotsState';
-import { BotCardSkeleton } from './BotCardSkeleton';
-import { BotLogsModal } from './BotLogsModal';
-import { BotDetailsModal } from './BotDetailsModal';
 
 const useStyles = makeStyles({
   container: {
@@ -111,13 +111,16 @@ export function BotsPageClient() {
   const limit = viewMode === 'grid' ? 12 : 20;
 
   // Fetch bots with React Query
-  const { data: botsData, isLoading: isBotsLoading, isError, error, refetch } = useQuery({
+  const {
+    data: botsData,
+    isLoading: isBotsLoading,
+    isError,
+    error,
+    refetch,
+  } = useQuery({
     queryKey: ['bots', { page: currentPage, limit }],
     queryFn: async () => {
-      return meetingBotApi.getBots(
-        {},
-        { page: currentPage, limit }
-      );
+      return meetingBotApi.getBots({}, { page: currentPage, limit });
     },
     staleTime: 2 * 60 * 1000, // 2 minutes (consistent with queryClient config)
     gcTime: 10 * 60 * 1000, // 10 minutes
@@ -179,16 +182,18 @@ export function BotsPageClient() {
           <Toast>
             <ToastTitle>{t('botStatusUpdated')}</ToastTitle>
           </Toast>,
-          { intent: 'success' }
+          { intent: 'success' },
         );
         refetch();
       } catch (err) {
         dispatchToast(
           <Toast>
             <ToastTitle>{t('failedToUpdateStatus')}</ToastTitle>
-            <ToastBody>{err instanceof Error ? err.message : 'Unknown error'}</ToastBody>
+            <ToastBody>
+              {err instanceof Error ? err.message : 'Unknown error'}
+            </ToastBody>
           </Toast>,
-          { intent: 'error' }
+          { intent: 'error' },
         );
       }
     },
@@ -204,29 +209,28 @@ export function BotsPageClient() {
           <Toast>
             <ToastTitle>{t('botDeleted')}</ToastTitle>
           </Toast>,
-          { intent: 'success' }
+          { intent: 'success' },
         );
         refetch();
       } catch (err) {
         dispatchToast(
           <Toast>
             <ToastTitle>{t('failedToDelete')}</ToastTitle>
-            <ToastBody>{err instanceof Error ? err.message : 'Unknown error'}</ToastBody>
+            <ToastBody>
+              {err instanceof Error ? err.message : 'Unknown error'}
+            </ToastBody>
           </Toast>,
-          { intent: 'error' }
+          { intent: 'error' },
         );
       }
     },
     [dispatchToast, t, refetch],
   );
 
-  const handleViewLogs = useCallback(
-    (botId: string) => {
-      setSelectedBotId(botId);
-      setIsLogsModalOpen(true);
-    },
-    [],
-  );
+  const handleViewLogs = useCallback((botId: string) => {
+    setSelectedBotId(botId);
+    setIsLogsModalOpen(true);
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -277,9 +281,7 @@ export function BotsPageClient() {
         <div className={styles.errorContainer}>
           <Text className={styles.errorTitle}>{t('errorTitle')}</Text>
           <Text className={styles.errorMessage}>
-            {error instanceof Error
-              ? error.message
-              : t('errorLoadingBots')}
+            {error instanceof Error ? error.message : t('errorLoadingBots')}
           </Text>
           <Button appearance="primary" onClick={() => refetch()}>
             {t('retry')}

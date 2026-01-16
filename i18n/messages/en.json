@@ -422,6 +422,7 @@
     "selectLanguage": "Select language ({current})"
   },
   "MeetingDetail": {
+    "meetingNote": "Meeting Notes",
     "uploadFile": "Upload File",
     "hasMeetingUrl": "Link available",
     "meetingDetails": "Meeting Details",
@@ -467,6 +468,7 @@
     "noNotes": "No meeting notes yet",
     "createNote": "Create AI Note",
     "regenerateNote": "Regenerate Meeting Note",
+    "agendaContent": "Agenda Content",
     "noTranscripts": "No transcripts yet",
     "uploadAudio": "Upload Audio",
     "uploadAudioSuccess": "Audio uploaded successfully",
