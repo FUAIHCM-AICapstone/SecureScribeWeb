@@ -19,7 +19,6 @@ const queryClient = new QueryClient({
       gcTime: cacheConfig.medium.gcTime, // 30 minutes garbage collection
       refetchOnMount: false, // Don't auto-refetch on mount (rely on staleTime)
       refetchOnReconnect: false, // Don't auto-refetch on reconnect
-      keepPreviousData: true, // ← CRITICAL: Shows previous data while fetching new data (eliminates UI flicker)
     },
     mutations: {
       retry: 0, // No retry for mutations (prevent accidental duplicates)
