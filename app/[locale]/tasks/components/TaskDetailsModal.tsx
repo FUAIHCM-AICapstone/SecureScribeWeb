@@ -26,7 +26,7 @@ import {
 import {
   CalendarClock20Regular,
   Edit20Regular,
-} from '@fluentui/react-icons';
+} from '@/lib/icons';
 import { useQuery } from '@tanstack/react-query';
 import { formatDateTime as formatDateTimeUtil } from '@/lib/dateFormatter';
 import { useTranslations } from 'next-intl';

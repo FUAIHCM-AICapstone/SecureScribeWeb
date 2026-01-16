@@ -16,7 +16,7 @@ import {
     tokens,
     shorthands,
 } from '@fluentui/react-components';
-import { ArrowUpload24Regular, Dismiss24Regular } from '@fluentui/react-icons';
+import { ArrowUpload24Regular, Dismiss24Regular } from '@/lib/icons';
 import { showToast } from '@/hooks/useShowToast';
 
 const useStyles = makeStyles({

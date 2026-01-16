@@ -5,7 +5,7 @@ import { createMentionChip, parseTokensFromText, serializeContenteditableToText 
 import useMentionInput from '@/components/mentions/useMentionInput';
 import { dynamicSearch } from '@/services/api/search';
 import { makeStyles, tokens } from '@fluentui/react-components';
-import { Send24Regular } from '@fluentui/react-icons';
+import { Send24Regular } from '@/lib/icons';
 import { useEffect, useRef, useState } from 'react';
 import type { ChatMessageCreate, Mention } from 'types/chat.type';
 

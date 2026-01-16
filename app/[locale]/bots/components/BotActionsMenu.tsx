@@ -14,7 +14,7 @@ import {
   Play20Regular,
   History20Regular,
   Delete20Regular,
-} from '@fluentui/react-icons';
+} from '@/lib/icons';
 import { useTranslations } from 'next-intl';
 
 interface BotActionsMenuProps {

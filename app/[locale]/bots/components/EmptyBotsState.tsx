@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Text, Caption1, makeStyles, shorthands, tokens } from '@fluentui/react-components';
-import { Record20Regular, Search20Regular } from '@fluentui/react-icons';
+import { Record20Regular, Search20Regular } from '@/lib/icons';
 import { useTranslations } from 'next-intl';
 
 const useStyles = makeStyles({

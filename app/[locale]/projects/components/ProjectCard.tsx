@@ -11,7 +11,7 @@ import {
   Text,
   tokens,
 } from '@fluentui/react-components';
-import { CalendarClock20Regular, People20Regular } from '@fluentui/react-icons';
+import { CalendarClock20Regular, People20Regular } from '@/lib/icons';
 import { formatDateTime } from '@/lib/dateFormatter';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';

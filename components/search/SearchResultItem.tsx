@@ -10,7 +10,7 @@ import {
     Building24Regular,
     Person24Regular,
     Search24Regular,
-} from "@fluentui/react-icons";
+} from "@/lib/icons";
 
 export type SearchEntityType = "meeting" | "transcript" | "meeting_note" | "file" | "project" | "user" | "document";
 

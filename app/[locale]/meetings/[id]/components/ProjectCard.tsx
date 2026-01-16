@@ -22,7 +22,7 @@ import {
     People20Regular,
     Document20Regular,
     ArrowRight20Regular,
-} from '@fluentui/react-icons';
+} from '@/lib/icons';
 import { formatDate } from '@/lib/dateFormatter';
 import { queryKeys } from '@/lib/queryClient';
 import { getProject } from '@/services/api/project';

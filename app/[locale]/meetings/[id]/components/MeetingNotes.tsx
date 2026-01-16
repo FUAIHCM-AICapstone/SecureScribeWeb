@@ -1,7 +1,7 @@
 'use client';
 
 import { Body1, Button, Card, Spinner, Text, makeStyles, shorthands, tokens, ProgressBar } from '@fluentui/react-components';
-import { Document20Regular, Edit20Regular, ClipboardTaskListLtrRegular } from '@fluentui/react-icons';
+import { Document20Regular, Edit20Regular, ClipboardTaskListLtrRegular } from '@/lib/icons';
 import { useTranslations } from 'next-intl';
 import React from 'react';
 import type { MeetingNoteResponse } from 'types/meeting_note.type';

@@ -14,7 +14,7 @@ import {
     DismissRegular,
     PasswordRegular,
     PersonRegular
-} from "@fluentui/react-icons";
+} from "@/lib/icons";
 import { useTranslations } from "next-intl";
 import * as React from "react";
 import { useForm } from "react-hook-form";

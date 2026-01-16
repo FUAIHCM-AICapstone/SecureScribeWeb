@@ -20,7 +20,7 @@ import {
   Archive20Regular,
   ArchiveArrowBack20Regular,
   Delete20Regular,
-} from '@fluentui/react-icons';
+} from '@/lib/icons';
 import type { ProjectResponse } from 'types/project.type';
 import {
   archiveProject,

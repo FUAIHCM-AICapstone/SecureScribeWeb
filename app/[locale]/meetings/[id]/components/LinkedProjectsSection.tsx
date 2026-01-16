@@ -14,7 +14,7 @@ import {
     People20Regular,
     ChevronLeft20Regular,
     ChevronRight20Regular,
-} from '@fluentui/react-icons';
+} from '@/lib/icons';
 import { ProjectCard } from './ProjectCard';
 
 const useStyles = makeStyles({
@@ -78,7 +78,7 @@ interface LinkedProjectsSectionProps {
     itemsPerPage?: number;
 }
 
-export export function LinkedProjectsSection({
+export function LinkedProjectsSection({
     projects,
     itemsPerPage = 6,
 }: LinkedProjectsSectionProps) {

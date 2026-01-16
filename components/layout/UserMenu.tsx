@@ -12,7 +12,7 @@ import {
   MenuTrigger,
   Tooltip,
 } from '@fluentui/react-components';
-import { SignOut24Regular } from '@fluentui/react-icons';
+import { SignOut24Regular } from '@/lib/icons';
 import type { User } from 'types/user.type';
 
 interface UserMenuProps {

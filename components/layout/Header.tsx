@@ -20,7 +20,7 @@ import {
   ArrowUpload24Regular,
   CalendarAdd24Regular,
   Navigation24Regular,
-} from '@fluentui/react-icons';
+} from '@/lib/icons';
 import { useLocale, useTranslations } from 'next-intl';
 import Image from 'next/image';
 import React, { useState, useEffect } from 'react';

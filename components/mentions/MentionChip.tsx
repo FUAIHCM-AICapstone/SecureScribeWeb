@@ -1,7 +1,7 @@
 'use client'
 
 import { makeStyles, tokens } from '@fluentui/react-components'
-import { CalendarLtr24Regular, Document24Regular, Folder24Regular } from '@fluentui/react-icons'
+import { CalendarLtr24Regular, Document24Regular, Folder24Regular } from '@/lib/icons'
 import type { Mention, MentionType } from 'types/chat.type'
 import { useMentionTitle } from '@/hooks/useMentionTitle'
 

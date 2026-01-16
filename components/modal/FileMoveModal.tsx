@@ -23,7 +23,7 @@ import {
   shorthands,
   tokens,
 } from '@fluentui/react-components';
-import { ArrowMove24Regular, Dismiss24Regular } from '@fluentui/react-icons';
+import { ArrowMove24Regular, Dismiss24Regular } from '@/lib/icons';
 import {
   useInfiniteQuery,
   useMutation,

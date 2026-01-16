@@ -15,7 +15,7 @@ import {
   makeStyles,
   tokens,
 } from '@fluentui/react-components';
-import { Edit20Regular } from '@fluentui/react-icons';
+import { Edit20Regular } from '@/lib/icons';
 import { useTranslations } from 'next-intl';
 import React, { useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';

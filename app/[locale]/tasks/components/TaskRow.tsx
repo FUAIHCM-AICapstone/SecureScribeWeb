@@ -17,7 +17,7 @@ import {
   isToday,
   isTomorrow,
 } from '@/lib/dateFormatter';
-import { PersonCircle20Regular } from '@fluentui/react-icons';
+import { PersonCircle20Regular } from '@/lib/icons';
 import type { TaskResponse } from 'types/task.type';
 import { TaskActionsMenu } from './TaskActionsMenu';
 

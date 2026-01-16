@@ -23,7 +23,7 @@ import {
   shorthands,
   tokens,
 } from '@fluentui/react-components';
-import { Dismiss24Regular, PersonAdd24Regular } from '@fluentui/react-icons';
+import { Dismiss24Regular, PersonAdd24Regular } from '@/lib/icons';
 import {
   useInfiniteQuery,
   useMutation,

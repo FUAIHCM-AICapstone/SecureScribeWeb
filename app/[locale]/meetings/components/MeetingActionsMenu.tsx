@@ -24,7 +24,7 @@ import {
   Archive20Regular,
   ArchiveArrowBack20Regular,
   Record20Regular,
-} from '@fluentui/react-icons';
+} from '@/lib/icons';
 import {
   deleteMeeting,
   archiveMeeting,

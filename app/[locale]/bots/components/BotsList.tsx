@@ -19,7 +19,7 @@ import {
   Play20Filled,
   Warning20Filled,
   Record20Regular,
-} from '@fluentui/react-icons';
+} from '@/lib/icons';
 import type { BotResponse } from 'types/meetingBot.type';
 import { BotActionsMenu } from './BotActionsMenu';
 import { useTranslations } from 'next-intl';

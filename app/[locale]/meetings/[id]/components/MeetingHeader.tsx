@@ -30,7 +30,7 @@ import {
     Link20Regular,
     MoreVertical20Regular,
     People20Regular,
-} from '@fluentui/react-icons';
+} from '@/lib/icons';
 import { useRouter } from 'next/navigation';
 import type { MeetingWithProjects } from 'types/meeting.type';
 import { formatDateTime } from './meetingDetailUtils';

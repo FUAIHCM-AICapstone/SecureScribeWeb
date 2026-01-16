@@ -17,7 +17,7 @@ import {
   List20Regular,
   Search20Regular,
   Record20Regular,
-} from '@fluentui/react-icons';
+} from '@/lib/icons';
 import { useTranslations } from 'next-intl';
 
 const useStyles = makeStyles({

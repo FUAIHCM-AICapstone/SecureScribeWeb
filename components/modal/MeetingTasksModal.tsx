@@ -13,7 +13,7 @@ import {
     Text,
     tokens,
 } from '@fluentui/react-components';
-import { ClipboardTaskListLtrRegular, ArrowLeft20Regular, ArrowRight20Regular } from '@fluentui/react-icons';
+import { ClipboardTaskListLtrRegular, ArrowLeft20Regular, ArrowRight20Regular } from '@/lib/icons';
 import { useTranslations } from 'next-intl';
 import React from 'react';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';

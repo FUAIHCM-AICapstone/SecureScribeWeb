@@ -1,7 +1,7 @@
 'use client';
 
 import { Body1, Button, Card, ProgressBar, Spinner, Text, makeStyles, shorthands, tokens } from '@fluentui/react-components';
-import { ArrowClockwise20Regular, ChevronDown20Regular, CloudAdd20Regular, Delete20Regular, Document20Regular } from '@fluentui/react-icons';
+import { ArrowClockwise20Regular, ChevronDown20Regular, CloudAdd20Regular, Delete20Regular, Document20Regular } from '@/lib/icons';
 import { useTranslations } from 'next-intl';
 import React from 'react';
 import { useTaskProgress } from '@/context/WebSocketContext';

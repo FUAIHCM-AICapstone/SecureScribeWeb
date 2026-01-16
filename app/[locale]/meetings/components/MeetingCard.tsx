@@ -18,7 +18,7 @@ import { formatStartTime } from '@/lib/dateFormatter';
 import {
   CalendarClock20Regular,
   PersonCircle20Regular,
-} from '@fluentui/react-icons';
+} from '@/lib/icons';
 import type { MeetingResponse } from 'types/meeting.type';
 import { useAuth } from 'context/AuthContext';
 import { isUserMeetingOwner } from 'lib/utils';

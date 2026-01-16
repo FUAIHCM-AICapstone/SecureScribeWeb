@@ -24,7 +24,7 @@ import {
   MoreHorizontal20Regular,
   Delete20Regular,
   PersonCircle20Regular,
-} from '@fluentui/react-icons';
+} from '@/lib/icons';
 import { removeUserFromProject, updateUserRole } from 'services/api/project';
 import { showToast } from 'hooks/useShowToast';
 import { useMutation } from '@tanstack/react-query';

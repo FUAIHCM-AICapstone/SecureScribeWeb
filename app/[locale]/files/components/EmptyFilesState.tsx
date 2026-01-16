@@ -12,7 +12,7 @@ import {
 import {
   DocumentFolder48Regular,
   ArrowUpload24Regular,
-} from '@fluentui/react-icons';
+} from '@/lib/icons';
 
 const useStyles = makeStyles({
   container: {

@@ -20,7 +20,7 @@ import {
   CalendarLtr20Regular,
   FolderOpen24Regular,
   Add20Regular,
-} from '@fluentui/react-icons';
+} from '@/lib/icons';
 
 const useStyles = makeStyles({
   header: {

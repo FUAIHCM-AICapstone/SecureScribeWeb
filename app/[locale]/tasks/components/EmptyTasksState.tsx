@@ -10,7 +10,7 @@ import {
   tokens,
   shorthands,
 } from '@fluentui/react-components';
-import { TaskListSquareLtr48Regular } from '@fluentui/react-icons';
+import { TaskListSquareLtr48Regular } from '@/lib/icons';
 
 const useStyles = makeStyles({
   container: {

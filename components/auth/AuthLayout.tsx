@@ -2,7 +2,7 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
 import { Card, CardHeader, Title3, Title2, Body1, makeStyles, shorthands, Avatar, tokens } from "@fluentui/react-components";
-import { Shield20Filled, Flash20Filled, PeopleTeam20Filled, DataBarVertical20Filled } from "@fluentui/react-icons";
+import { Shield20Filled, Flash20Filled, PeopleTeam20Filled, DataBarVertical20Filled } from "@/lib/icons";
 import { useTranslations } from "next-intl";
 import ThemeToggle from "@/components/layout/ThemeToggle";
 import { getBrandConfig } from "@/lib/utils/runtimeConfig";

@@ -24,7 +24,7 @@ import {
   Eye20Regular,
   Edit20Regular,
   Delete20Regular,
-} from '@fluentui/react-icons';
+} from '@/lib/icons';
 import type { TaskResponse } from 'types/task.type';
 import { showToast } from '@/hooks/useShowToast';
 import { deleteTask } from '@/services/api/task';

@@ -10,7 +10,7 @@ import {
   tokens,
   shorthands,
 } from '@fluentui/react-components';
-import { CalendarEmpty48Regular } from '@fluentui/react-icons';
+import { CalendarEmpty48Regular } from '@/lib/icons';
 
 const useStyles = makeStyles({
   container: {

@@ -29,7 +29,7 @@ import {
   Eye20Regular,
   MoreHorizontal20Regular,
   Rename20Regular,
-} from '@fluentui/react-icons';
+} from '@/lib/icons';
 import { useMutation } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';

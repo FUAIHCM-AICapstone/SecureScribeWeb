@@ -20,7 +20,7 @@ import {
   Warning20Filled,
   Calendar20Regular,
   ArrowClockwise20Regular,
-} from '@fluentui/react-icons';
+} from '@/lib/icons';
 import { BotResponse } from 'types/meetingBot.type';
 import { BotActionsMenu } from './BotActionsMenu';
 import { useTranslations } from 'next-intl';

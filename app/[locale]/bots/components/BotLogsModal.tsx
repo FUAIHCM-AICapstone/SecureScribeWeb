@@ -15,7 +15,7 @@ import {
   shorthands,
   tokens,
 } from '@fluentui/react-components';
-import { Dismiss24Regular } from '@fluentui/react-icons';
+import { Dismiss24Regular } from '@/lib/icons';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { meetingBotApi } from '@/services/api/meetingBot';

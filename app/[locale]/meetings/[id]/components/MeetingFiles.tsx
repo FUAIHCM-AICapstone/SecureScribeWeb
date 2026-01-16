@@ -18,7 +18,7 @@ import {
   Video20Regular,
   MusicNote220Regular,
   ArrowDownload20Regular,
-} from '@fluentui/react-icons';
+} from '@/lib/icons';
 import { useTranslations } from 'next-intl';
 import type { AudioFileResponse } from 'types/audio_file.type';
 import type { FileResponse } from 'types/file.type';

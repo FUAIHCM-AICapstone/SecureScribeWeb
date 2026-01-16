@@ -12,7 +12,7 @@ import {
   shorthands,
 } from '@fluentui/react-components';
 import { formatDateTime } from '@/lib/dateFormatter';
-import { PersonCircle20Regular } from '@fluentui/react-icons';
+import { PersonCircle20Regular } from '@/lib/icons';
 import type { MeetingResponse } from 'types/meeting.type';
 import { useAuth } from 'context/AuthContext';
 import { isUserMeetingOwner } from 'lib/utils';

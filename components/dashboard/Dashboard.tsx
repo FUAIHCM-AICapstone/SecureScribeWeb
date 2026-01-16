@@ -39,7 +39,7 @@ import {
   CalendarCheckmark24Regular,
   DocumentBulletList24Regular,
   History24Regular,
-} from '@fluentui/react-icons';
+} from '@/lib/icons';
 import { formatDateTime } from '@/lib/dateFormatter';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';

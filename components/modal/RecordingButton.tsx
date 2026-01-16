@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Button, Spinner, makeStyles, tokens } from '@fluentui/react-components';
-import { Record24Regular } from '@fluentui/react-icons';
+import { Record24Regular } from '@/lib/icons';
 import { useMutation } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { meetingBotApi } from '@/services/api/meetingBot';

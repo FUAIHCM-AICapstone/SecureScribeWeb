@@ -28,7 +28,7 @@ import {
   Person24Regular,
   Chat24Regular,
   Bot24Regular,
-} from '@fluentui/react-icons';
+} from '@/lib/icons';
 
 const useStyles = makeStyles({
   container: {

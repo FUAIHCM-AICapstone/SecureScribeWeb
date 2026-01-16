@@ -27,7 +27,7 @@ import {
   tokens
 } from '@fluentui/react-components';
 import { DatePicker, DatePickerProps } from '@fluentui/react-datepicker-compat';
-import { CalendarAdd24Regular } from '@fluentui/react-icons';
+import { CalendarAdd24Regular } from '@/lib/icons';
 import {
   TimePicker,
   TimePickerProps,

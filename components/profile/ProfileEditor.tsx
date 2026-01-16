@@ -21,7 +21,7 @@ import {
   Camera24Regular,
   CheckmarkCircle24Regular,
   ContactCard24Regular,
-} from '@fluentui/react-icons';
+} from '@/lib/icons';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getMe, updateMe } from '@/services/api/user';
 import { uploadFile } from '@/services/api/file';

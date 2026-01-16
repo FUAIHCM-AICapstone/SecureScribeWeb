@@ -11,7 +11,7 @@ import {
 import {
     CheckmarkCircle24Regular,
     Dismiss24Regular,
-} from '@fluentui/react-icons';
+} from '@/lib/icons';
 import { useTranslations } from 'next-intl';
 
 const useStyles = makeStyles({

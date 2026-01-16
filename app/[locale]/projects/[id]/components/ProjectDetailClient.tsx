@@ -49,7 +49,7 @@ import {
   People20Regular,
   Search20Regular,
   TaskListSquareLtr20Regular,
-} from '@fluentui/react-icons';
+} from '@/lib/icons';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { formatDateTime as formatDateTimeUtil } from '@/lib/dateFormatter';
 import { useTranslations } from 'next-intl';

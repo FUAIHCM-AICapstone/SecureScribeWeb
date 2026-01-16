@@ -20,7 +20,7 @@ import {
   Search20Regular,
   DocumentFolder24Regular,
   ArrowUpload20Regular,
-} from '@fluentui/react-icons';
+} from '@/lib/icons';
 import type { ProjectResponse } from 'types/project.type';
 import type { MeetingResponse } from 'types/meeting.type';
 

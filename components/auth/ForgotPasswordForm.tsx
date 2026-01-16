@@ -9,7 +9,7 @@ import {
     makeStyles,
     tokens
 } from "@fluentui/react-components";
-import { ArrowRightRegular, MailRegular } from "@fluentui/react-icons";
+import { ArrowRightRegular, MailRegular } from "@/lib/icons";
 import { useTranslations } from "next-intl";
 import * as React from "react";
 import { useForm } from "react-hook-form";

@@ -11,7 +11,7 @@ import {
   tokens,
   shorthands,
 } from '@fluentui/react-components';
-import { ArrowLeft20Regular, ArrowRight20Regular } from '@fluentui/react-icons';
+import { ArrowLeft20Regular, ArrowRight20Regular } from '@/lib/icons';
 import { getMeetings } from '@/services/api/meeting';
 import { queryKeys } from '@/lib/queryClient';
 import { showLoadingToast } from '@/components/loading/LoadingToast';

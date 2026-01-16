@@ -11,7 +11,7 @@ import {
   shorthands,
   tokens,
 } from '@fluentui/react-components';
-import { PersonCircle20Regular } from '@fluentui/react-icons';
+import { PersonCircle20Regular } from '@/lib/icons';
 import { formatDateTime as formatDateTimeUtil } from '@/lib/dateFormatter';
 import { useTranslations } from 'next-intl';
 import type { UserProjectResponse } from 'types/project.type';

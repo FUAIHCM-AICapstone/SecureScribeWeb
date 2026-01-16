@@ -15,7 +15,7 @@ import {
   shorthands,
   tokens,
 } from '@fluentui/react-components';
-import { Add20Regular, ArrowLeft20Regular } from '@fluentui/react-icons';
+import { Add20Regular, ArrowLeft20Regular } from '@/lib/icons';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import React from 'react';
@@ -27,7 +27,7 @@ import { MeetingFilesTable } from './MeetingFilesTable';
 import { MeetingModals } from './MeetingModals';
 
 // Lazy load LinkedProjectsSection to save ~40-50 kB on initial meeting detail load
-const LinkedProjectsSection = lazy(() => import('./LinkedProjectsSection').then(m => ({ default: m.LinkedProjectsSection })));
+const LinkedProjectsSection = React.lazy(() => import('./LinkedProjectsSection').then(m => ({ default: m.LinkedProjectsSection })));
 import { useMeetingQueries } from './useMeetingQueries';
 import { useMeetingMutations } from './useMeetingMutations';
 

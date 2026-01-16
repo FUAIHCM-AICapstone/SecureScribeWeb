@@ -3,7 +3,7 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { Button, Text, makeStyles } from '@fluentui/react-components';
-import { ArrowLeft24Regular, Home24Regular } from '@fluentui/react-icons';
+import { ArrowLeft24Regular, Home24Regular } from '@/lib/icons';
 
 const useStyles = makeStyles({
   container: {

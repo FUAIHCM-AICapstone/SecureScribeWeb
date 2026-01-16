@@ -21,7 +21,7 @@ import {
   Search20Regular,
   TaskListSquareLtr24Regular,
   Add20Regular,
-} from '@fluentui/react-icons';
+} from '@/lib/icons';
 import type { TaskStatus } from 'types/task.type';
 
 const useStyles = makeStyles({

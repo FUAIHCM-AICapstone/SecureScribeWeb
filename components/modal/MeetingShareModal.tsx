@@ -19,7 +19,7 @@ import {
   Copy20Regular,
   Checkmark20Regular,
   Link20Regular,
-} from '@fluentui/react-icons';
+} from '@/lib/icons';
 import { useTranslations } from 'next-intl';
 import React, { useState } from 'react';
 import type { MeetingResponse } from 'types/meeting.type';

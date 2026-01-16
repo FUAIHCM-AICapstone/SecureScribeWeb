@@ -15,7 +15,7 @@ import {
   ToastBody,
   useToastController,
 } from '@fluentui/react-components';
-import { ArrowLeft20Regular, ArrowRight20Regular } from '@fluentui/react-icons';
+import { ArrowLeft20Regular, ArrowRight20Regular } from '@/lib/icons';
 import { meetingBotApi } from '@/services/api/meetingBot';
 import { showLoadingToast } from '@/components/loading/LoadingToast';
 import { BotsHeader } from './BotsHeader';

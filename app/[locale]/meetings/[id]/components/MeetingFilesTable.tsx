@@ -1,7 +1,7 @@
 'use client';
 
 import { Button, Spinner, Text, tokens } from '@fluentui/react-components';
-import { ArrowDownload20Regular } from '@fluentui/react-icons';
+import { ArrowDownload20Regular } from '@/lib/icons';
 import { useTranslations } from 'next-intl';
 import React from 'react';
 import type { FileResponse } from 'types/file.type';

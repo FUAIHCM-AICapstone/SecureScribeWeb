@@ -3,7 +3,7 @@ import {
   makeStyles,
   tokens,
 } from '@fluentui/react-components';
-import { ArrowRight24Regular } from '@fluentui/react-icons';
+import { ArrowRight24Regular } from '@/lib/icons';
 import { useTranslations } from 'next-intl';
 import React from 'react';
 

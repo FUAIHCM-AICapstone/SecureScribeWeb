@@ -15,7 +15,7 @@ import { useTranslations } from 'next-intl';
 import {
   CalendarLtr24Regular,
   GridDots24Regular,
-} from '@fluentui/react-icons';
+} from '@/lib/icons';
 
 const useStyles = makeStyles({
   headerContainer: {

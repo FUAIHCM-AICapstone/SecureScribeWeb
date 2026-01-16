@@ -31,7 +31,7 @@ import {
   CheckmarkCircle24Filled,
   Dismiss24Regular,
   Document24Regular,
-} from '@fluentui/react-icons';
+} from '@/lib/icons';
 import {
   useInfiniteQuery,
   useMutation,

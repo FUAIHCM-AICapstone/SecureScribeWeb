@@ -11,7 +11,7 @@ import {
   Code24Regular,
   Video24Regular,
   MusicNote224Regular,
-} from '@fluentui/react-icons';
+} from '@/lib/icons';
 
 // File type constants
 export const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB in bytes
