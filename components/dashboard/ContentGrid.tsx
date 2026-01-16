@@ -1,5 +1,4 @@
 import { makeStyles } from '@fluentui/react-components';
-import { motion } from 'framer-motion';
 import React from 'react';
 
 const useStyles = makeStyles({
@@ -11,23 +10,12 @@ const useStyles = makeStyles({
       gridTemplateColumns: '1fr',
     },
   },
+  contentItem: {
+    height: '100%',
+    animation: 'fadeInUp 0.5s ease-out forwards',
+    opacity: 0,
+  },
 });
-
-const container = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.2 // Wait for stats to load a bit
-    }
-  }
-};
-
-const item = {
-  hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0 }
-};
 
 interface ContentGridProps {
   children: React.ReactNode;
@@ -37,15 +25,26 @@ export const ContentGrid: React.FC<ContentGridProps> = ({ children }) => {
   const styles = useStyles();
 
   return (
-    <motion.div
-      className={styles.contentGrid}
-      variants={container}
-      initial="hidden"
-      animate="show"
-    >
-      {React.Children.map(children, (child) => (
-        <motion.div variants={item} style={{ height: '100%' }}>{child}</motion.div>
-      ))}
-    </motion.div>
+    <>
+      <style>{`
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      `}</style>
+      <div className={styles.contentGrid}>
+        {React.Children.map(children, (child, index) => (
+          <div key={index} className={styles.contentItem} style={{ animationDelay: `${(index + 0.2) * 0.1}s` }}>
+            {child}
+          </div>
+        ))}
+      </div>
+    </>
   );
 };

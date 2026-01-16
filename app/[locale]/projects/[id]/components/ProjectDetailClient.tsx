@@ -51,7 +51,7 @@ import {
   TaskListSquareLtr20Regular,
 } from '@fluentui/react-icons';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { format } from 'date-fns';
+import { formatDateTime as formatDateTimeUtil } from '@/lib/dateFormatter';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -531,7 +531,7 @@ export function ProjectDetailClient({ projectId }: ProjectDetailClientProps) {
   const formatDateTime = (dateString: string | null) => {
     if (!dateString) return t('noDate');
     try {
-      return format(new Date(dateString), 'PPpp');
+      return formatDateTimeUtil(dateString);
     } catch {
       return t('invalidDate');
     }

@@ -28,7 +28,7 @@ import {
   Edit20Regular,
 } from '@fluentui/react-icons';
 import { useQuery } from '@tanstack/react-query';
-import { format } from 'date-fns';
+import { formatDateTime as formatDateTimeUtil } from '@/lib/dateFormatter';
 import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
 import type { TaskResponse } from 'types/task.type';
@@ -223,7 +223,7 @@ export function TaskDetailsModal({
       return null;
     }
     try {
-      return format(new Date(value), 'PPp');
+      return formatDateTimeUtil(value);
     } catch {
       return value;
     }

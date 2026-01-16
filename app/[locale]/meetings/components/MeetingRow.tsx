@@ -11,7 +11,7 @@ import {
   tokens,
   shorthands,
 } from '@fluentui/react-components';
-import { format } from 'date-fns';
+import { formatDateTime } from '@/lib/dateFormatter';
 import { PersonCircle20Regular } from '@fluentui/react-icons';
 import type { MeetingResponse } from 'types/meeting.type';
 import { useAuth } from 'context/AuthContext';
@@ -162,7 +162,7 @@ export function MeetingRow({ meeting }: MeetingRowProps) {
   const formatStartTime = () => {
     if (!meeting.start_time) return t('noDateSet');
     try {
-      return format(new Date(meeting.start_time), 'PPp');
+      return formatDateTime(meeting.start_time);
     } catch {
       return t('invalidDate');
     }

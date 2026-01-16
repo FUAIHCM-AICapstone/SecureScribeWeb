@@ -14,7 +14,7 @@ import {
   tokens,
   shorthands,
 } from '@fluentui/react-components';
-import { format } from 'date-fns';
+import { formatStartTime } from '@/lib/dateFormatter';
 import {
   CalendarClock20Regular,
   PersonCircle20Regular,
@@ -177,10 +177,10 @@ export function MeetingCard({ meeting }: MeetingCardProps) {
     }
   };
 
-  const formatStartTime = () => {
+  const formatStartTimeLocal = () => {
     if (!meeting.start_time) return t('noDateSet');
     try {
-      return format(new Date(meeting.start_time), 'PPp');
+      return formatStartTime(meeting.start_time);
     } catch {
       return t('invalidDate');
     }
@@ -218,7 +218,7 @@ export function MeetingCard({ meeting }: MeetingCardProps) {
 
         <div className={styles.timeRow}>
           <CalendarClock20Regular />
-          <Caption1>{formatStartTime()}</Caption1>
+          <Caption1>{formatStartTimeLocal()}</Caption1>
         </div>
 
         {meeting.description && (

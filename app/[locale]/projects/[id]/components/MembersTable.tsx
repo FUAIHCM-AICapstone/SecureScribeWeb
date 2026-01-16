@@ -12,7 +12,7 @@ import {
   tokens,
 } from '@fluentui/react-components';
 import { PersonCircle20Regular } from '@fluentui/react-icons';
-import { format } from 'date-fns';
+import { formatDateTime as formatDateTimeUtil } from '@/lib/dateFormatter';
 import { useTranslations } from 'next-intl';
 import type { UserProjectResponse } from 'types/project.type';
 import { MemberActionsMenu } from './MemberActionsMenu';
@@ -123,7 +123,7 @@ export function MembersTable({
   const defaultFormatDateTime = (dateString: string | null) => {
     if (!dateString) return t('noDate');
     try {
-      return format(new Date(dateString), 'PPpp');
+      return formatDateTimeUtil(dateString);
     } catch {
       return t('invalidDate');
     }

@@ -39,8 +39,7 @@ import {
   DocumentBulletList24Regular,
   History24Regular,
 } from '@fluentui/react-icons';
-import { format } from 'date-fns';
-import { vi } from 'date-fns/locale';
+import { formatDateTime } from '@/lib/dateFormatter';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import React, { useEffect, useState } from 'react';
@@ -203,7 +202,7 @@ const Dashboard: React.FC = () => {
 
   const formatDate = (dateString: string | null) => {
     if (!dateString) return 'N/A';
-    return format(new Date(dateString), 'dd/MM/yyyy HH:mm', { locale: vi });
+    return formatDateTime(dateString, 'vi-VN');
   };
 
 

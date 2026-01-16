@@ -8,7 +8,7 @@ import {
     getCoreRowModel,
     useReactTable,
 } from '@tanstack/react-table';
-import { format } from 'date-fns';
+import { formatDateTime } from '@/lib/dateFormatter';
 import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
 import { MeetingResponse } from 'types/meeting.type';
@@ -47,7 +47,7 @@ export function MeetingsTable({
                 header: t('tableHeaders.startTime'),
                 cell: (info) => {
                     const dateStr = info.getValue();
-                    return dateStr ? format(new Date(dateStr), 'PPpp') : '—';
+                    return dateStr ? formatDateTime(dateStr) : '—';
                 },
                 size: 200,
             }),

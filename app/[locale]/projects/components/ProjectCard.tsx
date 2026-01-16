@@ -12,7 +12,7 @@ import {
   tokens,
 } from '@fluentui/react-components';
 import { CalendarClock20Regular, People20Regular } from '@fluentui/react-icons';
-import { format } from 'date-fns';
+import { formatDateTime } from '@/lib/dateFormatter';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import React from 'react';
@@ -149,7 +149,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
   const formatCreatedDate = () => {
     if (!project.created_at) return t('noDateSet');
     try {
-      return format(new Date(project.created_at), 'PPp');
+      return formatDateTime(project.created_at);
     } catch {
       return t('invalidDate');
     }

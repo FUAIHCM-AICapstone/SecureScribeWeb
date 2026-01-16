@@ -23,7 +23,7 @@ import {
     Document20Regular,
     ArrowRight20Regular,
 } from '@fluentui/react-icons';
-import { format } from 'date-fns';
+import { formatDate } from '@/lib/dateFormatter';
 import { queryKeys } from '@/lib/queryClient';
 import { getProject } from '@/services/api/project';
 import type { ProjectWithMembers } from 'types/project.type';
@@ -191,7 +191,7 @@ export function ProjectCard({ projectId }: ProjectCardProps) {
     const formatDateTime = (dateString: string | null | undefined) => {
         if (!dateString) return t('noDate');
         try {
-            return format(new Date(dateString), 'PPp');
+            return formatDate(dateString, 'datetime');
         } catch {
             return t('invalidDate');
         }

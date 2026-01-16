@@ -18,7 +18,7 @@ import {
   Text,
   tokens,
 } from '@fluentui/react-components';
-import { format } from 'date-fns';
+import { formatDate } from '@/lib/dateFormatter';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import type { FileResponse } from 'types/file.type';
@@ -151,7 +151,7 @@ export function FileCard({ file, onPreview, onFileDeleted, onFileRenamed, onFile
                 </div>
                 <Caption1 className={styles.caption}>
                   {file.created_at
-                    ? format(new Date(file.created_at), 'MMM dd, yyyy')
+                    ? formatDate(file.created_at, 'long')
                     : t('noDateSet')}
                 </Caption1>
               </div>

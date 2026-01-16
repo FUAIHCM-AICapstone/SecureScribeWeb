@@ -11,7 +11,12 @@ import {
   tokens,
   shorthands,
 } from '@fluentui/react-components';
-import { format, isPast, isToday, isTomorrow } from 'date-fns';
+import {
+  formatDate,
+  isPast,
+  isToday,
+  isTomorrow,
+} from '@/lib/dateFormatter';
 import { PersonCircle20Regular } from '@fluentui/react-icons';
 import type { TaskResponse } from 'types/task.type';
 import { TaskActionsMenu } from './TaskActionsMenu';
@@ -148,7 +153,7 @@ export function TaskRow({ task }: TaskRowProps) {
 
       if (isPast(dueDate) && !isToday(dueDate)) {
         return {
-          text: `${t('overdue')} - ${format(dueDate, 'PP')}`,
+          text: `${t('overdue')} - ${formatDate(dueDate, 'short')}`,
           className: styles.dueDateOverdue,
         };
       }
@@ -168,7 +173,7 @@ export function TaskRow({ task }: TaskRowProps) {
       }
 
       return {
-        text: format(dueDate, 'PP'),
+        text: formatDate(dueDate, 'short'),
         className: '',
       };
     } catch {

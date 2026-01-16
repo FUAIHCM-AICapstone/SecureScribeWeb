@@ -16,7 +16,7 @@ import {
   Text,
   tokens,
 } from '@fluentui/react-components';
-import { format } from 'date-fns';
+import { formatDate } from '@/lib/dateFormatter';
 import { useTranslations } from 'next-intl';
 import type { FileResponse } from 'types/file.type';
 import { FileActionsMenu } from './FileActionsMenu';
@@ -75,7 +75,7 @@ export function FileListItem({ file, onFileDeleted, onFileRenamed, onFileMoved }
       <TableCell>
         <Caption1>
           {file.created_at
-            ? format(new Date(file.created_at), 'MMM dd, yyyy')
+            ? formatDate(file.created_at, 'long')
             : t('noDateSet')}
         </Caption1>
       </TableCell>

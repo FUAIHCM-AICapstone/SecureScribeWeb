@@ -4,7 +4,6 @@ import {
   tokens,
 } from '@fluentui/react-components';
 import { ArrowRight24Regular } from '@fluentui/react-icons';
-import { motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import React from 'react';
 
@@ -19,6 +18,11 @@ const useStyles = makeStyles({
     border: `1px solid ${tokens.colorNeutralStroke1}`,
     boxShadow: tokens.shadow2,
     height: '100%',
+    transition: 'all 0.2s ease',
+    ':hover': {
+      transform: 'translateY(-2px)',
+      boxShadow: tokens.shadow4,
+    },
   },
   sectionHeader: {
     display: 'flex',
@@ -67,10 +71,8 @@ export const ContentSection: React.FC<ContentSectionProps> = ({
   const t = useTranslations('Dashboard');
 
   return (
-    <motion.div
+    <div
       className={styles.section}
-      whileHover={{ y: -2, boxShadow: tokens.shadow4 }}
-      transition={{ duration: 0.2 }}
     >
       <div className={styles.sectionHeader}>
         <div className={styles.sectionTitle}>{title}</div>
@@ -83,6 +85,6 @@ export const ContentSection: React.FC<ContentSectionProps> = ({
           children
         )}
       </div>
-    </motion.div>
+    </div>
   );
 };

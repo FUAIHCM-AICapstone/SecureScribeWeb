@@ -2,7 +2,6 @@
 
 import React, { Suspense, lazy } from 'react';
 import { DashboardSkeleton } from './DashboardSkeleton';
-// Lazy load Dashboard with all heavy dependencies (framer-motion, recharts, react-countup)
 const Dashboard = lazy(() => import('./Dashboard'));
 
 /**

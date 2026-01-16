@@ -8,7 +8,7 @@ import {
     getCoreRowModel,
     useReactTable,
 } from '@tanstack/react-table';
-import { format } from 'date-fns';
+import { formatDate } from '@/lib/dateFormatter';
 import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
 import type { TaskResponse } from 'types/task.type';
@@ -71,7 +71,7 @@ export function TasksTable({ data, isLoading, page, onPageChange, hasMore, proje
                 header: t('dueDate'),
                 cell: (info) => {
                     const dateStr = info.getValue();
-                    return dateStr ? format(new Date(dateStr), 'PPP') : '—';
+                    return dateStr ? formatDate(dateStr, 'long') : '—';
                 },
                 size: 150,
             }),

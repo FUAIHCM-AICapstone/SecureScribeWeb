@@ -1,4 +1,4 @@
-import { format } from 'date-fns';
+import { formatDateTime as formatDateTimeLib } from '@/lib/dateFormatter';
 
 /**
  * Utility functions for Meeting Detail page
@@ -7,7 +7,7 @@ import { format } from 'date-fns';
 export const formatDateTime = (dateString: string | null, t: (key: string) => string): string => {
   if (!dateString) return t('noDescription');
   try {
-    return format(new Date(dateString), 'PPpp');
+    return formatDateTimeLib(dateString);
   } catch {
     return t('invalidDate');
   }

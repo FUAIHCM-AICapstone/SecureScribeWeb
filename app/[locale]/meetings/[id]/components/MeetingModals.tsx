@@ -1,9 +1,12 @@
 'use client';
 
+import { Suspense, lazy } from 'react';
 import { DeleteConfirmationModal } from '@/components/modal/DeleteConfirmationModal';
-import { NoteModal } from '@/components/modal/NoteModal';
 import { AudioUploadModal } from '@/components/modal/AudioUploadModal';
-import { MeetingTasksModal } from '@/components/modal/MeetingTasksModal';
+
+// Lazy load heavy modals
+const NoteModal = lazy(() => import('@/components/modal/NoteModal').then(mod => ({ default: mod.NoteModal })));
+const MeetingTasksModal = lazy(() => import('@/components/modal/MeetingTasksModal').then(mod => ({ default: mod.MeetingTasksModal })));
 
 interface MeetingModalsProps {
     // Note Modal
@@ -96,19 +99,23 @@ export function MeetingModals({
 }: MeetingModalsProps) {
     return (
         <>
-            {/* Note Modal - Create/Edit */}
-            <NoteModal
-                isOpen={showNoteModal}
-                mode={noteModalMode}
-                customNotePrompt={customNotePrompt}
-                noteContent={noteContent}
-                isCreatingNote={isCreatingNote}
-                isUpdatingNote={isUpdatingNote}
-                onOpenChange={onNoteModalOpenChange}
-                onCustomPromptChange={onCustomPromptChange}
-                onNoteContentChange={onNoteContentChange}
-                onSaveNote={onSaveNote}
-            />
+            {/* Note Modal - Create/Edit (Lazy Loaded) */}
+            {showNoteModal && (
+                <Suspense fallback={null}>
+                    <NoteModal
+                        isOpen={showNoteModal}
+                        mode={noteModalMode}
+                        customNotePrompt={customNotePrompt}
+                        noteContent={noteContent}
+                        isCreatingNote={isCreatingNote}
+                        isUpdatingNote={isUpdatingNote}
+                        onOpenChange={onNoteModalOpenChange}
+                        onCustomPromptChange={onCustomPromptChange}
+                        onNoteContentChange={onNoteContentChange}
+                        onSaveNote={onSaveNote}
+                    />
+                </Suspense>
+            )}
 
             {/* Upload Audio Modal */}
             <AudioUploadModal
@@ -142,12 +149,16 @@ export function MeetingModals({
                 itemName={meetingDeleteItemName}
             />
 
-            {/* Task Modal */}
-            <MeetingTasksModal
-                isOpen={showTaskModal}
-                meetingId={meetingId}
-                onOpenChange={onTaskModalOpenChange}
-            />
+            {/* Task Modal (Lazy Loaded) */}
+            {showTaskModal && (
+                <Suspense fallback={null}>
+                    <MeetingTasksModal
+                        isOpen={showTaskModal}
+                        meetingId={meetingId}
+                        onOpenChange={onTaskModalOpenChange}
+                    />
+                </Suspense>
+            )}
         </>
     );
 }

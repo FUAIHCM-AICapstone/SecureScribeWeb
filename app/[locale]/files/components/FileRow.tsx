@@ -10,7 +10,7 @@ import {
   tokens,
   shorthands,
 } from '@fluentui/react-components';
-import { format } from 'date-fns';
+import { formatDate } from '@/lib/dateFormatter';
 import type { FileResponse } from 'types/file.type';
 import type { ProjectResponse } from 'types/project.type';
 import type { MeetingResponse } from 'types/meeting.type';
@@ -161,7 +161,7 @@ export function FileRow({
       <div className={styles.hiddenOnMobile}>
         <Caption1>
           {file.created_at
-            ? format(new Date(file.created_at), 'MMM dd, yyyy')
+            ? formatDate(file.created_at, 'long')
             : t('noDateSet')}
         </Caption1>
       </div>

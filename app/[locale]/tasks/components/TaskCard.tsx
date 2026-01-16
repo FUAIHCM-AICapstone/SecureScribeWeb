@@ -14,7 +14,12 @@ import {
   tokens,
   shorthands,
 } from '@fluentui/react-components';
-import { format, isPast, isToday, isTomorrow } from 'date-fns';
+import {
+  formatDate,
+  isPast,
+  isToday,
+  isTomorrow,
+} from '@/lib/dateFormatter';
 import {
   CalendarClock20Regular,
   PersonCircle20Regular,
@@ -169,7 +174,7 @@ export function TaskCard({ task }: TaskCardProps) {
 
       if (isPast(dueDate) && !isToday(dueDate)) {
         return {
-          text: `${t('overdue')} - ${format(dueDate, 'PPp')}`,
+          text: `${t('overdue')} - ${formatDate(dueDate, 'datetime')}`,
           isOverdue: true,
           isToday: false,
         };
@@ -177,7 +182,7 @@ export function TaskCard({ task }: TaskCardProps) {
 
       if (isToday(dueDate)) {
         return {
-          text: `${t('dueToday')} - ${format(dueDate, 'p')}`,
+          text: `${t('dueToday')} - ${formatDate(dueDate, 'short')}`,
           isOverdue: false,
           isToday: true,
         };
@@ -185,14 +190,14 @@ export function TaskCard({ task }: TaskCardProps) {
 
       if (isTomorrow(dueDate)) {
         return {
-          text: `${t('dueTomorrow')} - ${format(dueDate, 'p')}`,
+          text: `${t('dueTomorrow')} - ${formatDate(dueDate, 'short')}`,
           isOverdue: false,
           isToday: false,
         };
       }
 
       return {
-        text: format(dueDate, 'PPp'),
+        text: formatDate(dueDate, 'datetime'),
         isOverdue: false,
         isToday: false,
       };

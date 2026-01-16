@@ -10,7 +10,7 @@ import {
   tokens,
   shorthands,
 } from '@fluentui/react-components';
-import { format } from 'date-fns';
+import { formatDateTime } from '@/lib/dateFormatter';
 import type { ProjectResponse } from 'types/project.type';
 import { ProjectActionsMenu } from './ProjectActionsMenu';
 
@@ -98,7 +98,7 @@ export function ProjectRow({ project }: ProjectRowProps) {
   const formatCreatedDate = () => {
     if (!project.created_at) return t('noDateSet');
     try {
-      return format(new Date(project.created_at), 'PPp');
+      return formatDateTime(project.created_at);
     } catch {
       return t('invalidDate');
     }

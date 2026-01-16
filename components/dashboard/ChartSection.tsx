@@ -1,5 +1,4 @@
 import { makeStyles, tokens } from '@fluentui/react-components';
-import { motion } from 'framer-motion';
 import React, { useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
@@ -119,12 +118,23 @@ export const ChartSection: React.FC<ChartSectionProps> = ({ title, taskData, mee
   const meetingColor = tokens.colorPaletteGreenForeground1;
 
   return (
-    <motion.div
-      className={styles.section}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-    >
+    <>
+      <style>{`
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      `}</style>
+      <div
+        className={styles.section}
+        style={{ animation: 'fadeInUp 0.5s ease-out' }}
+      >
       <div className={styles.sectionHeader}>{title}</div>
       {hasData ? (
         <>
@@ -157,7 +167,7 @@ export const ChartSection: React.FC<ChartSectionProps> = ({ title, taskData, mee
                     boxShadow: tokens.shadow16,
                   }}
                   labelStyle={{ color: tokens.colorNeutralForeground1, fontWeight: 600, marginBottom: '8px' }}
-                  formatter={(value: number, name: string) => {
+                  formatter={(value: number | undefined, name: string | undefined) => {
                     const label = name === 'tasks' ? t('tasksCreated') : t('meetingsHeld');
                     return [value, label];
                   }}
@@ -212,6 +222,7 @@ export const ChartSection: React.FC<ChartSectionProps> = ({ title, taskData, mee
       ) : (
         <div className={styles.emptyState}>{t('noActivityData')}</div>
       )}
-    </motion.div>
+      </div>
+    </>
   );
 };

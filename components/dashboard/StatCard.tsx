@@ -2,7 +2,6 @@ import {
   makeStyles,
   tokens,
 } from '@fluentui/react-components';
-import { motion } from 'framer-motion';
 import React from 'react';
 import CountUp from 'react-countup';
 
@@ -17,6 +16,11 @@ const useStyles = makeStyles({
     flexDirection: 'column',
     gap: '12px',
     cursor: 'default',
+    transition: 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
+    ':hover': {
+      transform: 'translateY(-5px)',
+      boxShadow: tokens.shadow8,
+    },
   },
   header: {
     display: 'flex',
@@ -75,10 +79,8 @@ export const StatCard: React.FC<StatCardProps> = ({
   const styles = useStyles();
 
   return (
-    <motion.div
+    <div
       className={styles.card}
-      whileHover={{ y: -5, boxShadow: tokens.shadow8 }}
-      transition={{ type: 'spring', stiffness: 300 }}
     >
       <div className={styles.header}>
         <div
@@ -104,6 +106,6 @@ export const StatCard: React.FC<StatCardProps> = ({
         {metaIcon}
         {metaText}
       </div>
-    </motion.div>
+    </div>
   );
 };

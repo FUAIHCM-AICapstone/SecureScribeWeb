@@ -11,7 +11,6 @@ import {
 } from '@fluentui/react-components';
 import { DashboardPeriod, DashboardScope } from 'types/statistic.type';
 import React from 'react';
-import { motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import {
   CalendarLtr24Regular,
@@ -161,11 +160,9 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   };
 
   return (
-    <motion.div
+    <div
       className={styles.headerContainer}
-      initial={{ opacity: 0, y: -10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
+      style={{ animation: 'fadeIn 0.3s ease-out' }}
     >
       <div className={styles.headerAccent} />
       
@@ -219,6 +216,18 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
           </Dropdown>
         </div>
       </div>
-    </motion.div>
+      <style>{`
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(-10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      `}</style>
+    </div>
   );
 };
