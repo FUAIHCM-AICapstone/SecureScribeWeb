@@ -6,7 +6,7 @@ import {
     DialogActions,
     DialogContent,
     Button,
-} from '@fluentui/react-components';
+} from '@/lib/components';
 import { useTranslations } from 'next-intl';
 
 interface AuthOverlayProps {

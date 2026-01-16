@@ -17,7 +17,7 @@ import {
   shorthands,
   Text,
   tokens,
-} from '@fluentui/react-components';
+} from '@/lib/components';
 import { formatDate } from '@/lib/dateFormatter';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';

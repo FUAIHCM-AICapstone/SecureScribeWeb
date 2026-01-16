@@ -62,6 +62,6 @@ export {
     ToastBody,
     ToastTitle,
     ToggleButton, tokens, Tooltip, typographyStyles,
-    useToastController, type OptionOnSelectData, type SelectionEvents
+    useToastController, webDarkTheme, webLightTheme, type OptionOnSelectData, type SelectionEvents
 } from '@fluentui/react-components';
 

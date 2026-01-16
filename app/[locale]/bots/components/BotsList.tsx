@@ -19,7 +19,7 @@ import {
   Text,
   tokens,
   Tooltip
-} from '@fluentui/react-components';
+} from '@/lib/components';
 import { useTranslations } from 'next-intl';
 import type { BotResponse } from 'types/meetingBot.type';
 import { BotActionsMenu } from './BotActionsMenu';

@@ -14,7 +14,7 @@ import {
   Textarea,
   makeStyles,
   tokens,
-} from '@fluentui/react-components';
+} from '@/lib/components';
 import { Edit20Regular } from '@/lib/icons';
 import { useTranslations } from 'next-intl';
 import React, { useEffect } from 'react';

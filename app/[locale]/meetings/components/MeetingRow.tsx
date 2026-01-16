@@ -10,7 +10,7 @@ import {
   makeStyles,
   tokens,
   shorthands,
-} from '@fluentui/react-components';
+} from '@/lib/components';
 import { formatDateTime } from '@/lib/dateFormatter';
 import { PersonCircle20Regular } from '@/lib/icons';
 import type { MeetingResponse } from 'types/meeting.type';

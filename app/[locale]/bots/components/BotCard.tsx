@@ -20,7 +20,7 @@ import {
   shorthands,
   Text,
   tokens,
-} from '@fluentui/react-components';
+} from '@/lib/components';
 import { useTranslations } from 'next-intl';
 import { BotResponse } from 'types/meetingBot.type';
 import { BotActionsMenu } from './BotActionsMenu';

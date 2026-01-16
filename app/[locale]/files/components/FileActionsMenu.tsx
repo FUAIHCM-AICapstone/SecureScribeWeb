@@ -21,7 +21,7 @@ import {
   MenuList,
   MenuPopover,
   MenuTrigger,
-} from '@fluentui/react-components';
+} from '@/lib/components';
 import {
   ArrowDownload20Regular,
   ArrowMove20Regular,

@@ -16,7 +16,7 @@ import {
   Text,
   ToggleButton,
   tokens,
-} from '@fluentui/react-components';
+} from '@/lib/components';
 import { useTranslations } from 'next-intl';
 import React, { useState } from 'react';
 

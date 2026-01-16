@@ -2,7 +2,7 @@
 import React from 'react';
 import { RiMoonFill, RiSunLine } from 'react-icons/ri';
 import { useTranslations } from 'next-intl';
-import { ToggleButton, Tooltip } from '@fluentui/react-components';
+import { ToggleButton, Tooltip } from '@/lib/components';
 import { useAppTheme } from '@/app/providers';
 
 const ThemeToggle = () => {

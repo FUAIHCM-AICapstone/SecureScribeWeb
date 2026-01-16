@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { makeStyles, shorthands } from '@fluentui/react-components';
+import { makeStyles, shorthands } from '@/lib/components';
 import type { TaskResponse } from 'types/task.type';
 import { TaskRow } from './TaskRow';
 

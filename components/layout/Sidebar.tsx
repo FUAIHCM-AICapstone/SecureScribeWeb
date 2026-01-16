@@ -15,7 +15,7 @@ import {
   ListItem,
   ToggleButton,
   // nếu MenuList hợp hơn thì import MenuList, MenuItem
-} from '@fluentui/react-components';
+} from '@/lib/components';
 import { useTranslations } from 'next-intl';
 import { useSidebar } from '@/context/SidebarContext';
 import { useLocale } from 'next-intl';

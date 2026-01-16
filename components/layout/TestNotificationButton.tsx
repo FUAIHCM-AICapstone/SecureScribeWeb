@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Button, makeStyles, tokens } from '@fluentui/react-components';
+import { Button, makeStyles, tokens } from '@/lib/components';
 import { SendRegular } from '@/lib/icons';
 import { sendNotifications } from '@/services/api/notification';
 import { useAuth } from '@/context/AuthContext';

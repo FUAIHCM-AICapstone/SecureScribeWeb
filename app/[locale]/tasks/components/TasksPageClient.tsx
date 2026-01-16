@@ -10,7 +10,7 @@ import {
   makeStyles,
   tokens,
   shorthands,
-} from '@fluentui/react-components';
+} from '@/lib/components';
 import { ArrowLeft20Regular, ArrowRight20Regular } from '@/lib/icons';
 import { getTasks } from '@/services/api/task';
 import { queryKeys } from '@/lib/queryClient';

@@ -3,7 +3,7 @@ import React from 'react';
 import Image from 'next/image';
 import { usePathname, useRouter } from '@/i18n/navigation';
 import { useLocale, useTranslations } from 'next-intl';
-import { Menu, MenuItemRadio, MenuList, MenuPopover, MenuTrigger, MenuButton, Tooltip } from '@fluentui/react-components';
+import { Menu, MenuItemRadio, MenuList, MenuPopover, MenuTrigger, MenuButton, Tooltip } from '@/lib/components';
 
 // Assumes public directory contains /vietnam.png and /united-kingdom.png
 

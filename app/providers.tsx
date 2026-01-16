@@ -1,6 +1,6 @@
 "use client";
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { FluentProvider, webDarkTheme, webLightTheme } from '@fluentui/react-components';
+import { FluentProvider, webDarkTheme, webLightTheme } from '@/lib/components';
 import { ReactQueryProvider } from '../context/ReactQueryProvider';
 
 type ThemeMode = 'light' | 'dark';

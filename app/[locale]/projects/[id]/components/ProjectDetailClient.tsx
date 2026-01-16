@@ -35,7 +35,7 @@ import {
   makeStyles,
   shorthands,
   tokens,
-} from '@fluentui/react-components';
+} from '@/lib/components';
 import {
   Add20Regular,
   Archive20Regular,

@@ -8,7 +8,7 @@ import {
   makeStyles,
   shorthands,
   tokens,
-} from '@fluentui/react-components';
+} from '@/lib/components';
 
 const useStyles = makeStyles({
   card: {

@@ -1,6 +1,6 @@
 'use client';
 
-import { Body1, Button, Spinner, Text, makeStyles, shorthands, tokens, ProgressBar } from '@fluentui/react-components';
+import { Body1, Button, Spinner, Text, makeStyles, shorthands, tokens, ProgressBar } from '@/lib/components';
 import { Edit20Regular, ClipboardTaskListLtrRegular } from '@/lib/icons';
 import { useTranslations } from 'next-intl';
 import React from 'react';

@@ -15,7 +15,7 @@ import {
   TableRow,
   Text,
   tokens,
-} from '@fluentui/react-components';
+} from '@/lib/components';
 import { formatDate } from '@/lib/dateFormatter';
 import { useTranslations } from 'next-intl';
 import type { FileResponse } from 'types/file.type';

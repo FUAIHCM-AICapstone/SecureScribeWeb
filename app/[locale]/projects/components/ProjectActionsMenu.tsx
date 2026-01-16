@@ -12,7 +12,7 @@ import {
   MenuList,
   MenuItem,
   makeStyles,
-} from '@fluentui/react-components';
+} from '@/lib/components';
 import {
   MoreVertical20Regular,
   Eye20Regular,

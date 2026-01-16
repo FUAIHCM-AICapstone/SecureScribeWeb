@@ -1,6 +1,6 @@
 "use client";
 import { useAuth } from "@/context/AuthContext";
-import { Button, Divider, makeStyles } from "@fluentui/react-components";
+import { Button, Divider, makeStyles } from "@/lib/components";
 import { useTranslations } from "next-intl";
 import * as React from "react";
 import ForgotPasswordForm from "./ForgotPasswordForm";

@@ -14,7 +14,7 @@ import {
   mergeClasses,
   makeStyles,
   tokens,
-} from '@fluentui/react-components';
+} from '@/lib/components';
 import {
   AlertUrgent24Regular,
   ArrowUpload24Regular,

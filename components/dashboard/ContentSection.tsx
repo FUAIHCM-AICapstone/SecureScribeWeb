@@ -2,7 +2,7 @@ import {
   Button,
   makeStyles,
   tokens,
-} from '@fluentui/react-components';
+} from '@/lib/components';
 import { ArrowRight24Regular } from '@/lib/icons';
 import { useTranslations } from 'next-intl';
 import React from 'react';

@@ -1,6 +1,6 @@
 'use client';
 
-import { makeStyles, tokens } from '@fluentui/react-components';
+import { makeStyles, tokens } from '@/lib/components';
 import { useEffect, useRef } from 'react';
 import { ChatMessageResponse } from 'types/chat.type';
 import { ChatMessage } from './ChatMessages';

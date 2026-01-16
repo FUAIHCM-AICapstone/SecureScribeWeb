@@ -14,7 +14,7 @@ import {
   MenuDivider,
   makeStyles,
   tokens,
-} from '@fluentui/react-components';
+} from '@/lib/components';
 import {
   MoreHorizontal20Regular,
   Eye20Regular,

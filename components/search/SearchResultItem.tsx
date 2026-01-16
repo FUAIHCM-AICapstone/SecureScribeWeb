@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { makeStyles, tokens, Avatar } from "@fluentui/react-components";
+import { makeStyles, tokens, Avatar } from "@/lib/components";
 import {
     CalendarLtr24Regular,
     DocumentText24Regular,

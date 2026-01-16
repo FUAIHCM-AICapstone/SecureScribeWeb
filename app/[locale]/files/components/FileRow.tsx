@@ -9,7 +9,7 @@ import {
   makeStyles,
   tokens,
   shorthands,
-} from '@fluentui/react-components';
+} from '@/lib/components';
 import { formatDate } from '@/lib/dateFormatter';
 import type { FileResponse } from 'types/file.type';
 import type { ProjectResponse } from 'types/project.type';

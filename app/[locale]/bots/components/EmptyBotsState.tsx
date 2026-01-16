@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Text, Caption1, makeStyles, shorthands, tokens } from '@fluentui/react-components';
+import { Text, Caption1, makeStyles, shorthands, tokens } from '@/lib/components';
 import { Record20Regular, Search20Regular } from '@/lib/icons';
 import { useTranslations } from 'next-intl';
 

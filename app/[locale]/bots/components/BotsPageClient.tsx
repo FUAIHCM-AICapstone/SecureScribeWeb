@@ -13,7 +13,7 @@ import {
   ToastTitle,
   tokens,
   useToastController,
-} from '@fluentui/react-components';
+} from '@/lib/components';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { useRouter, useSearchParams } from 'next/navigation';

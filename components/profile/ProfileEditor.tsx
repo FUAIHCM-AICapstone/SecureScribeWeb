@@ -16,7 +16,7 @@ import {
   tokens,
   Tooltip,
   shorthands,
-} from '@fluentui/react-components';
+} from '@/lib/components';
 import {
   Camera24Regular,
   CheckmarkCircle24Regular,

@@ -9,7 +9,7 @@ import {
   makeStyles,
   tokens,
   shorthands,
-} from '@fluentui/react-components';
+} from '@/lib/components';
 import { TaskListSquareLtr48Regular } from '@/lib/icons';
 
 const useStyles = makeStyles({

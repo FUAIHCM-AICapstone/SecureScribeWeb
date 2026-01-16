@@ -1,6 +1,6 @@
 'use client';
 
-import { Button, Spinner, Text, tokens } from '@fluentui/react-components';
+import { Button, Spinner, Text, tokens } from '@/lib/components';
 import { ArrowDownload20Regular } from '@/lib/icons';
 import { useTranslations } from 'next-intl';
 import React from 'react';

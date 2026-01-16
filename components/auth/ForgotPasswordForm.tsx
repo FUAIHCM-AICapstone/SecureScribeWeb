@@ -8,7 +8,7 @@ import {
     Text,
     makeStyles,
     tokens
-} from "@fluentui/react-components";
+} from "@/lib/components";
 import { ArrowRightRegular, MailRegular } from "@/lib/icons";
 import { useTranslations } from "next-intl";
 import * as React from "react";

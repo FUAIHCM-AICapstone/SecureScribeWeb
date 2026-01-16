@@ -1,5 +1,5 @@
 import { useToastController, Toast, ToastTitle, ToastBody } from '@fluentui/react-toast';
-import { Spinner } from '@fluentui/react-components';
+import { Spinner } from '@/lib/components';
 import * as React from 'react';
 
 // Global toast controller instance for loading toasts

@@ -1,5 +1,5 @@
 import { useToastController, Toast, ToastTitle, ToastBody, ToastTrigger } from '@fluentui/react-toast';
-import { Button } from '@fluentui/react-components';
+import { Button } from '@/lib/components';
 import React from 'react';
 
 type ToastType = 'success' | 'error' | 'warning' | 'info';

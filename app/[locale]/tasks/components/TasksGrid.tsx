@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { makeStyles, tokens, shorthands } from '@fluentui/react-components';
+import { makeStyles, tokens, shorthands } from '@/lib/components';
 import type { TaskResponse } from 'types/task.type';
 import { TaskCard } from './TaskCard';
 

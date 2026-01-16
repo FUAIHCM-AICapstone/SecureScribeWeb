@@ -14,7 +14,7 @@ import {
   makeStyles,
   shorthands,
   tokens,
-} from '@fluentui/react-components';
+} from '@/lib/components';
 import { Dismiss24Regular } from '@/lib/icons';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';

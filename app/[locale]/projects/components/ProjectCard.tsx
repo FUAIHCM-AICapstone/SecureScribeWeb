@@ -10,7 +10,7 @@ import {
   shorthands,
   Text,
   tokens,
-} from '@fluentui/react-components';
+} from '@/lib/components';
 import { CalendarClock20Regular, People20Regular } from '@/lib/icons';
 import { formatDateTime } from '@/lib/dateFormatter';
 import { useTranslations } from 'next-intl';

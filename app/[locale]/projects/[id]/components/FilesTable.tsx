@@ -1,7 +1,7 @@
 'use client';
 
 import { FileActionsMenu } from '@/app/[locale]/files/components/FileActionsMenu';
-import { Button, Spinner, Text, tokens } from '@fluentui/react-components';
+import { Button, Spinner, Text, tokens } from '@/lib/components';
 import {
     createColumnHelper,
     flexRender,

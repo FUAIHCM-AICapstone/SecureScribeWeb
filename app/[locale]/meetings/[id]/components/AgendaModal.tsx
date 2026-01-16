@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Dialog, DialogSurface, DialogTitle, DialogBody, DialogActions, Button, Textarea, makeStyles, shorthands, tokens, Spinner, Body1 } from '@fluentui/react-components';
+import { Dialog, DialogSurface, DialogTitle, DialogBody, DialogActions, Button, Textarea, makeStyles, shorthands, tokens, Spinner, Body1 } from '@/lib/components';
 import { useTranslations } from 'next-intl';
 
 const useStyles = makeStyles({

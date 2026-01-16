@@ -15,7 +15,7 @@ import {
     makeStyles,
     tokens,
     shorthands,
-} from '@fluentui/react-components';
+} from '@/lib/components';
 import { ArrowUpload24Regular, Dismiss24Regular } from '@/lib/icons';
 import { showToast } from '@/hooks/useShowToast';
 

@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { makeStyles, tokens, shorthands } from '@fluentui/react-components';
+import { makeStyles, tokens, shorthands } from '@/lib/components';
 import type { MeetingResponse } from 'types/meeting.type';
 import { MeetingCard } from './MeetingCard';
 

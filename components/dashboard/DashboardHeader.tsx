@@ -8,7 +8,7 @@ import {
   Title1,
   tokens,
   Caption1,
-} from '@fluentui/react-components';
+} from '@/lib/components';
 import { DashboardPeriod, DashboardScope } from 'types/statistic.type';
 import React from 'react';
 import { useTranslations } from 'next-intl';

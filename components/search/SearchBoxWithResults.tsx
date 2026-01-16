@@ -13,7 +13,7 @@ import {
     Popover,
     PopoverSurface,
     PopoverTrigger,
-} from "@fluentui/react-components";
+} from "@/lib/components";
 import { showToast } from "@/hooks/useShowToast";
 import SearchResultItem, { SearchResult, SearchEntityType } from "./SearchResultItem";
 import { useResponsiveDebouncedValue } from "./useDebouncedValue";

@@ -8,7 +8,7 @@ import {
   MenuList,
   MenuPopover,
   MenuTrigger,
-} from '@fluentui/react-components';
+} from '@/lib/components';
 import {
   MoreVertical20Regular,
   Play20Regular,

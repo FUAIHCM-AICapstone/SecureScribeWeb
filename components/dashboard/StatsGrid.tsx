@@ -1,4 +1,4 @@
-import { makeStyles } from '@fluentui/react-components';
+import { makeStyles } from '@/lib/components';
 import React from 'react';
 
 const useStyles = makeStyles({

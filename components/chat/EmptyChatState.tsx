@@ -1,8 +1,8 @@
 'use client';
 
 import Image from 'next/image';
-import { Text } from '@fluentui/react-components';
-import { makeStyles, tokens } from '@fluentui/react-components';
+import { Text } from '@/lib/components';
+import { makeStyles, tokens } from '@/lib/components';
 import { useState, useEffect } from 'react';
 import { getBrandConfig } from '@/lib/utils/runtimeConfig';
 

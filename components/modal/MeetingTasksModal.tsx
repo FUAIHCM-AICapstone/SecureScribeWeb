@@ -12,7 +12,7 @@ import {
     Spinner,
     Text,
     tokens,
-} from '@fluentui/react-components';
+} from '@/lib/components';
 import { ClipboardTaskListLtrRegular, ArrowLeft20Regular, ArrowRight20Regular } from '@/lib/icons';
 import { useTranslations } from 'next-intl';
 import React from 'react';

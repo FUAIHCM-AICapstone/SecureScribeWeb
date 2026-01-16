@@ -17,7 +17,7 @@ import {
     makeStyles,
     shorthands,
     tokens,
-} from '@fluentui/react-components';
+} from '@/lib/components';
 import { useState } from 'react';
 import {
     Archive20Regular,

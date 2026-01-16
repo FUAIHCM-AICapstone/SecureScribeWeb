@@ -9,7 +9,7 @@ import {
     DialogBody,
     DialogActions,
     Button,
-} from '@fluentui/react-components';
+} from '@/lib/components';
 
 interface DeleteConfirmationModalProps {
     isOpen: boolean;

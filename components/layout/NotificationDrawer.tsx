@@ -15,7 +15,7 @@ import {
   DrawerFooter,
   DrawerHeader,
   DrawerHeaderTitle,
-} from '@fluentui/react-components';
+} from '@/lib/components';
 import type { NotificationResponse } from 'types/notification.type';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/queryClient';

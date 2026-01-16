@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { Button, Text, makeStyles } from '@fluentui/react-components';
+import { Button, Text, makeStyles } from '@/lib/components';
 import { ArrowLeft24Regular, Home24Regular } from '@/lib/icons';
 
 const useStyles = makeStyles({

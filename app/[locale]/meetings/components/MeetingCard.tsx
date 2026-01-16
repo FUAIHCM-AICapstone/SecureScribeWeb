@@ -13,7 +13,7 @@ import {
   makeStyles,
   tokens,
   shorthands,
-} from '@fluentui/react-components';
+} from '@/lib/components';
 import { formatStartTime } from '@/lib/dateFormatter';
 import {
   CalendarClock20Regular,

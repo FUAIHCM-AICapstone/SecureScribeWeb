@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { makeStyles, tokens, shorthands } from '@fluentui/react-components';
+import { makeStyles, tokens, shorthands } from '@/lib/components';
 import type { ProjectResponse } from 'types/project.type';
 import { ProjectCard } from './ProjectCard';
 

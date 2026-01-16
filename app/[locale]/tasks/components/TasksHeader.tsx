@@ -14,7 +14,7 @@ import {
   Dropdown,
   Option,
   type OptionOnSelectData,
-} from '@fluentui/react-components';
+} from '@/lib/components';
 import {
   Grid20Regular,
   List20Regular,

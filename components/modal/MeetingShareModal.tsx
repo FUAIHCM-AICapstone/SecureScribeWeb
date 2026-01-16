@@ -14,7 +14,7 @@ import {
   makeStyles,
   tokens,
   Text,
-} from '@fluentui/react-components';
+} from '@/lib/components';
 import {
   Copy20Regular,
   Checkmark20Regular,

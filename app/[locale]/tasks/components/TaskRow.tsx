@@ -10,7 +10,7 @@ import {
   makeStyles,
   tokens,
   shorthands,
-} from '@fluentui/react-components';
+} from '@/lib/components';
 import {
   formatDate,
   isPast,

@@ -11,7 +11,7 @@ import {
   MenuPopover,
   MenuTrigger,
   Tooltip,
-} from '@fluentui/react-components';
+} from '@/lib/components';
 import { SignOut24Regular } from '@/lib/icons';
 import type { User } from 'types/user.type';
 

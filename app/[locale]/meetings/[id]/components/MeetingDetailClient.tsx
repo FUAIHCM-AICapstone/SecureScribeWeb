@@ -12,7 +12,7 @@ import {
   makeStyles,
   shorthands,
   tokens,
-} from '@fluentui/react-components';
+} from '@/lib/components';
 import { ArrowLeft20Regular } from '@/lib/icons';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';

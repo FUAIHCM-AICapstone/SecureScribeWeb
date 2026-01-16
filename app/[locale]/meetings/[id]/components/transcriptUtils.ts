@@ -1,6 +1,6 @@
 'use client';
 
-import { makeStyles, shorthands, tokens } from '@fluentui/react-components';
+import { makeStyles, shorthands, tokens } from '@/lib/components';
 
 // ============================================================================
 // Types & Interfaces

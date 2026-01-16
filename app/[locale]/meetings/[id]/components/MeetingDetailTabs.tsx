@@ -16,7 +16,7 @@ import {
     makeStyles,
     shorthands,
     tokens,
-} from '@fluentui/react-components';
+} from '@/lib/components';
 import { useTranslations } from 'next-intl';
 import { Suspense, useState } from 'react';
 import type { MeetingNoteResponse } from 'types/meeting_note.type';

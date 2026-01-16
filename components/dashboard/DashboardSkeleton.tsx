@@ -4,7 +4,7 @@ import {
   SkeletonItem,
   makeStyles,
   tokens,
-} from '@fluentui/react-components';
+} from '@/lib/components';
 
 const useStyles = makeStyles({
   root: {

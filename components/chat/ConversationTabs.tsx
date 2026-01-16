@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-empty-object-type */
 'use client'
 
-import { Button, Input, Tab, TabList, Tooltip, makeStyles, tokens } from '@fluentui/react-components'
+import { Button, Input, Tab, TabList, Tooltip, makeStyles, tokens } from '@/lib/components'
 import { Add24Regular, Checkmark16Regular, Dismiss16Regular, Edit16Regular } from '@/lib/icons'
 import { useTranslations } from 'next-intl'
 import { useRef, useState } from 'react'

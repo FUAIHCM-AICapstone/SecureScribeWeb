@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { makeStyles, shorthands, tokens } from '@fluentui/react-components';
+import { makeStyles, shorthands, tokens } from '@/lib/components';
 import type { FileResponse } from 'types/file.type';
 import { FileCard } from './FileCard';
 

@@ -1,7 +1,7 @@
 'use client';
 
 import DashboardDynamic from '@/components/dashboard/DashboardDynamic';
-import { makeStyles, shorthands } from '@fluentui/react-components';
+import { makeStyles, shorthands } from '@/lib/components';
 
 const useStyles = makeStyles({
   container: {

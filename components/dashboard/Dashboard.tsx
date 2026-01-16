@@ -22,7 +22,7 @@ import {
   tokens,
   Badge,
   Tooltip,
-} from '@fluentui/react-components';
+} from '@/lib/components';
 import {
   CalendarLtr24Regular,
   CheckboxChecked24Regular,

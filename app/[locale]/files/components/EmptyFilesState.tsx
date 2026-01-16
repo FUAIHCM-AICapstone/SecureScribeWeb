@@ -8,7 +8,7 @@ import {
   makeStyles,
   tokens,
   shorthands,
-} from '@fluentui/react-components';
+} from '@/lib/components';
 import {
   DocumentFolder48Regular,
   ArrowUpload24Regular,

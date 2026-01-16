@@ -4,7 +4,7 @@ import MentionSuggestions from '@/components/mentions/MentionSuggestions';
 import { createMentionChip, parseTokensFromText, serializeContenteditableToText } from '@/components/mentions/tokenUtils';
 import useMentionInput from '@/components/mentions/useMentionInput';
 import { dynamicSearch } from '@/services/api/search';
-import { makeStyles, tokens } from '@fluentui/react-components';
+import { makeStyles, tokens } from '@/lib/components';
 import { Send24Regular } from '@/lib/icons';
 import { useEffect, useRef, useState } from 'react';
 import type { ChatMessageCreate, Mention } from 'types/chat.type';

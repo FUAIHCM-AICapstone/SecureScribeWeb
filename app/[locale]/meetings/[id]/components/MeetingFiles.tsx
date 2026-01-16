@@ -9,7 +9,7 @@ import {
   makeStyles,
   shorthands,
   tokens,
-} from '@fluentui/react-components';
+} from '@/lib/components';
 import {
   Delete20Regular,
   Document20Regular,

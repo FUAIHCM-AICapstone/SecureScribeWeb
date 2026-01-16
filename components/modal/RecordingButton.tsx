@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Button, Spinner, makeStyles, tokens } from '@fluentui/react-components';
+import { Button, Spinner, makeStyles, tokens } from '@/lib/components';
 import { Record24Regular } from '@/lib/icons';
 import { useMutation } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';

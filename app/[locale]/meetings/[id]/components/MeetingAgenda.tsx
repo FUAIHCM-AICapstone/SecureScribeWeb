@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Text, Button, makeStyles, shorthands, tokens, Spinner } from '@fluentui/react-components';
+import { Text, Button, makeStyles, shorthands, tokens, Spinner } from '@/lib/components';
 import { useTranslations } from 'next-intl';
 import { Edit20Regular } from '@/lib/icons';
 import { parseMarkdownNote } from './meetingNoteUtils';

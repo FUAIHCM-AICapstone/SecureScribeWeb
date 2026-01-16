@@ -1,6 +1,6 @@
 'use client';
 
-import { Body1, Button, Card, Spinner, Text, makeStyles, shorthands, tokens } from '@fluentui/react-components';
+import { Body1, Button, Card, Spinner, Text, makeStyles, shorthands, tokens } from '@/lib/components';
 import { Delete20Regular, Document20Regular } from '@/lib/icons';
 import { useTranslations } from 'next-intl';
 import type { AudioFileResponse } from 'types/audio_file.type';

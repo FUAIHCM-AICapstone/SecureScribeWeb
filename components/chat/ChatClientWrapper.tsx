@@ -4,7 +4,7 @@
 
 import { useConversationManager } from '@/hooks/useConversationManager'
 import { useSSEManager } from '@/hooks/useSSEManager'
-import { makeStyles } from '@fluentui/react-components'
+import { makeStyles } from '@/lib/components'
 import { useEffect, useState } from 'react'
 import { ChatInterface } from './ChatInterface'
 import { ConversationTabs } from './ConversationTabs'

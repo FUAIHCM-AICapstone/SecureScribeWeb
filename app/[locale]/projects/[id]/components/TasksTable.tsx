@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
-import { Badge, Button, Spinner, Text, tokens } from '@fluentui/react-components';
+import { Badge, Button, Spinner, Text, tokens } from '@/lib/components';
 import {
     createColumnHelper,
     flexRender,

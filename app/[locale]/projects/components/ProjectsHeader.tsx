@@ -11,7 +11,7 @@ import {
   tokens,
   shorthands,
   ToggleButton,
-} from '@fluentui/react-components';
+} from '@/lib/components';
 import { DatePicker } from '@fluentui/react-datepicker-compat';
 import {
   Grid20Regular,

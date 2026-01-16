@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { makeStyles, shorthands, tokens } from '@fluentui/react-components';
+import { makeStyles, shorthands, tokens } from '@/lib/components';
 import type { BotResponse } from 'types/meetingBot.type';
 import { BotCard } from './BotCard';
 

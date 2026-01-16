@@ -3,7 +3,7 @@
 
 import { lazy, Suspense } from 'react';
 import { getBrandConfig } from '@/lib/utils/runtimeConfig';
-import { Button, makeStyles, tokens } from '@fluentui/react-components';
+import { Button, makeStyles, tokens } from '@/lib/components';
 import { Checkmark24Regular, Copy24Regular } from '@/lib/icons';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';

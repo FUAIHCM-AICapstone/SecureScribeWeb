@@ -4,7 +4,7 @@
  */
 
 import { parseNotification } from '@/lib/notifications/parseNotification';
-import { Badge } from '@fluentui/react-components';
+import { Badge } from '@/lib/components';
 import React from 'react';
 import type { NotificationResponse } from 'types/notification.type';
 

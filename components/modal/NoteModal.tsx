@@ -13,7 +13,7 @@ import {
     shorthands,
     Textarea,
     tokens,
-} from '@fluentui/react-components';
+} from '@/lib/components';
 import MDEditor from '@uiw/react-md-editor';
 import React, { useEffect, useState, useCallback } from 'react';
 import { useTranslations } from 'next-intl';

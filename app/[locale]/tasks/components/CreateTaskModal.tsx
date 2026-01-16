@@ -28,7 +28,7 @@ import {
   tokens,
   shorthands,
   type OptionOnSelectData,
-} from '@fluentui/react-components';
+} from '@/lib/components';
 import { DatePicker } from '@fluentui/react-datepicker-compat';
 import {
   TimePicker,

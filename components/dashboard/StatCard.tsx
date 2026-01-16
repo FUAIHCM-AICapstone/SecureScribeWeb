@@ -1,7 +1,7 @@
 import {
   makeStyles,
   tokens,
-} from '@fluentui/react-components';
+} from '@/lib/components';
 import React from 'react';
 import CountUp from 'react-countup';
 

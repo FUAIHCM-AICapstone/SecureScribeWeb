@@ -1,6 +1,6 @@
 'use client';
 
-import { makeStyles, tokens } from '@fluentui/react-components';
+import { makeStyles, tokens } from '@/lib/components';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { oneDark, oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { useAppTheme } from '@/app/providers';

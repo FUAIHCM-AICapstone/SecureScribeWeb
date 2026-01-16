@@ -9,7 +9,7 @@ import {
   makeStyles,
   tokens,
   shorthands,
-} from '@fluentui/react-components';
+} from '@/lib/components';
 import { formatDateTime } from '@/lib/dateFormatter';
 import type { ProjectResponse } from 'types/project.type';
 import { ProjectActionsMenu } from './ProjectActionsMenu';
