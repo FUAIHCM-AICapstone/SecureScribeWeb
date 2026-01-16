@@ -1,7 +1,8 @@
 'use client';
 
-import MeetingSchedulerModal from '@/components/modal/MeetingSchedulerModal';
-import { FileUploadModal } from '@/components/modal/FileUploadModal';
+import { lazy, Suspense } from 'react';
+const MeetingSchedulerModal = lazy(() => import('@/components/modal/MeetingSchedulerModal'));
+const FileUploadModal = lazy(() => import('@/components/modal/FileUploadModal').then(m => ({ default: m.FileUploadModal })));
 import SearchBoxWithResults from '@/components/search/SearchBoxWithResults';
 import { showToast } from '@/hooks/useShowToast';
 import { usePathname, useRouter } from '@/i18n/navigation';
@@ -524,14 +525,18 @@ export default function Header() {
         t={t}
       />
 
-      <MeetingSchedulerModal
-        open={isSchedulerOpen}
-        onOpenChange={setIsSchedulerOpen}
-      />
-      <FileUploadModal
-        open={isUploadOpen}
-        onClose={() => setIsUploadOpen(false)}
-      />
+      <Suspense fallback={null}>
+        <MeetingSchedulerModal
+          open={isSchedulerOpen}
+          onOpenChange={setIsSchedulerOpen}
+        />
+      </Suspense>
+      <Suspense fallback={null}>
+        <FileUploadModal
+          open={isUploadOpen}
+          onClose={() => setIsUploadOpen(false)}
+        />
+      </Suspense>
     </>
   );
 }

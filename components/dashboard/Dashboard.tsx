@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 'use client';
 
+import { lazy, Suspense } from 'react';
 import statisticApi from '@/services/api/statistic';
 import {
   DashboardPeriod,
@@ -51,7 +52,9 @@ import { StatCard } from './StatCard';
 import { ContentGrid } from './ContentGrid';
 import { ContentSection } from './ContentSection';
 import { ChartSection } from './ChartSection';
-import { TaskDetailsModal } from '@/app/[locale]/tasks/components/TaskDetailsModal';
+
+// Lazy load TaskDetailsModal to save ~8-10 kB on initial dashboard load
+const TaskDetailsModal = lazy(() => import('@/app/[locale]/tasks/components/TaskDetailsModal').then(m => ({ default: m.TaskDetailsModal })));
 
 const useStyles = makeStyles({
   root: {
@@ -623,11 +626,13 @@ const Dashboard: React.FC = () => {
         </ContentGrid>
       )}
 
-      <TaskDetailsModal
-        taskId={selectedTaskId || ''}
-        open={isTaskModalOpen}
-        onClose={handleTaskModalClose}
-      />
+      <Suspense fallback={null}>
+        <TaskDetailsModal
+          taskId={selectedTaskId || ''}
+          open={isTaskModalOpen}
+          onClose={handleTaskModalClose}
+        />
+      </Suspense>
     </div>
   );
 };
