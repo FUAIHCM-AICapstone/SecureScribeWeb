@@ -402,8 +402,10 @@
       "task_assigned": "Task '{task_title}' assigned by {assigned_by}",
       "task_updated": "Task '{task_title}' status changed to {new_status}",
       "file_indexing_completed": "File '{filename}' has been indexed successfully",
+      "task_file_indexing_failed": "File '{filename}' indexing failed",
       "audio_processing_completed": "Audio processing completed for meeting",
       "chat_processing_completed": "Chat processing completed",
+      "task_chat_processing_failed": "Chat processing failed",
       "meeting_analysis_completed": "Meeting analysis completed ({tasks_count} tasks, {note_length} characters)",
       "meeting_reminder": "Upcoming meeting: {title}",
       "bot_status_update": "Bot status: {status}",
@@ -411,6 +413,8 @@
       "maintenance": "System maintenance scheduled: {duration}",
       "project_update": "Project {project_name} has been updated",
       "comment_reply": "{user_name} replied to your comment",
+      "task_meeting_analysis_completed": "Meeting analysis task completed",
+      "task_meeting_analysis_failed": "Meeting analysis task failed",
       "generic": "You have a new notification"
     }
   },

@@ -7,7 +7,6 @@ export interface NotificationTypeConfig {
   translationKey: string;
   icon: string;
   payloadFields: string[]; // Fields to extract from payload for interpolation
-  entityIds?: string[]; // Entity IDs (meeting_id, project_id, etc.) to fetch if needed
 }
 
 export const notificationTypeMap: Record<string, NotificationTypeConfig> = {
@@ -16,25 +15,21 @@ export const notificationTypeMap: Record<string, NotificationTypeConfig> = {
     translationKey: 'notification.user_joined_project',
     icon: 'UserAdd',
     payloadFields: ['user_name', 'project_name'],
-    entityIds: ['user_id', 'project_id'], // IDs to fetch if names not present
   },
   added_to_project: {
     translationKey: 'notification.added_to_project',
     icon: 'PersonAdd',
     payloadFields: ['added_by_name', 'project_name'],
-    entityIds: ['added_by', 'project_id'],
   },
   user_removed_project: {
     translationKey: 'notification.user_removed_project',
     icon: 'PersonRemove',
     payloadFields: ['user_name', 'project_name'],
-    entityIds: ['user_id', 'project_id'],
   },
   removed_from_project: {
     translationKey: 'notification.removed_from_project',
     icon: 'Warning',
     payloadFields: ['removed_by_name', 'project_name'],
-    entityIds: ['removed_by', 'project_id'],
   },
 
   // Task-related notifications
@@ -42,13 +37,11 @@ export const notificationTypeMap: Record<string, NotificationTypeConfig> = {
     translationKey: 'notification.task_assigned',
     icon: 'CheckmarkCircle',
     payloadFields: ['task_title', 'assigned_by_name'],
-    entityIds: ['task_id', 'assigned_by'],
   },
   task_updated: {
     translationKey: 'notification.task_updated',
     icon: 'Edit',
     payloadFields: ['task_title', 'new_status'],
-    entityIds: ['task_id'],
   },
 
   // File-related notifications
@@ -56,7 +49,11 @@ export const notificationTypeMap: Record<string, NotificationTypeConfig> = {
     translationKey: 'notification.file_indexing_completed',
     icon: 'DocumentSearch',
     payloadFields: ['filename', 'meeting_name'],
-    entityIds: ['meeting_id'],
+  },
+  'task.file_indexing.failed': {
+    translationKey: 'notification.task_file_indexing_failed',
+    icon: 'ErrorCircle',
+    payloadFields: ['filename', 'meeting_name'],
   },
 
   // Audio processing notifications
@@ -64,7 +61,6 @@ export const notificationTypeMap: Record<string, NotificationTypeConfig> = {
     translationKey: 'notification.audio_processing_completed',
     icon: 'Speaker1',
     payloadFields: ['meeting_name'],
-    entityIds: ['meeting_id'],
   },
 
   // Chat processing notifications
@@ -72,7 +68,11 @@ export const notificationTypeMap: Record<string, NotificationTypeConfig> = {
     translationKey: 'notification.chat_processing_completed',
     icon: 'Chat',
     payloadFields: ['meeting_name'],
-    entityIds: ['meeting_id'],
+  },
+  'task.chat_processing.failed': {
+    translationKey: 'notification.task_chat_processing_failed',
+    icon: 'ErrorCircle',
+    payloadFields: ['meeting_name'],
   },
 
   // Meeting analysis notifications
@@ -80,7 +80,11 @@ export const notificationTypeMap: Record<string, NotificationTypeConfig> = {
     translationKey: 'notification.meeting_analysis_completed',
     icon: 'DocumentAnalytics',
     payloadFields: ['meeting_name', 'tasks_count', 'note_length'],
-    entityIds: ['meeting_id'],
+  },
+  'task.meeting_analysis.failed': {
+    translationKey: 'notification.task_meeting_analysis_failed',
+    icon: 'ErrorCircle',
+    payloadFields: ['meeting_name'],
   },
 
   // Meeting notifications
@@ -88,7 +92,6 @@ export const notificationTypeMap: Record<string, NotificationTypeConfig> = {
     translationKey: 'notification.meeting_reminder',
     icon: 'Calendar',
     payloadFields: ['title'],
-    entityIds: [],
   },
 
   // Bot notifications
@@ -96,7 +99,6 @@ export const notificationTypeMap: Record<string, NotificationTypeConfig> = {
     translationKey: 'notification.bot_status_update',
     icon: 'Bot',
     payloadFields: ['status', 'message'],
-    entityIds: [],
   },
 
   // System notifications
@@ -104,13 +106,11 @@ export const notificationTypeMap: Record<string, NotificationTypeConfig> = {
     translationKey: 'notification.system_announcement',
     icon: 'Info',
     payloadFields: ['message'],
-    entityIds: [],
   },
   maintenance: {
     translationKey: 'notification.maintenance',
     icon: 'Wrench',
     payloadFields: ['duration'],
-    entityIds: [],
   },
 
   // General notifications
@@ -118,13 +118,11 @@ export const notificationTypeMap: Record<string, NotificationTypeConfig> = {
     translationKey: 'notification.project_update',
     icon: 'FolderOpen',
     payloadFields: ['project_name'],
-    entityIds: ['project_id'],
   },
   comment_reply: {
     translationKey: 'notification.comment_reply',
     icon: 'Chat',
     payloadFields: ['user_name', 'content'],
-    entityIds: ['user_id'],
   },
 };
 

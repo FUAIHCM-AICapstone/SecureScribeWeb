@@ -7,7 +7,6 @@ import type { NotificationResponse } from 'types/notification.type';
 import {
   getNotificationTranslationKey,
   getNotificationIcon,
-  getNotificationPayloadFields,
 } from './notificationTypeMap';
 
 export interface ParsedNotification {
@@ -37,27 +36,6 @@ const interpolateText = (text: string, payload?: Record<string, any>): string =>
 };
 
 /**
- * Extract relevant payload fields for the notification type
- */
-const extractPayloadContext = (
-  type: string | undefined,
-  payload?: Record<string, any>
-): Record<string, any> => {
-  if (!payload) return {};
-
-  const fields = getNotificationPayloadFields(type);
-  const context: Record<string, any> = {};
-
-  fields.forEach((field) => {
-    if (field in payload) {
-      context[field] = payload[field];
-    }
-  });
-
-  return context;
-};
-
-/**
  * Parse notification for display
  * Priority: translationKey → payload.message → fallback
  */
@@ -71,25 +49,35 @@ export const parseNotification = (
   const translationKey = getNotificationTranslationKey(type);
   const icon = getNotificationIcon(type);
 
-  // Extract relevant payload fields
-  const payloadContext = extractPayloadContext(type, payload);
+  // Use payload directly for interpolation (no complex extraction needed)
+  const payloadContext = payload || {};
 
-  // Determine title
+  // Determine title - avoid showing UUIDs
   let title = '';
   
-  // Try to get title from payload first (task_title, project_name, etc.)
+  // Priority: meaningful names over IDs
   if (payload?.task_title) {
     title = payload.task_title;
   } else if (payload?.project_name) {
     title = payload.project_name;
+  } else if (payload?.meeting_name) {
+    title = payload.meeting_name;
   } else if (payload?.title) {
     title = payload.title;
   } else if (payload?.filename) {
     title = payload.filename;
+  } else if (payload?.user_name) {
+    title = payload.user_name;
   } else if (type) {
-    title = type.replace(/_/g, ' ').charAt(0).toUpperCase() + type.slice(1);
+    // Format type name nicely, avoid UUIDs
+    title = type.replace(/[_.-]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
   } else {
     title = 'Notification';
+  }
+
+  // Filter out UUIDs from title
+  if (title && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(title)) {
+    title = 'System Notification';
   }
 
   // Determine message
@@ -123,12 +111,17 @@ export const parseNotification = (
 
   // Priority 5: Fallback to notification type
   if (!message && type) {
-    message = type.replace(/_/g, ' ');
+    message = type.replace(/[_.-]/g, ' ').toLowerCase();
   }
 
   // Priority 6: Generic fallback
   if (!message) {
     message = 'You have a new notification';
+  }
+
+  // Filter out UUIDs from message too
+  if (message && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(message)) {
+    message = 'System notification received';
   }
 
   return {

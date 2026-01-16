@@ -1,11 +1,10 @@
 /**
  * Notification Item Component
- * Displays a single notification with entity data fetching
+ * Displays a single notification
  */
 
 import { parseNotification } from '@/lib/notifications/parseNotification';
-import { useEnrichedNotificationPayload } from '@/lib/notifications/useNotificationEntities';
-import { Badge, Skeleton } from '@fluentui/react-components';
+import { Badge } from '@fluentui/react-components';
 import React from 'react';
 import type { NotificationResponse } from 'types/notification.type';
 
@@ -67,37 +66,8 @@ export const NotificationItem: React.FC<NotificationItemProps> = ({
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onDelete,
 }) => {
-  // Fetch entity data if needed (meeting_id, project_id, etc.)
-  const { enrichedPayload, isLoading } = useEnrichedNotificationPayload(
-    notification.payload
-  );
-
-  // Parse notification with enriched data
-  const enrichedNotification: NotificationResponse = {
-    ...notification,
-    payload: enrichedPayload,
-  };
-
-  const parsed = parseNotification(enrichedNotification, t);
-
-  if (isLoading) {
-    return (
-      <div style={{ ...notificationItemStyles.wrapper, cursor: 'default' }}>
-        <Skeleton
-          appearance="opaque"
-          style={{ ...notificationItemStyles.skeletonLine, width: '200px', height: '16px' }}
-        />
-        <Skeleton
-          appearance="opaque"
-          style={{ ...notificationItemStyles.skeletonLine, width: '300px', height: '14px' }}
-        />
-        <Skeleton
-          appearance="opaque"
-          style={{ width: '100px', height: '12px' }}
-        />
-      </div>
-    );
-  }
+  // Parse notification directly without entity fetching
+  const parsed = parseNotification(notification, t);
 
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
