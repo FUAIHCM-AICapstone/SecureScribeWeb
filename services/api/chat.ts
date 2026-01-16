@@ -46,11 +46,19 @@ export const getConversations = async (
 export const getConversation = async (
     conversationId: string,
 ): Promise<ChatConversationResponse> => {
-
-
-    return ApiWrapper.execute(() =>
-        axiosInstance.get(`/conversations/${conversationId}/messages`)
-    );
+    return ApiWrapper.execute(async () => {
+        const response = await axiosInstance.get(`/conversations/${conversationId}/messages`);
+        
+        // Validate and sanitize the response to ensure message content is always a string
+        if (response.data && response.data.data && response.data.data.messages) {
+            response.data.data.messages = response.data.data.messages.map((msg: any) => ({
+                ...msg,
+                content: typeof msg.content === 'string' ? msg.content : String(msg.content || ''),
+            }));
+        }
+        
+        return response;
+    });
 };
 
 /**
@@ -86,9 +94,26 @@ export const sendChatMessage = async (
     user_message: ChatMessageResponse;
     ai_message: ChatMessageResponse;
 }> => {
-    return ApiWrapper.execute(() =>
-        axiosInstance.post(`/conversations/${conversationId}/messages`, messageData)
-    );
+    return ApiWrapper.execute(async () => {
+        const response = await axiosInstance.post(`/conversations/${conversationId}/messages`, messageData);
+        
+        // Validate and sanitize the response to ensure message content is always a string
+        if (response.data && response.data.data) {
+            const data = response.data.data;
+            if (data.user_message) {
+                data.user_message.content = typeof data.user_message.content === 'string' 
+                    ? data.user_message.content 
+                    : String(data.user_message.content || '');
+            }
+            if (data.ai_message) {
+                data.ai_message.content = typeof data.ai_message.content === 'string' 
+                    ? data.ai_message.content 
+                    : String(data.ai_message.content || '');
+            }
+        }
+        
+        return response;
+    });
 };
 
 /**

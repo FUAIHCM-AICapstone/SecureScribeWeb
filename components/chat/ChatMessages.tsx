@@ -144,24 +144,42 @@ export function ChatMessage({
             : 'inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-[rgba(0,120,212,0.18)] text-[#0b5cad] text-[0.9em] border border-[#5aa0e6]'
         }
       >
-        @{title}
+        @{String(title)}
       </span>
     );
   };
 
-  const renderContentWithMentions = (text: string, isUser: boolean) => {
+  // Helper function to ensure content is always a string
+  const ensureStringContent = (content: any): string => {
+    if (typeof content === 'string') {
+      return content;
+    }
+    if (content && typeof content === 'object') {
+      // If it's an object, try to extract useful properties
+      if ('content' in content && typeof content.content === 'string') {
+        return content.content;
+      }
+      // Otherwise stringify it for debugging, but this shouldn't happen
+      console.warn('Message content is an object when it should be a string:', content);
+      return JSON.stringify(content);
+    }
+    return String(content || '');
+  };
+
+  const renderContentWithMentions = (text: string | any, isUser: boolean) => {
+    const safeText = ensureStringContent(text);
     const parts: Array<string | { type: string; id: string }> = []
     const regex = /@\{(meeting|project|file)\}\{([^}]+)\}/g
     let lastIndex = 0
     let match: RegExpExecArray | null
-    while ((match = regex.exec(text)) !== null) {
-      if (match.index > lastIndex) parts.push(text.slice(lastIndex, match.index))
+    while ((match = regex.exec(safeText)) !== null) {
+      if (match.index > lastIndex) parts.push(safeText.slice(lastIndex, match.index))
       const type = match[1].trim()
       const id = match[2].trim()
       parts.push({ type, id })
       lastIndex = match.index + match[0].length
     }
-    if (lastIndex < text.length) parts.push(text.slice(lastIndex))
+    if (lastIndex < safeText.length) parts.push(safeText.slice(lastIndex))
     return (
       <>
         {parts.map((p, i) =>
@@ -351,7 +369,7 @@ export function ChatMessage({
                 )
               }}
             >
-              {message.content}
+              {ensureStringContent(message.content)}
             </ReactMarkdown>
           </Suspense>
         </div>
@@ -362,7 +380,7 @@ export function ChatMessage({
           <Button
             appearance="subtle"
             size="small"
-            onClick={() => handleCopyMessage(message.id, message.content)}
+            onClick={() => handleCopyMessage(message.id, ensureStringContent(message.content))}
             className={styles.copyButton}
           >
             {copiedMessageId === message.id ? (

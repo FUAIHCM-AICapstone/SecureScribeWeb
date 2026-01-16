@@ -36,13 +36,16 @@ export function useMentionTitle(
       try {
         if (entityType === 'project') {
           const result = await getProject(entityId);
-          return result.name || placeholders[entityType];
+          const title = result.name || placeholders[entityType];
+          return String(title); // Ensure it's always a string
         } else if (entityType === 'meeting') {
           const result = await getMeeting(entityId);
-          return result.title || placeholders[entityType];
+          const title = result.title || placeholders[entityType];
+          return String(title); // Ensure it's always a string
         } else if (entityType === 'file') {
           const result = await getFile(entityId);
-          return result.filename || placeholders[entityType];
+          const title = result.filename || placeholders[entityType];
+          return String(title); // Ensure it's always a string
         }
         return placeholders[entityType];
       } catch (error) {
@@ -55,7 +58,7 @@ export function useMentionTitle(
   });
 
   return {
-    title: data || placeholders[entityType],
+    title: String(data || placeholders[entityType]),
     isLoading,
     isError,
   };
