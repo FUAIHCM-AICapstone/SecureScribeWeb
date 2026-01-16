@@ -27,6 +27,7 @@ interface MessageCodeBlockDynamicProps {
   language?: string;
   theme?: any;
   className?: string;
+  variant?: 'header' | 'floating';
 }
 
 /**
@@ -40,6 +41,8 @@ export const MessageCodeBlockDynamic: React.FC<MessageCodeBlockDynamicProps> = (
   language = 'javascript',
   theme,
   className,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  variant = 'floating',
 }) => {
   return (
     <Suspense fallback={<CodeBlockSkeleton code={code} />}>

@@ -119,7 +119,7 @@ export default function RootLayoutClient({
                           notificationPermission="default"
                           fcmToken=""
                           fcmLoading={false}
-                          requestNotificationPermission={() => {}}
+                          requestNotificationPermission={async () => false}
                         />}
                         <div style={{ display: 'flex', flex: 1, minHeight: 0 }}>
                           {!hideHeader && <Sidebar />}
