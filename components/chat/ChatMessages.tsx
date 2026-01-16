@@ -10,7 +10,7 @@ import { useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import type { ChatMessageResponse, MentionType } from 'types/chat.type';
-import { MessageCodeBlock } from './MessageCodeBlock';
+import { MessageCodeBlockDynamic } from './MessageCodeBlockDynamic';
 import { useMentionTitle } from '@/hooks/useMentionTitle';
 import { usePrefetchMentions } from '@/hooks/usePrefetchMentions';
 
@@ -232,9 +232,9 @@ export function ChatMessage({
                   </span>);
                 }
 
-                // Handle block code (triple backticks) with MessageCodeBlock
+                // Handle block code (triple backticks) with MessageCodeBlockDynamic
                 return (
-                  <MessageCodeBlock
+                  <MessageCodeBlockDynamic
                     code={codeContent}
                     language={language}
                     variant={match ? 'header' : 'floating'}

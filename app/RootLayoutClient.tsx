@@ -21,8 +21,8 @@ import { Toaster, useToastController } from '@fluentui/react-toast';
 import { SidebarProvider } from '../context/SidebarContext';
 import ClientOnlyLayout from '@/components/layout/ClientOnly';
 import { AuthOverlay } from '@/components/layout/AuthOverlay';
-import { useFCM } from '@/hooks/useFCM';
 import { ApiTranslationProvider } from '@/components/providers/ApiTranslationProvider';
+import FirebaseInitializer from '@/components/providers/FirebaseInitializer';
 
 export default function RootLayoutClient({
   children,
@@ -39,22 +39,6 @@ export default function RootLayoutClient({
   const hideHeader = pathAfterLocale.startsWith('auth');
   const isAuthRoute = pathAfterLocale.startsWith('auth');
   const [shouldShowAuthOverlay, setShouldShowAuthOverlay] = useState(false);
-
-  // Initialize FCM for push notifications
-  const {
-    permission: notificationPermission,
-    token: fcmToken,
-    isLoading: fcmLoading,
-    requestNotificationPermission,
-    isSupported
-  } = useFCM();
-
-  // Log FCM support status for debugging
-  useEffect(() => {
-    if (!isSupported) {
-      console.log('FCM notifications not supported in this browser');
-    }
-  }, [isSupported]);
 
   // Initialize FluentUI toast controller
   const toastController = useToastController();
@@ -110,6 +94,7 @@ export default function RootLayoutClient({
       <ClientOnlyLayout>
         <Providers>
           <Toaster position="top-end" />
+          <FirebaseInitializer />
           <Provider store={store}>
             <ReactQueryProvider>
               <NextIntlClientProvider
@@ -131,10 +116,10 @@ export default function RootLayoutClient({
                         }}
                       >
                         {!hideHeader && <Header
-                          notificationPermission={notificationPermission}
-                          fcmToken={fcmToken}
-                          fcmLoading={fcmLoading}
-                          requestNotificationPermission={requestNotificationPermission}
+                          notificationPermission="default"
+                          fcmToken=""
+                          fcmLoading={false}
+                          requestNotificationPermission={() => {}}
                         />}
                         <div style={{ display: 'flex', flex: 1, minHeight: 0 }}>
                           {!hideHeader && <Sidebar />}

@@ -5,6 +5,8 @@ const withNextIntl = createNextIntlPlugin();
 const nextConfig = {
   reactStrictMode: true,
   images: {
+    unoptimized: false,
+    formats: ['image/webp', 'image/avif'],
     remotePatterns: [
       {
         protocol: 'https',
@@ -16,8 +18,8 @@ const nextConfig = {
       },
     ],
   },
-  experimental: {
-    turbo: {}, // Enables TurboPack for faster builds
+  turbopack: {
+    // Enable TurboPack optimizations for faster builds
   },
   webpack(config) {
     config.module.rules.push({

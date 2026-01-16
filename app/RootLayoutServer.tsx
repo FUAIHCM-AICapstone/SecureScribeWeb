@@ -57,7 +57,7 @@ export async function generateMetadata(): Promise<Metadata> {
       pricing: seoConfig.product?.pricing,
       security: seoConfig.product?.security?.note,
     },
-  };
+  } as Metadata;
 }
 
 export default async function RootLayoutServer(props: Props) {

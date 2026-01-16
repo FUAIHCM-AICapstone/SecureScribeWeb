@@ -1,6 +1,6 @@
 'use client';
 
-import Dashboard from '@/components/dashboard/Dashboard';
+import DashboardDynamic from '@/components/dashboard/DashboardDynamic';
 import { makeStyles, shorthands } from '@fluentui/react-components';
 
 const useStyles = makeStyles({
@@ -20,7 +20,7 @@ export default function DashboardPage() {
 
   return (
     <div className={styles.container}>
-      <Dashboard />
+      <DashboardDynamic />
     </div>
   );
 }
