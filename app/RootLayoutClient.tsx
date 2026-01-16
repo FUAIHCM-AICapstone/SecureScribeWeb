@@ -23,7 +23,6 @@ import ClientOnlyLayout from '@/components/layout/ClientOnly';
 import { AuthOverlay } from '@/components/layout/AuthOverlay';
 import { ApiTranslationProvider } from '@/components/providers/ApiTranslationProvider';
 import FirebaseInitializer from '@/components/providers/FirebaseInitializer';
-import { SpeedInsights } from "@vercel/speed-insights/next"
 
 export default function RootLayoutClient({
   children,
@@ -127,7 +126,6 @@ export default function RootLayoutClient({
                         </div>
                       </div>
                       </SidebarProvider>
-                      <SpeedInsights/>
                     </WebSocketProvider>
                   </AuthProvider>
                 </ApiTranslationProvider>

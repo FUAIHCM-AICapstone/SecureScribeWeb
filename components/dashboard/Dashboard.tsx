@@ -51,7 +51,9 @@ import { StatsGrid } from './StatsGrid';
 import { StatCard } from './StatCard';
 import { ContentGrid } from './ContentGrid';
 import { ContentSection } from './ContentSection';
-import { ChartSection } from './ChartSection';
+
+// Lazy load ChartSection to defer recharts library (~20-25 kB)
+const ChartSection = lazy(() => import('./ChartSection').then(m => ({ default: m.ChartSection })));
 
 // Lazy load TaskDetailsModal to save ~8-10 kB on initial dashboard load
 const TaskDetailsModal = lazy(() => import('@/app/[locale]/tasks/components/TaskDetailsModal').then(m => ({ default: m.TaskDetailsModal })));
@@ -426,11 +428,13 @@ const Dashboard: React.FC = () => {
 
       {/* Charts Section */}
       {data && (data.tasks.chart_data?.length > 0 || data.meetings.chart_data?.length > 0) && (
-        <ChartSection
-          title={t('activityOverview')}
-          taskData={data.tasks.chart_data}
-          meetingData={data.meetings.chart_data}
-        />
+        <Suspense fallback={null}>
+          <ChartSection
+            title={t('activityOverview')}
+            taskData={data.tasks.chart_data}
+            meetingData={data.meetings.chart_data}
+          />
+        </Suspense>
       )}
 
       {data && (!data.tasks.chart_data || data.tasks.chart_data.length === 0) && (!data.meetings.chart_data || data.meetings.chart_data.length === 0) && (

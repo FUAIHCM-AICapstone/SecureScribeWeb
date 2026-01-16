@@ -25,7 +25,9 @@ import { MeetingHeader } from './MeetingHeader';
 import { MeetingFiles } from './MeetingFiles';
 import { MeetingFilesTable } from './MeetingFilesTable';
 import { MeetingModals } from './MeetingModals';
-import { LinkedProjectsSection } from './LinkedProjectsSection';
+
+// Lazy load LinkedProjectsSection to save ~40-50 kB on initial meeting detail load
+const LinkedProjectsSection = lazy(() => import('./LinkedProjectsSection').then(m => ({ default: m.LinkedProjectsSection })));
 import { useMeetingQueries } from './useMeetingQueries';
 import { useMeetingMutations } from './useMeetingMutations';
 
@@ -407,7 +409,9 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
 
           {/* Related Projects */}
           {meeting.projects && meeting.projects.length > 0 && (
-            <LinkedProjectsSection projects={meeting.projects} />
+            <Suspense fallback={null}>
+              <LinkedProjectsSection projects={meeting.projects} />
+            </Suspense>
           )}
 
           {/* Meeting URL */}

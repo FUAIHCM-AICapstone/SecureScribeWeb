@@ -1,5 +1,7 @@
 
 // app/layout.tsx
+import { Insights } from './insights';
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning={true} className="bg-[var(--background-color)] text-[var(--text-color)]">
@@ -15,6 +17,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body style={{ fontFamily: 'var(--font-family-base)' }}>
         {children}
+        <Insights />
       </body>
     </html>
   );
