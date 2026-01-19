@@ -69,3 +69,16 @@ export const deleteMeetingAgenda = async (
         axiosInstance.delete(`/meetings/${meetingId}/agenda`)
     );
 };
+
+/**
+ * Download a meeting agenda as a file
+ */
+export const downloadMeetingAgenda = async (
+    meetingId: string
+): Promise<Blob> => {
+    UuidValidator.validate(meetingId, 'Meeting ID');
+    const response = await axiosInstance.get(`/meetings/${meetingId}/agenda/download`, {
+        responseType: 'blob',
+    });
+    return response.data;
+};

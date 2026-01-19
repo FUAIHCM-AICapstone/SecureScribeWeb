@@ -3,9 +3,10 @@
 import React, { useState } from 'react';
 import { Text, Button, makeStyles, shorthands, tokens, Spinner } from '@/lib/components';
 import { useTranslations } from 'next-intl';
-import { Edit20Regular } from '@/lib/icons';
+import { Edit20Regular, ArrowDownload20Regular } from '@/lib/icons';
 import { parseMarkdownNote } from './meetingNoteUtils';
 import { AgendaModal } from './AgendaModal';
+import { downloadMeetingAgenda } from '@/services/api/agenda';
 
 interface MarkdownSection {
   type: string;
@@ -84,6 +85,7 @@ export function MeetingAgenda({
   onGenerateAgenda,
   isUpdating,
   isGenerating,
+  meetingId,
 }: {
   agenda: any;
   isLoading: boolean;
@@ -92,6 +94,7 @@ export function MeetingAgenda({
   onGenerateAgenda: (customPrompt?: string) => Promise<void>;
   isUpdating: boolean;
   isGenerating: boolean;
+  meetingId: string;
 }) {
   const styles = useStyles();
   const t = useTranslations('MeetingDetail');
@@ -100,6 +103,7 @@ export function MeetingAgenda({
   const [agendaContent, setAgendaContent] = useState('');
   const [customAgendaPrompt, setCustomAgendaPrompt] = useState('');
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   // Use real agenda content or show empty state
   const displayContent = agenda?.content || '';
@@ -131,6 +135,28 @@ export function MeetingAgenda({
       setShowEditModal(false);
     } catch (error) {
       console.error('Failed to save/generate agenda:', error);
+    }
+  };
+
+  const handleDownloadAgenda = async () => {
+    if (!displayContent) return;
+
+    setIsDownloading(true);
+    try {
+      const blob = await downloadMeetingAgenda(meetingId);
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `meeting-agenda-${meetingId}.md`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Failed to download agenda:', error);
+      // You might want to show a toast notification here
+    } finally {
+      setIsDownloading(false);
     }
   };
 
@@ -273,16 +299,24 @@ interface InlineContentProps {
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <Button
             appearance="secondary"
+            icon={<ArrowDownload20Regular />}
+            onClick={handleDownloadAgenda}
+            disabled={isUpdating || isGenerating || isDownloading || !displayContent}
+          >
+            {isDownloading ? t('downloading') || 'Downloading...' : t('downloadAgenda') || 'Download'}
+          </Button>
+          <Button
+            appearance="secondary"
             icon={<Edit20Regular />}
             onClick={handleEditAgenda}
-            disabled={isUpdating || isGenerating || !displayContent}
+            disabled={isUpdating || isGenerating || isDownloading || !displayContent}
           >
             {isUpdating ? t('saving') : t('edit')}
           </Button>
           <Button
             appearance="primary"
             onClick={handleGenerateAgenda}
-            disabled={isUpdating || isGenerating}
+            disabled={isUpdating || isGenerating || isDownloading}
           >
             {isGenerating ? t('generating') || 'Generating...' : t('generateAgenda') || 'Generate'}
           </Button>

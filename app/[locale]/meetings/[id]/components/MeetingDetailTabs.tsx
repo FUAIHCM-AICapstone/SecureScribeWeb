@@ -94,6 +94,7 @@ interface MeetingDetailTabsProps {
   onGenerateAgenda: (customPrompt?: string) => Promise<void>;
   isUpdatingAgenda: boolean;
   isGeneratingAgenda: boolean;
+  meetingId: string;
   
   onTabChange?: (tabValue: string) => void; // ← Add handler for tab changes
 }
@@ -128,6 +129,7 @@ function MeetingDetailTabsComponent({
   onGenerateAgenda,
   isUpdatingAgenda,
   isGeneratingAgenda,
+  meetingId,
   onTabChange, // ← Add to destructuring
 }: MeetingDetailTabsProps) {
   const styles = useStyles();
@@ -268,6 +270,7 @@ function MeetingDetailTabsComponent({
               onGenerateAgenda={onGenerateAgenda}
               isUpdating={isUpdatingAgenda}
               isGenerating={isGeneratingAgenda}
+              meetingId={meetingId}
             />
           </Suspense>
         </div>
