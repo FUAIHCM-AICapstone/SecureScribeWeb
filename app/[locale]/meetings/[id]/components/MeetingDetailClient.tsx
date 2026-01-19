@@ -211,7 +211,7 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
     setIsDeleting(true);
     setShowDeleteModal(false);
     deleteMutation.mutate();
-  }, [deleteMutation]);
+  }, [deleteMutation, setIsDeleting]);
 
   const handleArchiveToggle = React.useCallback(() => {
     if (meeting?.status === 'archived') {
@@ -388,7 +388,7 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
           isUpdatingAgenda={updateAgendaMutation.isPending}
           isGeneratingAgenda={generateAgendaMutation.isPending}
           meetingId={meetingId}
-          meeting={meeting.data}
+          meeting={meeting}
           onTabChange={handleTabChange}  // ← Pass handler for lazy loading
         />
 
