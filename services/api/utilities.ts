@@ -94,6 +94,15 @@ export class MessageKeyMapper {
         'MEETING_NOTE_UPDATED_SUCCESS': 'MeetingDetail.updateNoteSuccess',
         'MEETING_NOTE_DELETED_SUCCESS': 'api.meetingNote.deleteSuccess',
 
+        // Meeting Agenda Messages
+        'MEETING_AGENDA_CREATED_SUCCESS': 'MeetingDetail.createAgendaSuccess',
+        'MEETING_AGENDA_NOT_FOUND': 'api.meetingAgenda.notFound',
+        'MEETING_AGENDA_RETRIEVED_SUCCESS': 'api.meetingAgenda.retrieveSuccess',
+        'MEETING_AGENDA_UPDATED_SUCCESS': 'MeetingDetail.updateAgendaSuccess',
+        'MEETING_AGENDA_DELETED_SUCCESS': 'api.meetingAgenda.deleteSuccess',
+        'MEETING_AGENDA_GENERATED_SUCCESS': 'MeetingDetail.generateAgendaSuccess',
+        'MEETING_AGENDA_GENERATION_FAILED': 'api.meetingAgenda.generationFailed',
+
         // Meeting Bot Messages
         'MEETING_BOT_CREATED_SUCCESS': 'api.bot.createSuccess',
         'MEETING_BOT_NOT_FOUND': 'api.bot.notFound',

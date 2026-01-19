@@ -497,7 +497,9 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
         <FileUploadModalComponent
           open={showFileModal}
           onClose={handleFileModalClose}
+          defaultProjectId={meeting?.projects[0]?.id || undefined}
           defaultMeetingId={meetingId}
+          meeting={meeting}
         />
       </Suspense>
     </div>

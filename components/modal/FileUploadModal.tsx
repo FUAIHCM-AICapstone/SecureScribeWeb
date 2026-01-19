@@ -3,11 +3,6 @@
 import { useDebounce } from '@/hooks/useDebounce';
 import { showToast } from '@/hooks/useShowToast';
 import { useRouter } from '@/i18n/navigation';
-import { formatFileSize, getFileIcon, validateFile } from '@/lib/fileUtils';
-import { queryKeys } from '@/lib/queryClient';
-import { uploadFile } from '@/services/api/file';
-import { getMeetings } from '@/services/api/meeting';
-import { getProjects } from '@/services/api/project';
 import {
   Button,
   Caption1,
@@ -26,12 +21,17 @@ import {
   shorthands,
   tokens,
 } from '@/lib/components';
+import { formatFileSize, getFileIcon, validateFile } from '@/lib/fileUtils';
 import {
   ArrowUpload24Regular,
   CheckmarkCircle24Filled,
   Dismiss24Regular,
   Document24Regular,
 } from '@/lib/icons';
+import { queryKeys } from '@/lib/queryClient';
+import { uploadFile } from '@/services/api/file';
+import { getMeetings } from '@/services/api/meeting';
+import { getProjects } from '@/services/api/project';
 import {
   useInfiniteQuery,
   useMutation,
@@ -179,6 +179,7 @@ interface FileUploadModalProps {
   onClose: () => void;
   defaultProjectId?: string;
   defaultMeetingId?: string;
+  meeting?: any;
 }
 
 export function FileUploadModal({
@@ -186,6 +187,7 @@ export function FileUploadModal({
   onClose,
   defaultProjectId,
   defaultMeetingId,
+  meeting,
 }: FileUploadModalProps) {
   const styles = useStyles();
   const t = useTranslations('Files');
@@ -204,6 +206,9 @@ export function FileUploadModal({
   const [isDragging, setIsDragging] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadSuccess, setUploadSuccess] = useState(false);
+
+  // Check if meeting belongs to any project
+  const meetingHasProject = meeting?.projects && meeting.projects.length > 0;
 
   // Search states for Combobox
   const [projectSearchQuery, setProjectSearchQuery] = useState('');
@@ -308,7 +313,6 @@ export function FileUploadModal({
     },
     onSuccess: () => {
       setUploadSuccess(true);
-      // Invalidate queries
       queryClient.invalidateQueries({ queryKey: queryKeys.files });
       if (projectId) {
         queryClient.invalidateQueries({
@@ -317,7 +321,7 @@ export function FileUploadModal({
       }
       if (meetingId) {
         queryClient.invalidateQueries({
-          queryKey: ['meetings', meetingId, 'files'],
+          queryKey: ['meetings', meetingId],
         });
       }
     },
@@ -506,63 +510,65 @@ export function FileUploadModal({
                 )}
 
                 {/* Project Selection with Search */}
-                <div className={styles.filterSection}>
-                  <label className={styles.label}>{t('selectProject')}</label>
-                  <Combobox
-                    placeholder={
-                      isLoadingProjects ? t('loading') : t('selectProject')
-                    }
-                    value={
-                      projectId && projects.length > 0
-                        ? projects.find((p: any) => p.id === projectId)?.name ||
-                          ''
-                        : projectSearchQuery
-                    }
-                    onInput={(e: React.ChangeEvent<HTMLInputElement>) => {
-                      setProjectSearchQuery(e.target.value);
-                    }}
-                    onOptionSelect={(_: any, data: any) => {
-                      const newProjectId = data.optionValue as string;
-                      setProjectId(newProjectId || undefined);
-                      setProjectSearchQuery('');
-                      // Reset meeting if project changes
-                      if (newProjectId !== projectId) {
-                        setMeetingId(undefined);
+                {meetingHasProject ? (
+                  <div className={styles.filterSection}>
+                    <label className={styles.label}>{t('selectProject')}</label>
+                    <Combobox
+                      placeholder={
+                        isLoadingProjects ? t('loading') : t('selectProject')
                       }
-                    }}
-                    disabled={!!defaultProjectId || uploadMutation.isPending}
-                    listbox={{
-                      onScroll: handleProjectsListScroll,
-                    }}
-                  >
-                    {projects.map((project: any) => (
-                      <Option key={project.id} value={project.id}>
-                        {project.name}
-                      </Option>
-                    ))}
-                    {isFetchingNextProjectsPage && (
-                      <div
-                        style={{
-                          padding: '8px 12px',
-                          display: 'flex',
-                          justifyContent: 'center',
-                          alignItems: 'center',
-                          gap: '8px',
-                        }}
-                      >
-                        <Spinner size="small" />
-                        <Caption1>{t('loading')}</Caption1>
-                      </div>
-                    )}
-                    {!isLoadingProjects &&
-                      projects.length === 0 &&
-                      debouncedProjectQuery && (
-                        <div style={{ padding: '12px', textAlign: 'center' }}>
-                          <Caption1>{t('noResults')}</Caption1>
+                      value={
+                        projectId && projects.length > 0
+                          ? projects.find((p: any) => p.id === projectId)
+                              ?.name || ''
+                          : projectSearchQuery
+                      }
+                      onInput={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        setProjectSearchQuery(e.target.value);
+                      }}
+                      onOptionSelect={(_: any, data: any) => {
+                        const newProjectId = data.optionValue as string;
+                        setProjectId(newProjectId || undefined);
+                        setProjectSearchQuery('');
+                        // Reset meeting if project changes
+                        if (newProjectId !== projectId) {
+                          setMeetingId(undefined);
+                        }
+                      }}
+                      disabled={!!defaultProjectId || uploadMutation.isPending}
+                      listbox={{
+                        onScroll: handleProjectsListScroll,
+                      }}
+                    >
+                      {projects.map((project: any) => (
+                        <Option key={project.id} value={project.id}>
+                          {project.name}
+                        </Option>
+                      ))}
+                      {isFetchingNextProjectsPage && (
+                        <div
+                          style={{
+                            padding: '8px 12px',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            gap: '8px',
+                          }}
+                        >
+                          <Spinner size="small" />
+                          <Caption1>{t('loading')}</Caption1>
                         </div>
                       )}
-                  </Combobox>
-                </div>
+                      {!isLoadingProjects &&
+                        projects.length === 0 &&
+                        debouncedProjectQuery && (
+                          <div style={{ padding: '12px', textAlign: 'center' }}>
+                            <Caption1>{t('noResults')}</Caption1>
+                          </div>
+                        )}
+                    </Combobox>
+                  </div>
+                ) : null}
 
                 {/* Meeting Selection with Search */}
                 <div className={styles.filterSection}>

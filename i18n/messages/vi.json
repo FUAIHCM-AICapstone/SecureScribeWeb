@@ -473,6 +473,10 @@
     "uploadAudioSuccess": "Tải audio lên thành công",
     "createNoteSuccess": "Tạo ghi chú thành công",
     "updateNoteSuccess": "Cập nhật ghi chú thành công",
+    "createAgendaSuccess": "Tạo chương trình họp thành công",
+    "updateAgendaSuccess": "Cập nhật chương trình họp thành công",
+    "generateAgendaSuccess": "Tạo chương trình họp bằng AI thành công",
+    "generateAgenda": "Tạo chương trình họp",
     "duration": "Thời lượng",
     "uploadedBy": "Tải lên bởi",
     "uploadedAt": "Tải lên lúc",
@@ -482,6 +486,7 @@
     "enterNoteContent": "Nhập nội dung ghi chú...",
     "agendaContent": "Nội dung chương trình nghị sự",
     "creating": "Đang tạo...",
+    "generating": "Đang tạo...",
     "saving": "Đang lưu...",
     "save": "Lưu",
     "dragDropAudio": "Kéo và thả tệp âm thanh của bạn tại đây",
@@ -1055,6 +1060,17 @@
       "retrieveSuccess": "Lấy bản ghi âm thành công",
       "updateSuccess": "Cập nhật bản ghi âm thành công",
       "deleteSuccess": "Xóa bản ghi âm thành công"
+    },
+    "meetingNote": {
+      "notFound": "Không tìm thấy ghi chú cuộc họp",
+      "retrieveSuccess": "Lấy ghi chú cuộc họp thành công",
+      "deleteSuccess": "Xóa ghi chú cuộc họp thành công"
+    },
+    "meetingAgenda": {
+      "notFound": "Không tìm thấy chương trình họp",
+      "retrieveSuccess": "Lấy chương trình họp thành công",
+      "deleteSuccess": "Xóa chương trình họp thành công",
+      "generationFailed": "Không thể tạo chương trình họp"
     },
     "task": {
       "notFound": "Không tìm thấy nhiệm vụ",

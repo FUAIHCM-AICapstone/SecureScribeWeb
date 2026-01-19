@@ -474,6 +474,10 @@
     "uploadAudioSuccess": "Audio uploaded successfully",
     "createNoteSuccess": "Note created successfully",
     "updateNoteSuccess": "Note updated successfully",
+    "createAgendaSuccess": "Agenda created successfully",
+    "updateAgendaSuccess": "Agenda updated successfully",
+    "generateAgendaSuccess": "Agenda generated successfully",
+    "generateAgenda": "Generate Agenda",
     "duration": "Duration",
     "uploadedBy": "Uploaded by",
     "uploadedAt": "Uploaded at",
@@ -482,6 +486,7 @@
     "noteContent": "Note Content",
     "enterNoteContent": "Enter note content...",
     "creating": "Creating...",
+    "generating": "Generating...",
     "saving": "Saving...",
     "save": "Save",
     "dragDropAudio": "Drag and drop your audio file here",
@@ -1055,6 +1060,17 @@
       "retrieveSuccess": "Transcript retrieved successfully",
       "updateSuccess": "Transcript updated successfully",
       "deleteSuccess": "Transcript deleted successfully"
+    },
+    "meetingNote": {
+      "notFound": "Meeting note not found",
+      "retrieveSuccess": "Meeting note retrieved successfully",
+      "deleteSuccess": "Meeting note deleted successfully"
+    },
+    "meetingAgenda": {
+      "notFound": "Meeting agenda not found",
+      "retrieveSuccess": "Meeting agenda retrieved successfully",
+      "deleteSuccess": "Meeting agenda deleted successfully",
+      "generationFailed": "Failed to generate meeting agenda"
     },
     "task": {
       "notFound": "Task not found",

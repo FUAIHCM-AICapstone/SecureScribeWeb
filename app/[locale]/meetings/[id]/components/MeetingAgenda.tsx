@@ -96,7 +96,9 @@ export function MeetingAgenda({
   const styles = useStyles();
   const t = useTranslations('MeetingDetail');
   const [showEditModal, setShowEditModal] = useState(false);
+  const [modalMode, setModalMode] = useState<'create' | 'edit'>('edit');
   const [agendaContent, setAgendaContent] = useState('');
+  const [customAgendaPrompt, setCustomAgendaPrompt] = useState('');
   const [isExpanded, setIsExpanded] = useState(false);
 
   // Use real agenda content or show empty state
@@ -105,24 +107,30 @@ export function MeetingAgenda({
 
   // Handlers
   const handleEditAgenda = () => {
+    setModalMode('edit');
     setAgendaContent(displayContent);
+    setCustomAgendaPrompt('');
+    setShowEditModal(true);
+  };
+
+  const handleGenerateAgenda = () => {
+    setModalMode('create');
+    setAgendaContent('');
+    setCustomAgendaPrompt('');
     setShowEditModal(true);
   };
 
   const handleSaveAgenda = async () => {
     try {
-      await onUpdateAgenda(agendaContent);
+      if (modalMode === 'edit') {
+        await onUpdateAgenda(agendaContent);
+      } else {
+        // For create mode, generate using custom prompt
+        await onGenerateAgenda(customAgendaPrompt);
+      }
       setShowEditModal(false);
     } catch (error) {
-      console.error('Failed to update agenda:', error);
-    }
-  };
-
-  const handleGenerateAgenda = async (customPrompt?: string) => {
-    try {
-      await onGenerateAgenda(customPrompt);
-    } catch (error) {
-      console.error('Failed to generate agenda:', error);
+      console.error('Failed to save/generate agenda:', error);
     }
   };
 
@@ -267,16 +275,16 @@ interface InlineContentProps {
             appearance="secondary"
             icon={<Edit20Regular />}
             onClick={handleEditAgenda}
-            disabled={isUpdating}
+            disabled={isUpdating || isGenerating || !displayContent}
           >
-            {t('edit')}
+            {isUpdating ? t('saving') : t('edit')}
           </Button>
           <Button
             appearance="primary"
-            onClick={() => handleGenerateAgenda()}
+            onClick={handleGenerateAgenda}
             disabled={isUpdating || isGenerating}
           >
-            Generate Agenda
+            {isGenerating ? t('generating') || 'Generating...' : t('generateAgenda') || 'Generate'}
           </Button>
         </div>
       </div>
@@ -331,20 +339,24 @@ interface InlineContentProps {
       </div>
       )}
 
-      {/* Agenda Edit Modal */}
+      {/* Agenda Modal */}
       <AgendaModal
         isOpen={showEditModal}
+        mode={modalMode}
         agendaContent={agendaContent}
-        isSaving={isUpdating}
+        customAgendaPrompt={customAgendaPrompt}
+        isSaving={isUpdating || isGenerating}
         isLoading={isLoading}
         error={error || null}
         onOpenChange={(open) => {
           setShowEditModal(open);
           if (!open) {
             setAgendaContent('');
+            setCustomAgendaPrompt('');
           }
         }}
         onAgendaContentChange={setAgendaContent}
+        onCustomPromptChange={setCustomAgendaPrompt}
         onSaveAgenda={handleSaveAgenda}
       />
     </div>
