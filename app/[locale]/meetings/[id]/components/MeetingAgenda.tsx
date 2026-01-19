@@ -7,6 +7,29 @@ import { Edit20Regular, ArrowDownload20Regular } from '@/lib/icons';
 import { parseMarkdownNote } from './meetingNoteUtils';
 import { AgendaModal } from './AgendaModal';
 import { downloadMeetingAgenda } from '@/services/api/agenda';
+import type { MeetingWithProjects } from 'types/meeting.type';
+
+// Helper function to generate a clean filename from meeting data for agenda
+function generateMeetingAgendaFilename(meeting: MeetingWithProjects | undefined): string {
+    if (!meeting) {
+        return 'meeting-agenda.md';
+    }
+
+    const title = meeting.title || 'Untitled Meeting';
+    const date = meeting.start_time ? new Date(meeting.start_time) : new Date(meeting.created_at);
+
+    // Format date as YYYY-MM-DD
+    const formattedDate = date.toISOString().split('T')[0];
+
+    // Clean title: remove special characters and limit length
+    const cleanTitle = title
+        .replace(/[^a-zA-Z0-9\s-]/g, '') // Remove special characters except spaces and hyphens
+        .replace(/\s+/g, ' ') // Replace multiple spaces with single space
+        .trim()
+        .substring(0, 50); // Limit to 50 characters
+
+    return `${cleanTitle} - Agenda - ${formattedDate}.md`;
+}
 
 interface MarkdownSection {
   type: string;
@@ -86,6 +109,7 @@ export function MeetingAgenda({
   isUpdating,
   isGenerating,
   meetingId,
+  meeting,
 }: {
   agenda: any;
   isLoading: boolean;
@@ -95,6 +119,7 @@ export function MeetingAgenda({
   isUpdating: boolean;
   isGenerating: boolean;
   meetingId: string;
+  meeting: MeetingWithProjects | undefined;
 }) {
   const styles = useStyles();
   const t = useTranslations('MeetingDetail');
@@ -147,7 +172,7 @@ export function MeetingAgenda({
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `meeting-agenda-${meetingId}.pdf`;
+      link.download = generateMeetingAgendaFilename(meeting);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);

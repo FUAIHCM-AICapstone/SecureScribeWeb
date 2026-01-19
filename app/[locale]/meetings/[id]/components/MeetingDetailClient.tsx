@@ -388,6 +388,7 @@ export function MeetingDetailClient({ meetingId }: MeetingDetailClientProps) {
           isUpdatingAgenda={updateAgendaMutation.isPending}
           isGeneratingAgenda={generateAgendaMutation.isPending}
           meetingId={meetingId}
+          meeting={meeting.data}
           onTabChange={handleTabChange}  // ← Pass handler for lazy loading
         />
 

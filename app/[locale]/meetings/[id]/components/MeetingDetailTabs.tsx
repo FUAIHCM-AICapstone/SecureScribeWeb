@@ -22,6 +22,7 @@ import React, { Suspense, useState } from 'react';
 import type { MeetingNoteResponse } from 'types/meeting_note.type';
 import type { TranscriptResponse } from 'types/transcript.type';
 import type { MeetingAgendaResponse } from 'types/agenda.type';
+import type { MeetingWithProjects } from 'types/meeting.type';
 import { MeetingAgenda } from './MeetingAgenda';
 import { MeetingFilesTable } from './MeetingFilesTable';
 import { MeetingNotes } from './MeetingNotes';
@@ -95,6 +96,7 @@ interface MeetingDetailTabsProps {
   isUpdatingAgenda: boolean;
   isGeneratingAgenda: boolean;
   meetingId: string;
+  meeting: MeetingWithProjects | undefined;
   
   onTabChange?: (tabValue: string) => void; // ← Add handler for tab changes
 }
@@ -130,6 +132,7 @@ function MeetingDetailTabsComponent({
   isUpdatingAgenda,
   isGeneratingAgenda,
   meetingId,
+  meeting,
   onTabChange, // ← Add to destructuring
 }: MeetingDetailTabsProps) {
   const styles = useStyles();
@@ -189,6 +192,7 @@ function MeetingDetailTabsComponent({
               isUpdating={isUpdating}
               analysisProgress={analysisProgress}
               meetingId={meetingId}
+              meeting={meeting}
             />
           </Suspense>
         </div>
@@ -272,6 +276,7 @@ function MeetingDetailTabsComponent({
               isUpdating={isUpdatingAgenda}
               isGenerating={isGeneratingAgenda}
               meetingId={meetingId}
+              meeting={meeting}
             />
           </Suspense>
         </div>
@@ -308,7 +313,8 @@ export const MeetingDetailTabs = React.memo(
       prevProps.isUploadingAudio === nextProps.isUploadingAudio &&
       prevProps.isReindexing === nextProps.isReindexing &&
       prevProps.isUpdatingAgenda === nextProps.isUpdatingAgenda &&
-      prevProps.isGeneratingAgenda === nextProps.isGeneratingAgenda
+      prevProps.isGeneratingAgenda === nextProps.isGeneratingAgenda &&
+      prevProps.meeting === nextProps.meeting
     );
   }
 );

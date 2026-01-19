@@ -5,8 +5,31 @@ import { Edit20Regular, ClipboardTaskListLtrRegular, ArrowDownload20Regular } fr
 import { useTranslations } from 'next-intl';
 import React from 'react';
 import type { MeetingNoteResponse } from 'types/meeting_note.type';
+import type { MeetingWithProjects } from 'types/meeting.type';
 import { parseMarkdownNote, useMeetingNoteStyles, type MarkdownSection, HEADING_SIZE_CONFIG, type HeadingSize } from './meetingNoteUtils';
 import { downloadMeetingNote } from '@/services/api/meetingNote';
+
+// Helper function to generate a clean filename from meeting data
+function generateMeetingNoteFilename(meeting: MeetingWithProjects | undefined): string {
+    if (!meeting) {
+        return 'meeting-note.pdf';
+    }
+
+    const title = meeting.title || 'Untitled Meeting';
+    const date = meeting.start_time ? new Date(meeting.start_time) : new Date(meeting.created_at);
+
+    // Format date as YYYY-MM-DD
+    const formattedDate = date.toISOString().split('T')[0];
+
+    // Clean title: remove special characters and limit length
+    const cleanTitle = title
+        .replace(/[^a-zA-Z0-9\s-]/g, '') // Remove special characters except spaces and hyphens
+        .replace(/\s+/g, ' ') // Replace multiple spaces with single space
+        .trim()
+        .substring(0, 50); // Limit to 50 characters
+
+    return `${cleanTitle} - ${formattedDate}.pdf`;
+}
 
 const useStyles = makeStyles({
     sectionTitle: {
@@ -95,6 +118,7 @@ interface MeetingNotesProps {
         task_id: string;
     } | null;
     meetingId: string;
+    meeting: MeetingWithProjects | undefined;
 }
 
 // Component to render a single markdown section
@@ -181,6 +205,7 @@ export function MeetingNotes({
     isUpdating,
     analysisProgress,
     meetingId,
+    meeting,
 }: MeetingNotesProps) {
     const styles = useStyles();
     const t = useTranslations('MeetingDetail');
@@ -202,7 +227,7 @@ export function MeetingNotes({
             const url = window.URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
-            link.download = `meeting-note-${meetingId}.pdf`;
+            link.download = generateMeetingNoteFilename(meeting);
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -213,7 +238,7 @@ export function MeetingNotes({
         } finally {
             setIsDownloading(false);
         }
-    }, [meetingId, note]);
+    }, [meetingId, note, meeting]);
 
     // Parse markdown when note changes
     React.useEffect(() => {
