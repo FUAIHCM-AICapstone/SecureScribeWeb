@@ -202,7 +202,7 @@ export function MeetingNotes({
             const url = window.URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
-            link.download = `meeting-note-${meetingId}.md`;
+            link.download = `meeting-note-${meetingId}.pdf`;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);

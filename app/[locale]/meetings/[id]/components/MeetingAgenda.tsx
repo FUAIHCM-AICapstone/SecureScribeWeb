@@ -147,7 +147,7 @@ export function MeetingAgenda({
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `meeting-agenda-${meetingId}.md`;
+      link.download = `meeting-agenda-${meetingId}.pdf`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
