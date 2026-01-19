@@ -1,11 +1,12 @@
 'use client';
 
 import { Body1, Button, Spinner, Text, makeStyles, shorthands, tokens, ProgressBar } from '@/lib/components';
-import { Edit20Regular, ClipboardTaskListLtrRegular } from '@/lib/icons';
+import { Edit20Regular, ClipboardTaskListLtrRegular, ArrowDownload20Regular } from '@/lib/icons';
 import { useTranslations } from 'next-intl';
 import React from 'react';
 import type { MeetingNoteResponse } from 'types/meeting_note.type';
 import { parseMarkdownNote, useMeetingNoteStyles, type MarkdownSection, HEADING_SIZE_CONFIG, type HeadingSize } from './meetingNoteUtils';
+import { downloadMeetingNote } from '@/services/api/meetingNote';
 
 const useStyles = makeStyles({
     sectionTitle: {
@@ -93,6 +94,7 @@ interface MeetingNotesProps {
         status: string;
         task_id: string;
     } | null;
+    meetingId: string;
 }
 
 // Component to render a single markdown section
@@ -178,15 +180,40 @@ export function MeetingNotes({
     isCreating,
     isUpdating,
     analysisProgress,
+    meetingId,
 }: MeetingNotesProps) {
     const styles = useStyles();
     const t = useTranslations('MeetingDetail');
     const [isExpanded, setIsExpanded] = React.useState(false);
     const [parsedNote, setParsedNote] = React.useState<ReturnType<typeof parseMarkdownNote> | null>(null);
     const [headingSize, setHeadingSize] = React.useState<'small' | 'medium' | 'large'>('small');
+    const [isDownloading, setIsDownloading] = React.useState(false);
 
     // Check if analysis is in progress
     const isAnalyzing = analysisProgress && analysisProgress.status === 'processing';
+
+    // Download handler
+    const handleDownloadNote = React.useCallback(async () => {
+        if (!meetingId || !note) return;
+
+        setIsDownloading(true);
+        try {
+            const blob = await downloadMeetingNote(meetingId);
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `meeting-note-${meetingId}.md`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('Failed to download meeting note:', error);
+            // TODO: Add proper error handling/toast notification
+        } finally {
+            setIsDownloading(false);
+        }
+    }, [meetingId, note]);
 
     // Parse markdown when note changes
     React.useEffect(() => {
@@ -236,6 +263,14 @@ export function MeetingNotes({
                     )}
                     {note ? (
                         <>
+                            <Button
+                                appearance="outline"
+                                icon={<ArrowDownload20Regular />}
+                                onClick={handleDownloadNote}
+                                disabled={isDownloading || !!isAnalyzing}
+                            >
+                                {isDownloading ? t('downloading') : t('downloadNote')}
+                            </Button>
                             <Button
                                 appearance="secondary"
                                 icon={<Edit20Regular />}

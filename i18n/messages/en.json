@@ -474,6 +474,7 @@
     "uploadAudioSuccess": "Audio uploaded successfully",
     "createNoteSuccess": "Note created successfully",
     "updateNoteSuccess": "Note updated successfully",
+    "downloadNote": "Download Note",
     "createAgendaSuccess": "Agenda created successfully",
     "updateAgendaSuccess": "Agenda updated successfully",
     "generateAgendaSuccess": "Agenda generated successfully",

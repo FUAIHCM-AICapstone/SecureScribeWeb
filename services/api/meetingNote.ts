@@ -69,3 +69,16 @@ export const deleteMeetingNote = async (
         axiosInstance.delete(`/meetings/${meetingId}/notes`)
     );
 };
+
+/**
+ * Download a meeting note as a file
+ */
+export const downloadMeetingNote = async (
+    meetingId: string
+): Promise<Blob> => {
+    UuidValidator.validate(meetingId, 'Meeting ID');
+    const response = await axiosInstance.get(`/meetings/${meetingId}/notes/download`, {
+        responseType: 'blob',
+    });
+    return response.data;
+};

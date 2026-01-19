@@ -473,6 +473,7 @@
     "uploadAudioSuccess": "Tải audio lên thành công",
     "createNoteSuccess": "Tạo ghi chú thành công",
     "updateNoteSuccess": "Cập nhật ghi chú thành công",
+    "downloadNote": "Tải xuống ghi chú",
     "createAgendaSuccess": "Tạo chương trình họp thành công",
     "updateAgendaSuccess": "Cập nhật chương trình họp thành công",
     "generateAgendaSuccess": "Tạo chương trình họp bằng AI thành công",

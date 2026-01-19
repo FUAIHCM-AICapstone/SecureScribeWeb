@@ -188,6 +188,7 @@ function MeetingDetailTabsComponent({
               isCreating={isCreating}
               isUpdating={isUpdating}
               analysisProgress={analysisProgress}
+              meetingId={meetingId}
             />
           </Suspense>
         </div>
