@@ -6,7 +6,7 @@ import { useTranslations } from 'next-intl';
 import React from 'react';
 import type { MeetingNoteResponse } from 'types/meeting_note.type';
 import type { MeetingWithProjects } from 'types/meeting.type';
-import { parseMarkdownNote, useMeetingNoteStyles, type MarkdownSection, HEADING_SIZE_CONFIG, type HeadingSize } from './meetingNoteUtils';
+import { MeetingNoteContent } from './meetingNoteUtils';
 import { downloadMeetingNote } from '@/services/api/meetingNote';
 
 // Helper function to generate a clean filename from meeting data
@@ -121,78 +121,6 @@ interface MeetingNotesProps {
     meeting: MeetingWithProjects | undefined;
 }
 
-// Component to render a single markdown section
-function MarkdownSectionView({ section, headingSize = 'small' }: { section: MarkdownSection; headingSize?: HeadingSize }) {
-    const noteStyles = useMeetingNoteStyles();
-    const headingSizeStyles = HEADING_SIZE_CONFIG[headingSize];
-
-    switch (section.type) {
-        case 'heading1':
-            return (
-                <div style={{ ...headingSizeStyles.h1, color: tokens.colorBrandForeground1, marginTop: '20px', marginBottom: '14px', paddingBottom: '10px', borderBottomStyle: 'solid', borderBottomWidth: '2px', borderBottomColor: tokens.colorBrandForeground1 }}>
-                    {section.content}
-                </div>
-            );
-        case 'heading2':
-            return (
-                <div style={{ ...headingSizeStyles.h2, color: tokens.colorBrandForeground1, marginTop: '16px', marginBottom: '10px', paddingBottom: '6px', borderBottomStyle: 'solid', borderBottomWidth: '1px', borderBottomColor: tokens.colorBrandForeground2 }}>
-                    {section.content}
-                </div>
-            );
-        case 'heading3':
-            return (
-                <div style={{ ...headingSizeStyles.h3, color: tokens.colorBrandForeground2, marginTop: '12px', marginBottom: '6px', fontWeight: 600 }}>
-                    {section.content}
-                </div>
-            );
-        case 'paragraph':
-            return (
-                <div className={noteStyles.paragraph}>
-                    {section.children && section.children.length > 0 ? (
-                        <InlineContent sections={section.children} />
-                    ) : (
-                        section.content
-                    )}
-                </div>
-            );
-        case 'list':
-            return (
-                <ul className={noteStyles.list}>
-                    {section.children?.map((item, idx) => (
-                        <li key={idx} className={noteStyles.listItem}>
-                            {item.children && item.children.length > 0 ? (
-                                <InlineContent sections={item.children} />
-                            ) : (
-                                item.content
-                            )}
-                        </li>
-                    ))}
-                </ul>
-            );
-        default:
-            return <div>{section.content}</div>;
-    }
-}
-
-// Component to render inline formatted content (bold, italic, etc.)
-function InlineContent({ sections }: { sections: MarkdownSection[] }) {
-    const noteStyles = useMeetingNoteStyles();
-
-    return (
-        <>
-            {sections.map((section, idx) => {
-                if (section.type === 'bold') {
-                    return (
-                        <span key={idx} className={noteStyles.bold}>
-                            {section.content}
-                        </span>
-                    );
-                }
-                return <span key={idx}>{section.content}</span>;
-            })}
-        </>
-    );
-}
 
 export function MeetingNotes({
     note,
@@ -210,8 +138,6 @@ export function MeetingNotes({
     const styles = useStyles();
     const t = useTranslations('MeetingDetail');
     const [isExpanded, setIsExpanded] = React.useState(false);
-    const [parsedNote, setParsedNote] = React.useState<ReturnType<typeof parseMarkdownNote> | null>(null);
-    const [headingSize, setHeadingSize] = React.useState<'small' | 'medium' | 'large'>('small');
     const [isDownloading, setIsDownloading] = React.useState(false);
 
     // Check if analysis is in progress
@@ -240,18 +166,6 @@ export function MeetingNotes({
         }
     }, [meetingId, note, meeting]);
 
-    // Parse markdown when note changes
-    React.useEffect(() => {
-        if (note?.content) {
-            const parsed = parseMarkdownNote(note.content as string);
-            if (parsed.error) {
-                console.warn(`[MeetingNotes] Parse error for note ${note.id}:`, parsed.error);
-            } else {
-            }
-            setParsedNote(parsed);
-        }
-    }, [note]);
-
     return (
         <div>
             <div className={styles.sectionTitle}>
@@ -259,24 +173,6 @@ export function MeetingNotes({
                     <Text className={styles.sectionHeading}>{t('notes')}</Text>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <select
-                        value={headingSize}
-                        onChange={(e) => setHeadingSize(e.target.value as 'small' | 'medium' | 'large')}
-                        className={styles.headingSizeSelector}
-                        style={{
-                            padding: '4px 8px',
-                            borderRadius: tokens.borderRadiusSmall,
-                            border: `1px solid ${tokens.colorNeutralStroke1}`,
-                            backgroundColor: tokens.colorNeutralBackground1,
-                            color: tokens.colorNeutralForeground1,
-                            fontSize: '12px',
-                            cursor: 'pointer',
-                        }}
-                    >
-                        <option value="small">Small</option>
-                        <option value="medium">Medium</option>
-                        <option value="large">Large</option>
-                    </select>
                     {onShowTasks && (
                         <Button
                             appearance="outline"
@@ -350,32 +246,16 @@ export function MeetingNotes({
                 </div>
             ) : note ? (
                 <div>
-                    {parsedNote?.error ? (
-                        // Fallback to raw content if parsing fails
-                        <div className={styles.noteContent}>
-                            <Text>{note.content || 'No content'}</Text>
-                        </div>
-                    ) : parsedNote?.sections && parsedNote.sections.length > 0 ? (
-                        // Render parsed markdown with expandable view
-                        <div>
-                            <div className={isExpanded ? styles.expandedContent : styles.notePreview}>
-                                {parsedNote.sections.map((section, idx) => (
-                                    <MarkdownSectionView key={idx} section={section} headingSize={headingSize} />
-                                ))}
-                            </div>
-                            <Button
-                                appearance="subtle"
-                                onClick={() => setIsExpanded(!isExpanded)}
-                                className={styles.expandButton}
-                            >
-                                {isExpanded ? t('showLess') || 'Show Less' : t('showMore') || 'Show More'}
-                            </Button>
-                        </div>
-                    ) : (
-                        <div className={styles.noteEmpty}>
-                            <Body1>{t('noNotes')}</Body1>
-                        </div>
-                    )}
+                    <div className={isExpanded ? styles.expandedContent : styles.notePreview}>
+                        <MeetingNoteContent content={note.content as string} />
+                    </div>
+                    <Button
+                        appearance="subtle"
+                        onClick={() => setIsExpanded(!isExpanded)}
+                        className={styles.expandButton}
+                    >
+                        {isExpanded ? t('showLess') || 'Show Less' : t('showMore') || 'Show More'}
+                    </Button>
                 </div>
             ) : (
                 <div className={styles.noteEmpty}>

@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Text, Button, makeStyles, shorthands, tokens, Spinner } from '@/lib/components';
 import { useTranslations } from 'next-intl';
 import { Edit20Regular, ArrowDownload20Regular } from '@/lib/icons';
-import { parseMarkdownNote } from './meetingNoteUtils';
+import { MeetingNoteContent } from './meetingNoteUtils';
 import { AgendaModal } from './AgendaModal';
 import { downloadMeetingAgenda } from '@/services/api/agenda';
 import type { MeetingWithProjects } from 'types/meeting.type';
@@ -12,7 +12,7 @@ import type { MeetingWithProjects } from 'types/meeting.type';
 // Helper function to generate a clean filename from meeting data for agenda
 function generateMeetingAgendaFilename(meeting: MeetingWithProjects | undefined): string {
     if (!meeting) {
-        return 'meeting-agenda.md';
+        return 'meeting-agenda.pdf';
     }
 
     const title = meeting.title || 'Untitled Meeting';
@@ -28,13 +28,7 @@ function generateMeetingAgendaFilename(meeting: MeetingWithProjects | undefined)
         .trim()
         .substring(0, 50); // Limit to 50 characters
 
-    return `${cleanTitle} - Agenda - ${formattedDate}.md`;
-}
-
-interface MarkdownSection {
-  type: string;
-  content: string;
-  children?: MarkdownSection[];
+    return `${cleanTitle} - Agenda - ${formattedDate}.pdf`;
 }
 
 const useStyles = makeStyles({
@@ -132,7 +126,6 @@ export function MeetingAgenda({
 
   // Use real agenda content or show empty state
   const displayContent = agenda?.content || '';
-  const parsed = parseMarkdownNote(displayContent);
 
   // Handlers
   const handleEditAgenda = () => {
@@ -185,136 +178,6 @@ export function MeetingAgenda({
     }
   };
 
-interface MarkdownSectionViewProps {
-  section: MarkdownSection;
-}
-
-  // Component to render a single markdown section
-  function MarkdownSectionView({ section }: MarkdownSectionViewProps) {
-    switch (section.type) {
-      case 'heading1':
-        return (
-          <div
-            style={{
-              fontSize: '28px',
-              fontWeight: 700,
-              color: tokens.colorBrandForeground1,
-              marginTop: '20px',
-              marginBottom: '14px',
-              paddingBottom: '10px',
-              borderBottomStyle: 'solid',
-              borderBottomWidth: '2px',
-              borderBottomColor: tokens.colorBrandForeground1,
-            }}
-          >
-            {section.content}
-          </div>
-        );
-      case 'heading2':
-        return (
-          <div
-            style={{
-              fontSize: '22px',
-              fontWeight: 700,
-              color: tokens.colorBrandForeground1,
-              marginTop: '16px',
-              marginBottom: '10px',
-              paddingBottom: '6px',
-              borderBottomStyle: 'solid',
-              borderBottomWidth: '1px',
-              borderBottomColor: tokens.colorBrandForeground2,
-            }}
-          >
-            {section.content}
-          </div>
-        );
-      case 'heading3':
-        return (
-          <div
-            style={{
-              fontSize: '18px',
-              fontWeight: 600,
-              color: tokens.colorBrandForeground2,
-              marginTop: '12px',
-              marginBottom: '6px',
-            }}
-          >
-            {section.content}
-          </div>
-        );
-      case 'paragraph':
-        return (
-          <div
-            style={{
-              fontSize: tokens.fontSizeBase300,
-              color: tokens.colorNeutralForeground1,
-              lineHeight: '1.6',
-              marginBottom: '10px',
-            }}
-          >
-            {section.children && section.children.length > 0 ? (
-              <InlineContent sections={section.children} />
-            ) : (
-              section.content
-            )}
-          </div>
-        );
-      case 'list':
-        return (
-          <ul
-            style={{
-              fontSize: tokens.fontSizeBase300,
-              color: tokens.colorNeutralForeground1,
-              lineHeight: '1.6',
-              marginBottom: '10px',
-              marginLeft: '20px',
-            }}
-          >
-            {section.children?.map((item: any, idx: number) => (
-              <li key={idx} style={{ marginBottom: '6px' }}>
-                {item.children && item.children.length > 0 ? (
-                  <InlineContent sections={item.children} />
-                ) : (
-                  item.content
-                )}
-              </li>
-            ))}
-          </ul>
-        );
-      default:
-        return (
-          <div
-            style={{
-              fontSize: tokens.fontSizeBase300,
-              color: tokens.colorNeutralForeground1,
-            }}
-          >
-            {section.content}
-          </div>
-        );
-    }
-  }
-
-interface InlineContentProps {
-  sections: MarkdownSection[];
-}
-
-  function InlineContent({ sections }: InlineContentProps) {
-    return (
-      <>
-        {sections.map((section: any, idx: number) => (
-          <span key={idx}>
-            {section.type === 'bold' ? (
-              <strong>{section.content}</strong>
-            ) : (
-              section.content
-            )}
-          </span>
-        ))}
-      </>
-    );
-  }
-
   return (
     <div>
       <div className={styles.sectionTitle}>
@@ -366,36 +229,34 @@ interface InlineContentProps {
 
       {!isLoading && !error && (
         <div className={styles.agendaContainer}>
-        <div
-          className={isExpanded ? styles.expandedContent : styles.agendaPreview}
-          style={{
-            fontSize: tokens.fontSizeBase300,
-            color: tokens.colorNeutralForeground1,
-            lineHeight: '1.8',
-          }}
-        >
-          {parsed.sections && parsed.sections.length > 0 ? (
-            parsed.sections.map((section: any, idx: number) => (
-              <MarkdownSectionView key={idx} section={section} />
-            ))
-          ) : (
-            <div className={styles.agendaEmpty}>
-              <Text style={{ fontSize: tokens.fontSizeBase300 }}>
-                No agenda items yet
-              </Text>
-            </div>
+          <div
+            className={isExpanded ? styles.expandedContent : styles.agendaPreview}
+            style={{
+              fontSize: tokens.fontSizeBase300,
+              color: tokens.colorNeutralForeground1,
+              lineHeight: '1.8',
+            }}
+          >
+            {displayContent ? (
+              <MeetingNoteContent content={displayContent} />
+            ) : (
+              <div className={styles.agendaEmpty}>
+                <Text style={{ fontSize: tokens.fontSizeBase300 }}>
+                  No agenda items yet
+                </Text>
+              </div>
+            )}
+          </div>
+          {displayContent && (
+            <Button
+              appearance="subtle"
+              onClick={() => setIsExpanded(!isExpanded)}
+              className={styles.expandButton}
+            >
+              {isExpanded ? t('showLess') || 'Show Less' : t('showMore') || 'Show More'}
+            </Button>
           )}
         </div>
-        {parsed.sections && parsed.sections.length > 0 && (
-          <Button
-            appearance="subtle"
-            onClick={() => setIsExpanded(!isExpanded)}
-            className={styles.expandButton}
-          >
-            {isExpanded ? t('showLess') || 'Show Less' : t('showMore') || 'Show More'}
-          </Button>
-        )}
-      </div>
       )}
 
       {/* Agenda Modal */}

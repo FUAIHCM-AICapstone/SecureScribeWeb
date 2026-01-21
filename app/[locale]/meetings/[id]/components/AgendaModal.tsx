@@ -1,37 +1,63 @@
 'use client';
 
-import React, { useCallback, useEffect, useState } from 'react';
-import { Dialog, DialogSurface, DialogTitle, DialogBody, DialogActions, Button, Textarea, Badge, Field, makeStyles, shorthands, tokens, Spinner, Body1 } from '@/lib/components';
-import { useTranslations } from 'next-intl';
+import {
+  Badge,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogBody,
+  DialogSurface,
+  DialogTitle,
+  Field,
+  makeStyles,
+  shorthands,
+  Spinner,
+  Textarea,
+  tokens,
+} from '@/lib/components';
 import MDEditor from '@uiw/react-md-editor';
+import { useTranslations } from 'next-intl';
+import { useCallback, useEffect, useState } from 'react';
 
 // Normalize escaped newlines (\\n -> \n) from API responses
 const normalizeContent = (content: string): string => {
-    if (!content) return '';
-    return content.replace(/\\n/g, '\n');
+  if (!content) return '';
+  return content.replace(/\\n/g, '\n');
 };
 
 // Preset configurations for meeting agenda generation
 const PRESET_CONFIGS = {
-    languages: [
-        { key: 'vietnamese', label: 'Tiếng Việt', prompt: 'trên tiếng Việt' },
-        { key: 'english', label: 'English', prompt: 'in English' },
-        { key: 'japanese', label: '日本語', prompt: 'in Japanese' },
-    ],
-    styles: [
-        { key: 'formal', label: 'Chính thức', prompt: 'với phong cách trang trọng, chuyên nghiệp' },
-        { key: 'casual', label: 'Thân thiện', prompt: 'với phong cách thân thiện, dễ tiếp cận' },
-        { key: 'concise', label: 'Ngắn gọn', prompt: 'tóm tắt ngắn gọn, súc tích' },
-        { key: 'detailed', label: 'Chi tiết', prompt: 'chi tiết và toàn diện' },
-    ],
-    meetingTypes: [
-        { key: 'business', label: 'Kinh doanh', prompt: 'cuộc họp kinh doanh' },
-        { key: 'technical', label: 'Kỹ thuật', prompt: 'cuộc họp kỹ thuật' },
-        { key: 'brainstorming', label: 'Brainstorming', prompt: 'phiên brainstorming' },
-        { key: 'review', label: 'Đánh giá', prompt: 'cuộc họp đánh giá' },
-        { key: 'planning', label: 'Lập kế hoạch', prompt: 'cuộc họp lập kế hoạch' },
-        { key: 'training', label: 'Đào tạo', prompt: 'buổi đào tạo' },
-    ],
+  languages: [
+    { key: 'vietnamese', label: 'Tiếng Việt', prompt: 'trên tiếng Việt' },
+    { key: 'english', label: 'English', prompt: 'in English' },
+    { key: 'japanese', label: '日本語', prompt: 'in Japanese' },
+  ],
+  styles: [
+    {
+      key: 'formal',
+      label: 'Chính thức',
+      prompt: 'với phong cách trang trọng, chuyên nghiệp',
+    },
+    {
+      key: 'casual',
+      label: 'Thân thiện',
+      prompt: 'với phong cách thân thiện, dễ tiếp cận',
+    },
+    { key: 'concise', label: 'Ngắn gọn', prompt: 'tóm tắt ngắn gọn, súc tích' },
+    { key: 'detailed', label: 'Chi tiết', prompt: 'chi tiết và toàn diện' },
+  ],
+  meetingTypes: [
+    { key: 'business', label: 'Kinh doanh', prompt: 'cuộc họp kinh doanh' },
+    { key: 'technical', label: 'Kỹ thuật', prompt: 'cuộc họp kỹ thuật' },
+    {
+      key: 'brainstorming',
+      label: 'Brainstorming',
+      prompt: 'phiên brainstorming',
+    },
+    { key: 'review', label: 'Đánh giá', prompt: 'cuộc họp đánh giá' },
+    { key: 'planning', label: 'Lập kế hoạch', prompt: 'cuộc họp lập kế hoạch' },
+    { key: 'training', label: 'Đào tạo', prompt: 'buổi đào tạo' },
+  ],
 };
 
 const useStyles = makeStyles({
@@ -139,10 +165,15 @@ export function AgendaModal({
   // Preset selection state
   const [selectedLanguage, setSelectedLanguage] = useState<string | null>(null);
   const [selectedStyle, setSelectedStyle] = useState<string | null>(null);
-  const [selectedMeetingType, setSelectedMeetingType] = useState<string | null>(null);
+  const [selectedMeetingType, setSelectedMeetingType] = useState<string | null>(
+    null,
+  );
 
   // Handle preset selection
-  const handlePresetSelect = (category: 'language' | 'style' | 'meetingType', key: string) => {
+  const handlePresetSelect = (
+    category: 'language' | 'style' | 'meetingType',
+    key: string,
+  ) => {
     const setters = {
       language: setSelectedLanguage,
       style: setSelectedStyle,
@@ -167,21 +198,25 @@ export function AgendaModal({
     const parts: string[] = [];
 
     if (selectedMeetingType) {
-      const meetingType = PRESET_CONFIGS.meetingTypes.find(m => m.key === selectedMeetingType);
+      const meetingType = PRESET_CONFIGS.meetingTypes.find(
+        (m) => m.key === selectedMeetingType,
+      );
       if (meetingType) {
         parts.push(`Tạo chương trình họp cho ${meetingType.prompt}`);
       }
     }
 
     if (selectedStyle) {
-      const style = PRESET_CONFIGS.styles.find(s => s.key === selectedStyle);
+      const style = PRESET_CONFIGS.styles.find((s) => s.key === selectedStyle);
       if (style) {
         parts.push(style.prompt);
       }
     }
 
     if (selectedLanguage) {
-      const language = PRESET_CONFIGS.languages.find(l => l.key === selectedLanguage);
+      const language = PRESET_CONFIGS.languages.find(
+        (l) => l.key === selectedLanguage,
+      );
       if (language) {
         parts.push(language.prompt);
       }
@@ -204,7 +239,15 @@ export function AgendaModal({
         }
       }
     }
-  }, [selectedLanguage, selectedStyle, selectedMeetingType, mode, customAgendaPrompt, onCustomPromptChange, composePresetPrompt]);
+  }, [
+    selectedLanguage,
+    selectedStyle,
+    selectedMeetingType,
+    mode,
+    customAgendaPrompt,
+    onCustomPromptChange,
+    composePresetPrompt,
+  ]);
 
   // Reset preset selections when modal opens
   useEffect(() => {
@@ -225,13 +268,19 @@ export function AgendaModal({
     }
   }, [mode, isOpen, agendaContent, onAgendaContentChange]);
 
+  // Auto switch to create mode if edit has error and no content
+  const displayMode =
+    mode === 'edit' && error && !agendaContent ? 'create' : mode;
+
   // Determine if save button should be disabled
   const isSaveDisabled =
-    isSaving || (mode === 'edit' && agendaContent.trim() === '');
+    isSaving || (displayMode === 'edit' && agendaContent.trim() === '');
 
   // Determine modal title
   const modalTitle =
-    mode === 'create' ? (t('generateAgenda') || 'Generate Agenda') : (t('edit') || 'Edit');
+    displayMode === 'create'
+      ? t('generateAgenda') || 'Generate Agenda'
+      : t('edit') || 'Edit';
 
   const handleOpenChange = (event: any, data: { open: boolean }) => {
     onOpenChange(data.open);
@@ -243,24 +292,36 @@ export function AgendaModal({
         <DialogTitle>{modalTitle}</DialogTitle>
         <DialogBody className={styles.content}>
           {isLoading ? (
-            <div style={{ display: 'flex', justifyContent: 'center', padding: '24px' }}>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                padding: '24px',
+              }}
+            >
               <Spinner size="small" />
             </div>
-          ) : error ? (
-            <div style={{ color: tokens.colorPaletteRedForeground1, padding: '16px', textAlign: 'center' }}>
-              <Body1>{error}</Body1>
-            </div>
-          ) : mode === 'create' ? (
+          ) : displayMode === 'create' ? (
             <>
               <div className={styles.presetsSection}>
                 <div className={styles.presetGroup}>
-                  <h4 style={{ fontWeight: '600', marginBottom: tokens.spacingVerticalXS, marginTop: 0 }}>Loại cuộc họp</h4>
+                  <h4
+                    style={{
+                      fontWeight: '600',
+                      marginBottom: tokens.spacingVerticalXS,
+                      marginTop: 0,
+                    }}
+                  >
+                    Loại cuộc họp
+                  </h4>
                   <div className={styles.presetBadges}>
                     {PRESET_CONFIGS.meetingTypes.map((meetingType) => (
                       <Badge
                         key={meetingType.key}
                         className={`${styles.presetBadge} ${selectedMeetingType === meetingType.key ? styles.presetBadgeSelected : ''}`}
-                        onClick={() => handlePresetSelect('meetingType', meetingType.key)}
+                        onClick={() =>
+                          handlePresetSelect('meetingType', meetingType.key)
+                        }
                         style={{ cursor: 'pointer' }}
                       >
                         {meetingType.label}
@@ -270,7 +331,15 @@ export function AgendaModal({
                 </div>
 
                 <div className={styles.presetGroup}>
-                  <h4 style={{ fontWeight: '600', marginBottom: tokens.spacingVerticalXS, marginTop: 0 }}>Phong cách</h4>
+                  <h4
+                    style={{
+                      fontWeight: '600',
+                      marginBottom: tokens.spacingVerticalXS,
+                      marginTop: 0,
+                    }}
+                  >
+                    Phong cách
+                  </h4>
                   <div className={styles.presetBadges}>
                     {PRESET_CONFIGS.styles.map((style) => (
                       <Badge
@@ -286,13 +355,23 @@ export function AgendaModal({
                 </div>
 
                 <div className={styles.presetGroup}>
-                  <h4 style={{ fontWeight: '600', marginBottom: tokens.spacingVerticalXS, marginTop: 0 }}>Ngôn ngữ</h4>
+                  <h4
+                    style={{
+                      fontWeight: '600',
+                      marginBottom: tokens.spacingVerticalXS,
+                      marginTop: 0,
+                    }}
+                  >
+                    Ngôn ngữ
+                  </h4>
                   <div className={styles.presetBadges}>
                     {PRESET_CONFIGS.languages.map((language) => (
                       <Badge
                         key={language.key}
                         className={`${styles.presetBadge} ${selectedLanguage === language.key ? styles.presetBadgeSelected : ''}`}
-                        onClick={() => handlePresetSelect('language', language.key)}
+                        onClick={() =>
+                          handlePresetSelect('language', language.key)
+                        }
                         style={{ cursor: 'pointer' }}
                       >
                         {language.label}
@@ -324,14 +403,17 @@ export function AgendaModal({
               <div className={styles.editorContainer} data-color-mode="light">
                 <MDEditor
                   value={agendaContent}
-                  onChange={(val: string | undefined) => onAgendaContentChange(val || '')}
+                  onChange={(val: string | undefined) =>
+                    onAgendaContentChange(val || '')
+                  }
                   preview="edit"
                   height={'100%'}
                   visibleDragbar={false}
                   style={{ height: '100%' }}
                   textareaProps={{
                     disabled: isSaving,
-                    placeholder: t('enterAgendaContent') || 'Enter agenda content...',
+                    placeholder:
+                      t('enterAgendaContent') || 'Enter agenda content...',
                     style: { height: '100%' },
                   }}
                 />
